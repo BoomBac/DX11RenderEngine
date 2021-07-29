@@ -1,0 +1,190 @@
+#include "RenderFrame.h"
+#include <d3d11.h>
+#include <QDebug>
+#include "vector2D.h"
+#include <d3dcompiler.h>
+
+
+
+#pragma comment(lib,"d3d11.lib") 
+#pragma comment(lib,"dxgi.lib") 
+#pragma comment(lib,"D3DCompiler.lib")
+
+
+RenderFrame::RenderFrame(HWND hWnd)
+{
+	InitDx11(hWnd);
+	static float color[] = { 1,0,0,1 };
+	bg_color = color;
+}
+
+RenderFrame::~RenderFrame()
+{
+}
+
+void RenderFrame::EndFrame()
+{
+	DrawTestGraph();
+	pDeviceContext->ClearRenderTargetView(pRenderTargetView.Get(), bg_color);
+	//pDeviceContext->Draw(3u, 0u);
+	pDeviceContext->DrawIndexed(6u, 0u,0u);
+	pSwapChain->Present(0u, 0u);
+	
+}
+
+HRESULT RenderFrame::InitDx11(HWND hWnd)
+{
+	//创建设备和上下文
+	D3D_FEATURE_LEVEL featureLevel;
+	HRESULT hr = D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE, 0,
+		D3D11_CREATE_DEVICE_DEBUG, 0, 0, D3D11_SDK_VERSION, pDevice.GetAddressOf(), &featureLevel, pDeviceContext.GetAddressOf());
+	if (FAILED(hr))
+	{
+		qDebug() << QString("D3D11CreateDevice Failed.");
+		return hr;
+	}
+	if (featureLevel != D3D_FEATURE_LEVEL_11_0)
+	{
+		qDebug() << QString("Direct3D FeatureLevel 11 unsupported."); return hr;
+	}
+	//创建交换链
+	DXGI_SWAP_CHAIN_DESC sd = {};
+	sd.BufferDesc.Width = 800;
+	sd.BufferDesc.Height = 600;
+	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	sd.BufferDesc.RefreshRate.Numerator = 60;
+	sd.BufferDesc.RefreshRate.Denominator = 1;
+	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+
+	//多重采样数量和质量级别
+	sd.SampleDesc.Count = 4;
+	sd.SampleDesc.Quality = 0.2;
+
+	//将场景渲染到后台缓冲区
+	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	//交换链中的后台缓冲区数量；我们一般只用一个后台缓冲区来实现双缓存。
+	sd.BufferCount = 1;
+	//将要渲染到的窗口的句柄。
+	sd.Windowed = TRUE;
+	sd.OutputWindow = hWnd;
+	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+
+	IDXGIFactory* dxgiFactory;
+	CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&dxgiFactory));
+	dxgiFactory->CreateSwapChain(pDevice.Get(), &sd, pSwapChain.GetAddressOf());
+	if (FAILED(hr)) return hr;
+
+	ID3D11Texture2D* backBuffer;
+	pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
+	if(backBuffer!=nullptr)
+		hr = pDevice->CreateRenderTargetView(backBuffer, NULL, pRenderTargetView.GetAddressOf());
+	else
+	{
+		qDebug() << "backBuffer is null!";
+	}
+
+	D3D11_VIEWPORT vp;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	vp.Width = 800;
+	vp.Height = 600;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+
+	pDeviceContext->RSSetViewports(1, &vp);
+	return hr;
+}
+
+void RenderFrame::DrawTestGraph()
+{
+//------------------------------------------------输入装配阶段IA
+	//输入顶点数据
+	const CusMath::vector2d vertices[] = {
+		{-0.5,0.5},
+		{0.5,0.5},
+		{0.5,-0.5},
+		{-0.5,-0.5}
+		/*
+			.1    .2
+			.3    .4
+		*/
+	};
+	//创建顶点缓冲区
+	D3D11_BUFFER_DESC bd = {};
+	ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(vertices);
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+	D3D11_SUBRESOURCE_DATA InitData;
+	ZeroMemory(&InitData, sizeof(InitData));
+	InitData.pSysMem = vertices;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
+	pDevice->CreateBuffer(&bd, &InitData, &pVertexBuffer);
+	//创建索引缓冲区
+	const unsigned short indices[] =
+	{
+		0,1,2,
+		0,2,3
+	};
+	D3D11_BUFFER_DESC Ibd = {};
+	Ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	Ibd.Usage = D3D11_USAGE_DEFAULT;
+	Ibd.CPUAccessFlags = 0;
+	Ibd.MiscFlags = 0;
+	Ibd.ByteWidth = sizeof(indices);
+	Ibd.StructureByteStride = sizeof(unsigned short);
+	Microsoft::WRL::ComPtr<ID3D11Buffer> pIndexBuffer;
+	D3D11_SUBRESOURCE_DATA isd = {};
+	isd.pSysMem = indices;
+	pDevice->CreateBuffer(&Ibd, &isd, &pIndexBuffer);
+
+
+
+
+	Microsoft::WRL::ComPtr<ID3DBlob> pVSBlob = nullptr;
+	// 编译创建像素着色器
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> pPixelShader;
+	D3DReadFileToBlob(L"PixelShader.cso", &pVSBlob);
+	pDevice->CreatePixelShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &pPixelShader);
+	pDeviceContext->PSSetShader(pPixelShader.Get(), nullptr, 0);
+
+	//pDeviceContext->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), nullptr);
+
+	// 编译创建顶点着色器
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> pVertexShader;
+	D3DReadFileToBlob(L"VertexShader.cso", &pVSBlob);
+	pDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr,
+		pVertexShader.GetAddressOf());
+
+	//定义输入布局描述
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> pInputLayout;
+	const D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{"POSITION",0,DXGI_FORMAT_R32G32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+		//{"Color",0,DXGI_FORMAT_R8G8B8A8_UNORM,0,12,D3D11_INPUT_PER_VERTEX_DATA,0},
+	};
+	UINT numElements = ARRAYSIZE(layout);
+
+	//创建输入布局
+	pDevice->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
+		pVSBlob->GetBufferSize(), pInputLayout.GetAddressOf());
+
+
+
+	//绑定
+	//绑定顶点缓冲
+	UINT stride = sizeof(CusMath::vector2d);
+	UINT offset = 0u;
+	pDeviceContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
+	pDeviceContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
+	pDeviceContext->IASetInputLayout(pInputLayout.Get());
+
+	// 设置图元拓扑
+	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	pDeviceContext->VSSetShader(pVertexShader.Get(), nullptr, 0);
+
+	pDeviceContext->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), nullptr);
+
+}

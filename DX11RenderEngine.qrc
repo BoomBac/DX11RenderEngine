@@ -1,0 +1,4 @@
+<RCC>
+    <qresource prefix="DX11RenderEngine">
+    </qresource>
+</RCC>
