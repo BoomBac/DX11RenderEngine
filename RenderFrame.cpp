@@ -10,6 +10,25 @@
 #pragma comment(lib,"dxgi.lib") 
 #pragma comment(lib,"D3DCompiler.lib")
 
+struct ConstantBuffer
+{
+	struct 
+	{
+		float elem[4][4];
+	}transformation;
+};
+//const ConstantBuffer cb =
+//{
+//	//行优先矩阵，行主序，可以直接传入hlsl的mul，无需转置
+//	{
+//		0.75f*std::cos(45.f),std::sin(45.f),0.f,0.f,
+//		0.75f * -std::sin(45.f),std::cos(45.f),0.f,0.f,
+//		0.f,0.f,1.f,0.f,
+//		0.f,0.f,0.f,1.f,
+//	}
+//};
+
+
 
 RenderFrame::RenderFrame(HWND hWnd)
 {
@@ -158,6 +177,30 @@ void RenderFrame::DrawTestGraph()
 	pDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr,
 		pVertexShader.GetAddressOf());
 
+	const ConstantBuffer cb =
+	{
+		//行优先矩阵，行主序，可以直接传入hlsl的mul，无需转置
+		{
+			0.75f * std::cos(45.f),std::sin(45.f),0.f,0.f,
+			0.75f * -std::sin(45.f),std::cos(45.f),0.f,0.f,
+			0.f,0.f,1.f,0.f,
+			0.f,0.f,0.f,1.f,
+		}
+	};
+
+	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
+	D3D11_BUFFER_DESC cdb;
+	cdb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cdb.Usage = D3D11_USAGE_DYNAMIC;
+	cdb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cdb.MiscFlags = 0;
+	cdb.ByteWidth = sizeof(cb);
+	cdb.StructureByteStride = 0;
+	D3D11_SUBRESOURCE_DATA csd = {};
+	csd.pSysMem = &cb;
+	pDevice->CreateBuffer(&cdb, &csd, pConstantBuffer.GetAddressOf());
+
+	pDeviceContext->VSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
 	//定义输入布局描述
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> pInputLayout;
 	const D3D11_INPUT_ELEMENT_DESC layout[] =

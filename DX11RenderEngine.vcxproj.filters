@@ -36,6 +36,12 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{3e7efe5b-3877-4f1b-becd-cb546239f9e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Tool">
+      <UniqueIdentifier>{2d8b51e3-398f-4a48-8d84-b749ce166627}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tool">
+      <UniqueIdentifier>{5358ddfb-2e9d-4470-98ee-82d066589f7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="DX11RenderEngine.qrc">
@@ -58,6 +64,12 @@
     <ClCompile Include="RenderViewport.cpp">
       <Filter>Source Files\QtFrame</Filter>
     </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files\Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="Global.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="DX11RenderEngine.h">
@@ -70,6 +82,12 @@
   <ItemGroup>
     <ClInclude Include="RenderFrame.h">
       <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Header Files\Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="Global.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
