@@ -5,7 +5,7 @@
 #include "ui_DX11RenderEngine.h"
 
 
-class RenderFrame;
+class Graphics;
 
 
 class DX11RenderEngine : public QMainWindow
@@ -18,5 +18,6 @@ public:
     HWND hWnd;
 private:
     Ui::DX11RenderEngineClass ui;
-    RenderFrame* renderframe = nullptr;
+protected:
+    void paintEvent(QPaintEvent* e);
 };

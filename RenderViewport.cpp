@@ -1,5 +1,6 @@
 #include "RenderViewport.h"
 #include <QMouseEvent>
+#include "Graphics.h"
 #include <QString>
 
 
@@ -11,10 +12,17 @@ RenderViewport::RenderViewport(QWidget *parent)
 	this->setAttribute(Qt::WA_PaintOnScreen);
 	setMouseTracking(true);
 
+
 }
 
 RenderViewport::~RenderViewport()
 {
+	if (renderframe != nullptr)
+	{
+		delete renderframe;
+		renderframe = nullptr;
+	}
+		
 }
 
 void RenderViewport::mouseMoveEvent(QMouseEvent* e)
@@ -33,4 +41,13 @@ void RenderViewport::mouseReleaseEvent(QMouseEvent* e)
 {
 	moubtState = "Released";
 	emit(MouseReleased(moubtState));
+}
+void RenderViewport::InitialViewport()
+{
+	//初始化renderViewport，传入hWnd初始化dx
+  renderframe = new Graphics((HWND)winId());
+}
+void RenderViewport::UpdateViewport()
+{
+	renderframe->EndFrame();
 }

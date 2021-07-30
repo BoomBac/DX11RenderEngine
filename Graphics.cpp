@@ -1,14 +1,20 @@
-#include "RenderFrame.h"
+#include "Graphics.h"
 #include <d3d11.h>
 #include <QDebug>
 #include "vector2D.h"
 #include <d3dcompiler.h>
-
+#include <vector>
+#include "VertexBuffer.hpp"
+#include "IndexBuffer.hpp"
 
 
 #pragma comment(lib,"d3d11.lib") 
 #pragma comment(lib,"dxgi.lib") 
 #pragma comment(lib,"D3DCompiler.lib")
+
+template<typename T>
+using Vec = std::vector<T, std::allocator<T>>;
+
 
 struct ConstantBuffer
 {
@@ -30,18 +36,18 @@ struct ConstantBuffer
 
 
 
-RenderFrame::RenderFrame(HWND hWnd)
+Graphics::Graphics(HWND hWnd)
 {
 	InitDx11(hWnd);
 	static float color[] = { 1,0,0,1 };
 	bg_color = color;
 }
 
-RenderFrame::~RenderFrame()
+Graphics::~Graphics()
 {
 }
 
-void RenderFrame::EndFrame()
+void Graphics::EndFrame()
 {
 	DrawTestGraph();
 	pDeviceContext->ClearRenderTargetView(pRenderTargetView.Get(), bg_color);
@@ -51,7 +57,7 @@ void RenderFrame::EndFrame()
 	
 }
 
-HRESULT RenderFrame::InitDx11(HWND hWnd)
+HRESULT Graphics::InitDx11(HWND hWnd)
 {
 	//创建设备和上下文
 	D3D_FEATURE_LEVEL featureLevel;
@@ -115,49 +121,64 @@ HRESULT RenderFrame::InitDx11(HWND hWnd)
 	return hr;
 }
 
-void RenderFrame::DrawTestGraph()
+void Graphics::DrawTestGraph()
 {
 //------------------------------------------------输入装配阶段IA
-	//输入顶点数据
-	const CusMath::vector2d vertices[] = {
-		{-0.5,0.5},
+	////输入顶点数据
+	//const CusMath::vector2d vertices[] = {
+
+	//	/*
+	//		.1    .2
+	//		.3    .4
+	//	*/
+	//};
+	std::vector<CusMath::vector2d> vertices{
+			{-0.5,0.5},
 		{0.5,0.5},
 		{0.5,-0.5},
 		{-0.5,-0.5}
-		/*
-			.1    .2
-			.3    .4
-		*/
 	};
-	//创建顶点缓冲区
-	D3D11_BUFFER_DESC bd = {};
-	ZeroMemory(&bd, sizeof(bd));
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(vertices);
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.CPUAccessFlags = 0;
-	D3D11_SUBRESOURCE_DATA InitData;
-	ZeroMemory(&InitData, sizeof(InitData));
-	InitData.pSysMem = vertices;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
-	pDevice->CreateBuffer(&bd, &InitData, &pVertexBuffer);
+	VertexBuffer<CusMath::vector2d, Vec> vb(vertices,pDevice.Get());
+	vb.tBind(*(pDeviceContext.Get()));
+	////创建顶点缓冲区
+	//D3D11_BUFFER_DESC bd = {};
+	//ZeroMemory(&bd, sizeof(bd));
+	//bd.Usage = D3D11_USAGE_DEFAULT;
+	//bd.ByteWidth = sizeof(vertices);
+	//bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	//bd.CPUAccessFlags = 0;
+	//D3D11_SUBRESOURCE_DATA InitData;
+	//ZeroMemory(&InitData, sizeof(InitData));
+	//InitData.pSysMem = &vertices.at(0);
+	//Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
+	//pDevice->CreateBuffer(&bd, &InitData, &pVertexBuffer);
+
+
+
 	//创建索引缓冲区
-	const unsigned short indices[] =
-	{
+
+	//const unsigned short indices[] =
+	//{
+	//	0,1,2,
+	//	0,2,3
+	//};
+	std::vector<unsigned short> indices{
 		0,1,2,
 		0,2,3
 	};
-	D3D11_BUFFER_DESC Ibd = {};
-	Ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	Ibd.Usage = D3D11_USAGE_DEFAULT;
-	Ibd.CPUAccessFlags = 0;
-	Ibd.MiscFlags = 0;
-	Ibd.ByteWidth = sizeof(indices);
-	Ibd.StructureByteStride = sizeof(unsigned short);
-	Microsoft::WRL::ComPtr<ID3D11Buffer> pIndexBuffer;
-	D3D11_SUBRESOURCE_DATA isd = {};
-	isd.pSysMem = indices;
-	pDevice->CreateBuffer(&Ibd, &isd, &pIndexBuffer);
+	IndexBuffer<unsigned short, Vec> ib(indices,pDevice.Get());
+	ib.tBind(*pDeviceContext.Get());
+	//D3D11_BUFFER_DESC Ibd = {};
+	//Ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	//Ibd.Usage = D3D11_USAGE_DEFAULT;
+	//Ibd.CPUAccessFlags = 0;
+	//Ibd.MiscFlags = 0;
+	//Ibd.ByteWidth = sizeof(indices);
+	//Ibd.StructureByteStride = sizeof(unsigned short);
+	//Microsoft::WRL::ComPtr<ID3D11Buffer> pIndexBuffer;
+	//D3D11_SUBRESOURCE_DATA isd = {};
+	//isd.pSysMem = indices;
+	//pDevice->CreateBuffer(&Ibd, &isd, &pIndexBuffer);
 
 
 
@@ -201,6 +222,8 @@ void RenderFrame::DrawTestGraph()
 	pDevice->CreateBuffer(&cdb, &csd, pConstantBuffer.GetAddressOf());
 
 	pDeviceContext->VSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
+
+
 	//定义输入布局描述
 	Microsoft::WRL::ComPtr<ID3D11InputLayout> pInputLayout;
 	const D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -220,8 +243,8 @@ void RenderFrame::DrawTestGraph()
 	//绑定顶点缓冲
 	UINT stride = sizeof(CusMath::vector2d);
 	UINT offset = 0u;
-	pDeviceContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
-	pDeviceContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
+	//pDeviceContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
+	//pDeviceContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
 	pDeviceContext->IASetInputLayout(pInputLayout.Get());
 
 	// 设置图元拓扑

@@ -42,6 +42,12 @@
     <Filter Include="Source Files\Tool">
       <UniqueIdentifier>{5358ddfb-2e9d-4470-98ee-82d066589f7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Render\Bindable">
+      <UniqueIdentifier>{e6911620-35a0-4965-b701-9513af6d34a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\Bindable">
+      <UniqueIdentifier>{16c609cb-5cad-44e6-a4f4-2d6658cbc7cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="DX11RenderEngine.qrc">
@@ -58,7 +64,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RenderFrame.cpp">
+    <ClCompile Include="Graphics.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
     <ClCompile Include="RenderViewport.cpp">
@@ -68,6 +74,24 @@
       <Filter>Source Files\Tool</Filter>
     </ClCompile>
     <ClCompile Include="Global.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bindable.cpp">
+      <Filter>Source Files\Render\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsResource.cpp">
+      <Filter>Header Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexBuffer.cpp">
+      <Filter>Source Files\Render\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexShader.cpp">
+      <Filter>Source Files\Render\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="PixelShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InputLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -80,13 +104,37 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RenderFrame.h">
+    <ClInclude Include="Graphics.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Header Files\Tool</Filter>
     </ClInclude>
     <ClInclude Include="Global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bindable.h">
+      <Filter>Header Files\Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsResource.h">
+      <Filter>Source Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexBuffer.hpp">
+      <Filter>Header Files\Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexBuffer.hpp">
+      <Filter>Header Files\Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexShader.h">
+      <Filter>Header Files\Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="Utili.h">
+      <Filter>Header Files\Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="PixelShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputLayout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

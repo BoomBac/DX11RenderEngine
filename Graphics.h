@@ -7,13 +7,14 @@ class ID3D11DeviceContext;
 class IDXGISwapChain;
 class ID3D11RenderTargetView;
 
-class RenderFrame
+class Graphics
 {
+	friend class GraphicsResource;
 public:
-	RenderFrame(HWND hWnd);
-	RenderFrame(const RenderFrame&) = delete;
-	RenderFrame& operator=(const RenderFrame&) = delete;
-	~RenderFrame();
+	Graphics(HWND hWnd);
+	Graphics(const Graphics&) = delete;
+	Graphics& operator=(const Graphics&) = delete;
+	~Graphics();
 	void EndFrame();
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr;

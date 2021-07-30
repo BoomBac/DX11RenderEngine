@@ -101,10 +101,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bindable.cpp" />
     <ClCompile Include="Global.cpp" />
-    <ClCompile Include="RenderFrame.cpp" />
+    <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="GraphicsResource.cpp" />
+    <ClCompile Include="InputLayout.cpp" />
+    <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="RenderViewport.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="VertexBuffer.cpp" />
+    <ClCompile Include="VertexShader.cpp" />
     <QtRcc Include="DX11RenderEngine.qrc" />
     <QtUic Include="DX11RenderEngine.ui" />
     <QtMoc Include="DX11RenderEngine.h" />
@@ -113,9 +119,17 @@
     <QtUic Include="RenderViewport.ui" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bindable.h" />
     <ClInclude Include="Global.h" />
-    <ClInclude Include="RenderFrame.h" />
+    <ClInclude Include="GraphicsResource.h" />
+    <ClInclude Include="Graphics.h" />
+    <ClInclude Include="IndexBuffer.hpp" />
+    <ClInclude Include="InputLayout.h" />
+    <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="Utili.h" />
+    <ClInclude Include="VertexBuffer.hpp" />
+    <ClInclude Include="VertexShader.h" />
     <QtMoc Include="RenderViewport.h" />
   </ItemGroup>
   <ItemGroup>
