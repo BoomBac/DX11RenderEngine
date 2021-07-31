@@ -110,6 +110,7 @@
     <ClCompile Include="RenderViewport.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
+    <ClCompile Include="VertexLayout.cpp" />
     <ClCompile Include="VertexShader.cpp" />
     <QtRcc Include="DX11RenderEngine.qrc" />
     <QtUic Include="DX11RenderEngine.ui" />
@@ -129,6 +130,7 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Utili.h" />
     <ClInclude Include="VertexBuffer.hpp" />
+    <ClInclude Include="VertexLayout.h" />
     <ClInclude Include="VertexShader.h" />
     <QtMoc Include="RenderViewport.h" />
   </ItemGroup>

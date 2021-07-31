@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-
+using namespace std;
 namespace Utility
 {
 	std::wstring ToWide(const std::string& narrow)
