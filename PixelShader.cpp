@@ -4,7 +4,7 @@
 
 PixelShader::PixelShader(ID3D11Device* pd, const std::string& path)
 {
-	D3DReadFileToBlob(Utility::ToWide(path).c_str(), &pVSBlob);
+	D3DReadFileToBlob(ToWide(path).c_str(), &pVSBlob);
 	pd->CreatePixelShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &pPShader);
 }
 

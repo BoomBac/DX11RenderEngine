@@ -143,6 +143,9 @@
     <ClInclude Include="VertexLayout.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
+    <ClInclude Include="ConstantBuffer.h">
+      <Filter>Header Files\Render\Bindable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="RenderViewport.ui">

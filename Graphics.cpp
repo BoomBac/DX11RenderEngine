@@ -10,6 +10,8 @@
 #include "PixelShader.h"
 #include "VertexShader.h"
 #include "VertexLayout.h"
+#include "Global.h"
+#include "ConstantBuffer.h"
 
 #pragma comment(lib,"d3d11.lib") 
 #pragma comment(lib,"dxgi.lib") 
@@ -19,7 +21,7 @@ template<typename T>
 using Vec = std::vector<T, std::allocator<T>>;
 
 
-struct ConstantBuffer
+struct ConstantBuffers
 {
 	struct 
 	{
@@ -124,6 +126,8 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	return hr;
 }
 
+
+
 void Graphics::DrawTestGraph()
 {
 //------------------------------------------------输入装配阶段IA
@@ -136,127 +140,44 @@ void Graphics::DrawTestGraph()
 	//	*/
 	//};
 	std::vector<CusMath::vector2d> vertices{
-			{-0.5,0.5},
+		{-0.5,0.5},
 		{0.5,0.5},
 		{0.5,-0.5},
 		{-0.5,-0.5}
 	};
 	VertexBuffer<CusMath::vector2d, Vec> vb(vertices,pDevice.Get());
 	vb.tBind(*(pDeviceContext.Get()));
-	////创建顶点缓冲区
-	//D3D11_BUFFER_DESC bd = {};
-	//ZeroMemory(&bd, sizeof(bd));
-	//bd.Usage = D3D11_USAGE_DEFAULT;
-	//bd.ByteWidth = sizeof(vertices);
-	//bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	//bd.CPUAccessFlags = 0;
-	//D3D11_SUBRESOURCE_DATA InitData;
-	//ZeroMemory(&InitData, sizeof(InitData));
-	//InitData.pSysMem = &vertices.at(0);
-	//Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
-	//pDevice->CreateBuffer(&bd, &InitData, &pVertexBuffer);
-
-
-
-	//创建索引缓冲区
-
-	//const unsigned short indices[] =
-	//{
-	//	0,1,2,
-	//	0,2,3
-	//};
 	std::vector<unsigned short> indices{
 		0,1,2,
 		0,2,3
 	};
 	IndexBuffer<unsigned short, Vec> ib(indices,pDevice.Get());
 	ib.tBind(*pDeviceContext.Get());
-	//D3D11_BUFFER_DESC Ibd = {};
-	//Ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	//Ibd.Usage = D3D11_USAGE_DEFAULT;
-	//Ibd.CPUAccessFlags = 0;
-	//Ibd.MiscFlags = 0;
-	//Ibd.ByteWidth = sizeof(indices);
-	//Ibd.StructureByteStride = sizeof(unsigned short);
-	//Microsoft::WRL::ComPtr<ID3D11Buffer> pIndexBuffer;
-	//D3D11_SUBRESOURCE_DATA isd = {};
-	//isd.pSysMem = indices;
-	//pDevice->CreateBuffer(&Ibd, &isd, &pIndexBuffer);
-
-
-
 	PixelShader ps(pDevice.Get(), "PixelShader.cso");
 	ps.TBind(*pDeviceContext.Get());
-
-	//Microsoft::WRL::ComPtr<ID3DBlob> pVSBlob = nullptr;
-	// 编译创建像素着色器
-	//Microsoft::WRL::ComPtr<ID3D11PixelShader> pPixelShader;
-	//D3DReadFileToBlob(L"PixelShader.cso", &pVSBlob);
-	//pDevice->CreatePixelShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, &pPixelShader);
-	//pDeviceContext->PSSetShader(pPixelShader.Get(), nullptr, 0);
-
-	//pDeviceContext->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), nullptr);
 	VertexShader vs(pDevice.Get(), "VertexShader.cso");
 	vs.TBind(*pDeviceContext.Get());
-	// 编译创建顶点着色器
-	//Microsoft::WRL::ComPtr<ID3D11VertexShader> pVertexShader;
-	//D3DReadFileToBlob(L"VertexShader.cso", &pVSBlob);
-	//pDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr,
-	//	pVertexShader.GetAddressOf());
 
-	const ConstantBuffer cb =
+	float angle = Global::getInstance()->gTimer.Peek();
+	ConstantBuffers cb =
 	{
+
 		//行优先矩阵，行主序，可以直接传入hlsl的mul，无需转置
 		{
-			0.75f * std::cos(45.f),std::sin(45.f),0.f,0.f,
-			0.75f * -std::sin(45.f),std::cos(45.f),0.f,0.f,
+			0.75f * std::cos(angle),std::sin(angle),0.f,0.f,
+			0.75f * -std::sin(angle),std::cos(angle),0.f,0.f,
 			0.f,0.f,1.f,0.f,
 			0.f,0.f,0.f,1.f,
 		}
 	};
-
-	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
-	D3D11_BUFFER_DESC cdb;
-	cdb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cdb.Usage = D3D11_USAGE_DYNAMIC;
-	cdb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cdb.MiscFlags = 0;
-	cdb.ByteWidth = sizeof(cb);
-	cdb.StructureByteStride = 0;
-	D3D11_SUBRESOURCE_DATA csd = {};
-	csd.pSysMem = &cb;
-	pDevice->CreateBuffer(&cdb, &csd, pConstantBuffer.GetAddressOf());
-
-	pDeviceContext->VSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
-
+	//************************************************************
+	VConstantBuffer<ConstantBuffers> vcb(*pDevice.Get(),cb);
+	vcb.TBind(*pDeviceContext.Get());
 	VertexLayout vl;
 	vl << VertexType::Position2D;
 	vl.Build();
 	InputLayout il(pDevice.Get(),vs,vl);
 	il.TBind(*pDeviceContext.Get());
-
-	//定义输入布局描述
-	//Microsoft::WRL::ComPtr<ID3D11InputLayout> pInputLayout;
-	//const D3D11_INPUT_ELEMENT_DESC layout[] =
-	//{
-	//	{"POSITION",0,DXGI_FORMAT_R32G32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-	//	//{"Color",0,DXGI_FORMAT_R8G8B8A8_UNORM,0,12,D3D11_INPUT_PER_VERTEX_DATA,0},
-	//};
-	//UINT numElements = ARRAYSIZE(layout);
-
-	////创建输入布局
-	//pDevice->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
-	//	pVSBlob->GetBufferSize(), pInputLayout.GetAddressOf());
-
-
-
-	//绑定
-	//绑定顶点缓冲
-	//UINT stride = sizeof(CusMath::vector2d);
-	//UINT offset = 0u;
-	//pDeviceContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
-	//pDeviceContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
-	//pDeviceContext->IASetInputLayout(pInputLayout.Get());
 
 	// 设置图元拓扑
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

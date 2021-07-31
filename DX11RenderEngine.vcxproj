@@ -121,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bindable.h" />
+    <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="GraphicsResource.h" />
     <ClInclude Include="Graphics.h" />

@@ -1,20 +1,16 @@
 #pragma once
 #include <string>
-using namespace std;
-namespace Utility
+
+inline std::wstring ToWide(const std::string& narrow)
 {
-	std::wstring ToWide(const std::string& narrow)
-	{
-		wchar_t wide[512];
-		mbstowcs_s(nullptr, wide, narrow.c_str(), _TRUNCATE);
-		return wide;
-	}
+	wchar_t wide[512];
+	mbstowcs_s(nullptr, wide, narrow.c_str(), _TRUNCATE);
+	return wide;
+}
 
-	std::string ToNarrow(const std::wstring& wide)
-	{
-		char narrow[512];
-		wcstombs_s(nullptr, narrow, wide.c_str(), _TRUNCATE);
-		return narrow;
-	}
-
+inline std::string ToNarrow(const std::wstring& wide)
+{
+	char narrow[512];
+	wcstombs_s(nullptr, narrow, wide.c_str(), _TRUNCATE);
+	return narrow;
 }
