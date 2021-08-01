@@ -3,7 +3,6 @@
 #include <d3d11.h>
 
 class Graphics;
-
 class GraphicsResource
 {
 protected:
