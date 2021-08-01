@@ -2,7 +2,7 @@
 #include "VertexShader.h"
 #include "VertexLayout.h"
 
-InputLayout::InputLayout(ID3D11Device* pd, const VertexShader& vs, VertexLayout& vl)
+InputLayout::InputLayout(Graphics& gfx, const VertexShader& vs, VertexLayout& vl)
 {
 	;
 	//const D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -12,17 +12,13 @@ InputLayout::InputLayout(ID3D11Device* pd, const VertexShader& vs, VertexLayout&
 	//};
 	//UINT numElements = ARRAYSIZE(layout);
 
-	//创建输入布局
-	pd->CreateInputLayout(vl.Build(), 1u,vs.pVSBlob->GetBufferPointer(),
+	//鍒涘缓杈撳叆甯冨眬
+	GetDevice(gfx)->CreateInputLayout(vl.Build(), 1u,vs.pVSBlob->GetBufferPointer(),
 		vs.pVSBlob->GetBufferSize(), pInputLayout.GetAddressOf());
 }
 
 void InputLayout::Bind(Graphics& gfx)
 {
-
-}
-
-void InputLayout::TBind(ID3D11DeviceContext& pc)
-{
-	pc.IASetInputLayout(pInputLayout.Get());
+	GetContext(gfx)->IASetInputLayout(pInputLayout.Get());
+	GetContext(gfx)->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }

@@ -128,6 +128,7 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	vp.MaxDepth = 1.0f;
 
 	pDeviceContext->RSSetViewports(1, &vp);
+	pDeviceContext->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), nullptr);
 	return hr;
 }
 
@@ -185,13 +186,11 @@ void Graphics::DrawTestGraph()
 	VertexLayout vl;
 	vl << VertexType::Position2D;
 	vl.Build();
-	InputLayout il(pDevice.Get(),vs,vl);
-	il.TBind(*pDeviceContext.Get());
+	InputLayout il(*this,vs,vl);
+	il.Bind(*this);
 
-	// 设置图元拓扑
-	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//pDeviceContext->VSSetShader(pVertexShader.Get(), nullptr, 0);
 
-	pDeviceContext->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), nullptr);
+	
 
 }
