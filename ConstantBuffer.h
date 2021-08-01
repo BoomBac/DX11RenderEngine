@@ -53,7 +53,7 @@ void VConstantBuffer<T>::Bind(Graphics& gfx)
 template<class T>
 void VConstantBuffer<T>::TBind(ID3D11DeviceContext& dc)
 {
-	dc.PSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
+	dc.VSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
 }
 
 template<class T>
@@ -73,5 +73,5 @@ void PConstantBuffer<T>::Bind(Graphics& gfx)
 template<class T>
 void PConstantBuffer<T>::TBind(ID3D11DeviceContext& dc)
 {
-	dc.VSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
+	dc.PSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
 }
