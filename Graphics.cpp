@@ -4,14 +4,15 @@
 #include "vector2D.h"
 #include <d3dcompiler.h>
 #include <vector>
-#include "VertexBuffer.hpp"
-#include "IndexBuffer.h"
-#include "InputLayout.h"
-#include "PixelShader.h"
-#include "VertexShader.h"
-#include "VertexLayout.h"
+//#include "VertexBuffer.hpp"
+//#include "IndexBuffer.h"
+//#include "InputLayout.h"
+//#include "PixelShader.h"
+//#include "VertexShader.h"
+//#include "VertexLayout.h"
 #include "Global.h"
-#include "ConstantBuffer.h"
+//#include "ConstantBuffer.h"
+#include "Box.h"
 
 #pragma comment(lib,"d3d11.lib") 
 #pragma comment(lib,"dxgi.lib") 
@@ -21,13 +22,13 @@ template<typename T>
 using Vec = std::vector<T, std::allocator<T>>;
 
 
-struct ConstantBuffers
-{
-	struct 
-	{
-		float elem[4][4];
-	}transformation;
-};
+//struct ConstantBuffers
+//{
+//	struct 
+//	{
+//		float elem[4][4];
+//	}transformation;
+//};
 //const ConstantBuffer cb =
 //{
 //	//行优先矩阵，行主序，可以直接传入hlsl的mul，无需转置
@@ -46,17 +47,21 @@ Graphics::Graphics(HWND hWnd)
 	InitDx11(hWnd);
 	static float color[] = { 1,0,0,1 };
 	bg_color = color;
+	box = new Box(CusMath::vector3d(0.f, 0.f, 0.f), 5, *this);
 }
 
 Graphics::~Graphics()
 {
+	if (box != nullptr)
+		delete box;
 }
 
 void Graphics::EndFrame()
 {
-	DrawTestGraph();
+	//DrawTestGraph();
 	pDeviceContext->ClearRenderTargetView(pRenderTargetView.Get(), bg_color);
-	DrawIndexed(6u);
+	box->Draw(*this);
+	//DrawIndexed(6u);
 	pSwapChain->Present(0u, 0u);
 	
 }
@@ -135,57 +140,57 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 
 void Graphics::DrawTestGraph()
 {
-//------------------------------------------------输入装配阶段IA
-	////输入顶点数据
-	//const CusMath::vector2d vertices[] = {
-
-	//	/*
-	//		.1    .2
-	//		.3    .4
-	//	*/
-	//};
-	std::vector<CusMath::vector2d> vertices{
-		{-0.5,0.5},
-		{0.5,0.5},
-		{0.5,-0.5},
-		{-0.5,-0.5}
-	};
-	VertexBuffer<CusMath::vector2d, Vec> vb(vertices, *this);
-	vb.Bind(*this);
-
-	std::vector<UINT> indices{
-		0,1,2,
-		0,2,3
-	};
-	IndexBuffer ib(indices,*this);
-	ib.Bind(*this);
-
-	PixelShader ps(*this, "PixelShader.cso");
-	ps.Bind(*this);
-
-	VertexShader vs(*this, "VertexShader.cso");
-	vs.Bind(*this);
-
-	float angle = Global::getInstance()->gTimer.Peek();
-	ConstantBuffers cb =
-	{
-
-		//行优先矩阵，行主序，可以直接传入hlsl的mul，无需转置
-		{
-			0.75f * std::cos(angle),std::sin(angle),0.f,0.f,
-			0.75f * -std::sin(angle),std::cos(angle),0.f,0.f,
-			0.f,0.f,1.f,0.f,
-			0.f,0.f,0.f,1.f,
-		}
-	};
-
-	VConstantBuffer<ConstantBuffers> vcb(*this, cb);
-	vcb.Bind(*this);
-
-	VertexLayout vl;
-	vl << VertexType::Position2D;
-	vl.Build();
-	InputLayout il(*this,vs,vl);
-	il.Bind(*this);
+////------------------------------------------------输入装配阶段IA
+//	////输入顶点数据
+//	//const CusMath::vector2d vertices[] = {
+//
+//	//	/*
+//	//		.1    .2
+//	//		.3    .4
+//	//	*/
+//	//};
+//	std::vector<CusMath::vector2d> vertices{
+//		{-0.5,0.5},
+//		{0.5,0.5},
+//		{0.5,-0.5},
+//		{-0.5,-0.5}
+//	};
+//	VertexBuffer<CusMath::vector2d, Vec> vb(vertices, *this);
+//	vb.Bind(*this);
+//
+//	std::vector<UINT> indices{
+//		0,1,2,
+//		0,2,3
+//	};
+//	IndexBuffer ib(indices,*this);
+//	ib.Bind(*this);
+//
+//	PixelShader ps(*this, "PixelShader.cso");
+//	ps.Bind(*this);
+//
+//	VertexShader vs(*this, "VertexShader.cso");
+//	vs.Bind(*this);
+//
+//	float angle = Global::getInstance()->gTimer.Peek();
+//	ConstantBuffers cb =
+//	{
+//
+//		//行优先矩阵，行主序，可以直接传入hlsl的mul，无需转置
+//		{
+//			0.75f * std::cos(angle),std::sin(angle),0.f,0.f,
+//			0.75f * -std::sin(angle),std::cos(angle),0.f,0.f,
+//			0.f,0.f,1.f,0.f,
+//			0.f,0.f,0.f,1.f,
+//		}
+//	};
+//
+//	VConstantBuffer<ConstantBuffers> vcb(*this, cb);
+//	vcb.Bind(*this);
+//
+//	VertexLayout vl;
+//	vl << VertexType::Position2D;
+//	vl.Build();
+//	InputLayout il(*this,vs,vl);
+//	il.Bind(*this);
 
 }

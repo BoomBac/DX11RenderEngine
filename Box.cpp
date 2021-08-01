@@ -50,16 +50,16 @@ Box::Box(const CusMath::vector3d& initPos, const int& size,Graphics& gfx)
 		0,3,7,
 		7,4,0//back
 	};
-	BindItem ib = std::make_unique<IndexBuffer>(indices, gfx);
-	AddBind(std::move(ib));
+	auto ib = std::make_unique<IndexBuffer>(indices, gfx);
+	AddIndexBuf(std::move(ib),gfx);
 
 	BindItem vs = std::make_unique<VertexShader>(gfx, "VertexShader.cso");
-	AddBind(std::move(vs));
+
 
 	BindItem ps = std::make_unique<PixelShader>(gfx, "PixelShader.cso");
 	AddBind(std::move(ps));
-	DirectX::XMVECTOR Eye = DirectX::XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
-	DirectX::XMVECTOR At = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	DirectX::XMVECTOR Eye = DirectX::XMVectorSet(0.0f,10.0f, 10.0f, 0.0f);
+	DirectX::XMVECTOR At = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	DirectX::XMVECTOR Up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	ConstantBuffers cb
 	{
@@ -74,5 +74,6 @@ Box::Box(const CusMath::vector3d& initPos, const int& size,Graphics& gfx)
 	vl << VertexType::Position3D;
 	vl.Build();
 	BindItem il = std::make_unique<InputLayout>(gfx,*dynamic_cast<VertexShader*>(vs.get()),vl);
+	AddBind(std::move(vs));
 	AddBind(std::move(il));
 }

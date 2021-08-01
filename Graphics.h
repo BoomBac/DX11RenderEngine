@@ -6,6 +6,7 @@ class ID3D11Device;
 class ID3D11DeviceContext;
 class IDXGISwapChain;
 class ID3D11RenderTargetView;
+class Box;
 
 class Graphics
 {
@@ -24,7 +25,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>pRenderTargetView = nullptr;
 	HRESULT InitDx11(HWND hWnd);
 	float* bg_color;
-
+	Box* box = nullptr;
 	void DrawTestGraph();
 };
 

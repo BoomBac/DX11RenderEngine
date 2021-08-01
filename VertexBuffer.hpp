@@ -20,11 +20,12 @@ template<typename T, template<typename U> typename Container>
 VertexBuffer<T, Container>::VertexBuffer(const Container<T>& vertics, Graphics& gfx)
 {
 	D3D11_BUFFER_DESC bd = {};
-	ZeroMemory(&bd, sizeof(bd));
-	bd.ByteWidth = sizeof(vertics);
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
+	bd.MiscFlags = 0;
+	bd.ByteWidth = sizeof(T)*vertics.size();
+	bd.StructureByteStride = sizeof(T);
 	D3D11_SUBRESOURCE_DATA InitData;
 	ZeroMemory(&InitData, sizeof(InitData));
 	InitData.pSysMem = &vertics.at(0);

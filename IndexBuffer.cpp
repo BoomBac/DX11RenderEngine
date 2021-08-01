@@ -1,4 +1,5 @@
 #include "IndexBuffer.h"
+#include <minwinbase.h>
 
 
 IndexBuffer::IndexBuffer(const std::vector<UINT>& indices, Graphics& gfx)
@@ -8,11 +9,12 @@ IndexBuffer::IndexBuffer(const std::vector<UINT>& indices, Graphics& gfx)
 	Ibd.Usage = D3D11_USAGE_DEFAULT;
 	Ibd.CPUAccessFlags = 0;
 	Ibd.MiscFlags = 0;
-	Ibd.ByteWidth = sizeof(indices);
+	Ibd.ByteWidth = sizeof(UINT)*indices.size();
 	Ibd.StructureByteStride = sizeof(UINT);
-	D3D11_SUBRESOURCE_DATA isd = {};
-	isd.pSysMem = &indices.at(0);
-	GetDevice(gfx)->CreateBuffer(&Ibd, &isd, pIndexBuffer.GetAddressOf());
+	D3D11_SUBRESOURCE_DATA InitData;
+	ZeroMemory(&InitData, sizeof(InitData));
+	InitData.pSysMem = &indices.at(0);
+	GetDevice(gfx)->CreateBuffer(&Ibd, &InitData, pIndexBuffer.GetAddressOf());
 	count = indices.size();
 }
 

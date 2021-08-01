@@ -21,6 +21,6 @@ void Drawable::AddBind(std::unique_ptr<Bindable> bind)
 void Drawable::AddIndexBuf(std::unique_ptr<IndexBuffer> ibf, Graphics& gfx)
 {
 	indexbuffer = std::move(ibf);
-	//indexbuffer->Bind(gfx);
+	indexbuffer->Bind(gfx);
 }
 

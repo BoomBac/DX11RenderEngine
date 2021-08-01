@@ -67,7 +67,7 @@
     <Link />
     <Link>
       <AdditionalLibraryDirectories>Y:\Project_VS2019\DLLMath\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DLLMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
