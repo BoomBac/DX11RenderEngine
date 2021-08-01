@@ -102,9 +102,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bindable.cpp" />
+    <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Global.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="GraphicsResource.cpp" />
+    <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputLayout.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="RenderViewport.cpp" />
@@ -122,10 +124,11 @@
   <ItemGroup>
     <ClInclude Include="Bindable.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="Drawable.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="GraphicsResource.h" />
     <ClInclude Include="Graphics.h" />
-    <ClInclude Include="IndexBuffer.hpp" />
+    <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputLayout.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Timer.h" />

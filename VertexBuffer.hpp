@@ -6,7 +6,7 @@ template<typename T, template<typename U> typename Container>
 class VertexBuffer : public Bindable
 {
 public:
-	VertexBuffer(const Container<T>& vertics, ID3D11Device* pd);
+	VertexBuffer(const Container<T>& vertics, Graphics& gfx);
 	
 	virtual void Bind(Graphics& gfx) override;
 
@@ -17,7 +17,7 @@ private:
 };
 
 template<typename T, template<typename U> typename Container>
-VertexBuffer<T, Container>::VertexBuffer(const Container<T>& vertics, ID3D11Device* pd)
+VertexBuffer<T, Container>::VertexBuffer(const Container<T>& vertics, Graphics& gfx)
 {
 	D3D11_BUFFER_DESC bd = {};
 	ZeroMemory(&bd, sizeof(bd));
@@ -28,15 +28,15 @@ VertexBuffer<T, Container>::VertexBuffer(const Container<T>& vertics, ID3D11Devi
 	D3D11_SUBRESOURCE_DATA InitData;
 	ZeroMemory(&InitData, sizeof(InitData));
 	InitData.pSysMem = &vertics.at(0);
-	pd->CreateBuffer(&bd, &InitData, pVertexBuffer.GetAddressOf());
+	GetDevice(gfx)->CreateBuffer(&bd, &InitData, pVertexBuffer.GetAddressOf());
 }
 
 template<typename T, template<typename U> typename Container>
 void VertexBuffer<T, Container>::Bind(Graphics& gfx)
 {
-	//UINT stride = sizeof(T);
-	//UINT offset = 0u;
-	//gfx.pDeviceContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset)
+	UINT stride = sizeof(T);
+	UINT offset = 0u;
+	GetContext(gfx)->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
 }
 
 template<typename T, template<typename U> typename Container>

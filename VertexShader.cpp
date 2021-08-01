@@ -13,20 +13,15 @@
 //};
 
 
-
-VertexShader::VertexShader(ID3D11Device* pd, const std::string& path)
+VertexShader::VertexShader(Graphics& gfx, const std::string& path)
 {
-	// ±àÒë´´½¨¶¥µã×ÅÉ«Æ÷
+	// ç¼–è¯‘åˆ›å»ºé¡¶ç‚¹ç€è‰²å™¨
 	D3DReadFileToBlob(ToWide(path.c_str()).c_str(), &pVSBlob);
-	pd->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr,
+	GetDevice(gfx)->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr,
 		pVShader.GetAddressOf());
 }
 
 void VertexShader::Bind(Graphics& gfx)
 {
-}
-
-void VertexShader::TBind(ID3D11DeviceContext& pc)
-{
-	pc.VSSetShader(pVShader.Get(), nullptr, 0);
+	GetContext(gfx)->VSSetShader(pVShader.Get(), nullptr, 0);
 }

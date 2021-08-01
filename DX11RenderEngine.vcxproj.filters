@@ -48,6 +48,12 @@
     <Filter Include="Source Files\Render\Bindable">
       <UniqueIdentifier>{16c609cb-5cad-44e6-a4f4-2d6658cbc7cd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Render\Drawable">
+      <UniqueIdentifier>{c634cedd-a8e9-4be3-b1cb-f957130882cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\Drawable">
+      <UniqueIdentifier>{37d6de64-4116-4f06-87f7-acb16e6b30ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="DX11RenderEngine.qrc">
@@ -97,6 +103,12 @@
     <ClCompile Include="VertexLayout.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
+    <ClCompile Include="Drawable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexBuffer.cpp">
+      <Filter>Source Files\Render\Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="DX11RenderEngine.h">
@@ -125,7 +137,7 @@
     <ClInclude Include="VertexBuffer.hpp">
       <Filter>Header Files\Render\Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="IndexBuffer.hpp">
+    <ClInclude Include="IndexBuffer.h">
       <Filter>Header Files\Render\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="VertexShader.h">
@@ -145,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="ConstantBuffer.h">
       <Filter>Header Files\Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawable.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

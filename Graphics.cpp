@@ -5,7 +5,7 @@
 #include <d3dcompiler.h>
 #include <vector>
 #include "VertexBuffer.hpp"
-#include "IndexBuffer.hpp"
+#include "IndexBuffer.h"
 #include "InputLayout.h"
 #include "PixelShader.h"
 #include "VertexShader.h"
@@ -57,9 +57,14 @@ void Graphics::EndFrame()
 	DrawTestGraph();
 	pDeviceContext->ClearRenderTargetView(pRenderTargetView.Get(), bg_color);
 	//pDeviceContext->Draw(3u, 0u);
-	pDeviceContext->DrawIndexed(6u, 0u,0u);
+	DrawIndexed(6u);
 	pSwapChain->Present(0u, 0u);
 	
+}
+
+void Graphics::DrawIndexed(const UINT& count)
+{
+	pDeviceContext->DrawIndexed(count, 0u, 0u);
 }
 
 HRESULT Graphics::InitDx11(HWND hWnd)
@@ -145,18 +150,21 @@ void Graphics::DrawTestGraph()
 		{0.5,-0.5},
 		{-0.5,-0.5}
 	};
-	VertexBuffer<CusMath::vector2d, Vec> vb(vertices,pDevice.Get());
-	vb.tBind(*(pDeviceContext.Get()));
-	std::vector<unsigned short> indices{
+	VertexBuffer<CusMath::vector2d, Vec> vb(vertices, *this);
+	vb.Bind(*this);
+
+	std::vector<UINT> indices{
 		0,1,2,
 		0,2,3
 	};
-	IndexBuffer<unsigned short, Vec> ib(indices,pDevice.Get());
-	ib.tBind(*pDeviceContext.Get());
-	PixelShader ps(pDevice.Get(), "PixelShader.cso");
-	ps.TBind(*pDeviceContext.Get());
-	VertexShader vs(pDevice.Get(), "VertexShader.cso");
-	vs.TBind(*pDeviceContext.Get());
+	IndexBuffer ib(indices,*this);
+	ib.Bind(*this);
+
+	PixelShader ps(*this, "PixelShader.cso");
+	ps.Bind(*this);
+
+	VertexShader vs(*this, "VertexShader.cso");
+	vs.Bind(*this);
 
 	float angle = Global::getInstance()->gTimer.Peek();
 	ConstantBuffers cb =
@@ -170,24 +178,9 @@ void Graphics::DrawTestGraph()
 			0.f,0.f,0.f,1.f,
 		}
 	};
-	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
-	D3D11_BUFFER_DESC cdb;
-	cdb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cdb.Usage = D3D11_USAGE_DYNAMIC;
-	cdb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cdb.MiscFlags = 0;
-	cdb.ByteWidth = sizeof(cb);
-	cdb.StructureByteStride = 0;
-	D3D11_SUBRESOURCE_DATA csd = {};
-	csd.pSysMem = &cb;
-	pDevice->CreateBuffer(&cdb, &csd, pConstantBuffer.GetAddressOf());
 
-	pDeviceContext->VSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
-
-	//************************************************************
-	//VConstantBuffer<ConstantBuffers> vcb(*pDevice.Get(),cb);
-	//vcb.TBind(*pDeviceContext.Get());
-
+	VConstantBuffer<ConstantBuffers> vcb(*this, cb);
+	vcb.Bind(*this);
 
 	VertexLayout vl;
 	vl << VertexType::Position2D;
