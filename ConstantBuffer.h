@@ -5,7 +5,7 @@ template<class T>
 class ConstantBuffer : public Bindable
 {
 public:
-	ConstantBuffer(ID3D11Device& d,const T& buffer);
+	ConstantBuffer(Graphics& gfx,const T& buffer);
 	void Update(Graphics& gfx,const T&buffer);
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
@@ -22,7 +22,7 @@ void ConstantBuffer<T>::Update(Graphics& gfx, const T& buffer)
 }
 
 template<class T>
-ConstantBuffer<T>::ConstantBuffer(ID3D11Device& d, const T& buffer)
+ConstantBuffer<T>::ConstantBuffer(Graphics& gfx, const T& buffer)
 {
 	D3D11_BUFFER_DESC cdb;
 	cdb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -33,8 +33,9 @@ ConstantBuffer<T>::ConstantBuffer(ID3D11Device& d, const T& buffer)
 	cdb.StructureByteStride = 0;
 	D3D11_SUBRESOURCE_DATA csd = {};
 	csd.pSysMem = &buffer;
-	d.CreateBuffer(&cdb, &csd, pConstantBuffer.GetAddressOf());
+	GetDevice(gfx)->CreateBuffer(&cdb, &csd, pConstantBuffer.GetAddressOf());
 }
+
 
 
 template<class T>
@@ -48,12 +49,7 @@ public:
 template<class T>
 void VConstantBuffer<T>::Bind(Graphics& gfx)
 {
-
-}
-template<class T>
-void VConstantBuffer<T>::TBind(ID3D11DeviceContext& dc)
-{
-	dc.VSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
+	GetContext(gfx)->VSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
 }
 
 template<class T>
@@ -67,11 +63,5 @@ public:
 template<class T>
 void PConstantBuffer<T>::Bind(Graphics& gfx)
 {
-
-}
-
-template<class T>
-void PConstantBuffer<T>::TBind(ID3D11DeviceContext& dc)
-{
-	dc.PSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
+	GetContext(gfx)->PSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
 }
