@@ -30,7 +30,7 @@ struct ConstantBuffers
 };
 //const ConstantBuffer cb =
 //{
-//	//ĞĞÓÅÏÈ¾ØÕó£¬ĞĞÖ÷Ğò£¬¿ÉÒÔÖ±½Ó´«ÈëhlslµÄmul£¬ÎŞĞè×ªÖÃ
+//	//è¡Œä¼˜å…ˆçŸ©é˜µï¼Œè¡Œä¸»åºï¼Œå¯ä»¥ç›´æ¥ä¼ å…¥hlslçš„mulï¼Œæ— éœ€è½¬ç½®
 //	{
 //		0.75f*std::cos(45.f),std::sin(45.f),0.f,0.f,
 //		0.75f * -std::sin(45.f),std::cos(45.f),0.f,0.f,
@@ -64,7 +64,7 @@ void Graphics::EndFrame()
 
 HRESULT Graphics::InitDx11(HWND hWnd)
 {
-	//´´½¨Éè±¸ºÍÉÏÏÂÎÄ
+	//åˆ›å»ºè®¾å¤‡å’Œä¸Šä¸‹æ–‡
 	D3D_FEATURE_LEVEL featureLevel;
 	HRESULT hr = D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE, 0,
 		D3D11_CREATE_DEVICE_DEBUG, 0, 0, D3D11_SDK_VERSION, pDevice.GetAddressOf(), &featureLevel, pDeviceContext.GetAddressOf());
@@ -77,7 +77,7 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	{
 		qDebug() << QString("Direct3D FeatureLevel 11 unsupported."); return hr;
 	}
-	//´´½¨½»»»Á´
+	//åˆ›å»ºäº¤æ¢é“¾
 	DXGI_SWAP_CHAIN_DESC sd = {};
 	sd.BufferDesc.Width = 800;
 	sd.BufferDesc.Height = 600;
@@ -87,15 +87,15 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 
-	//¶àÖØ²ÉÑùÊıÁ¿ºÍÖÊÁ¿¼¶±ğ
+	//å¤šé‡é‡‡æ ·æ•°é‡å’Œè´¨é‡çº§åˆ«
 	sd.SampleDesc.Count = 4;
 	sd.SampleDesc.Quality = 0.2;
 
-	//½«³¡¾°äÖÈ¾µ½ºóÌ¨»º³åÇø
+	//å°†åœºæ™¯æ¸²æŸ“åˆ°åå°ç¼“å†²åŒº
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	//½»»»Á´ÖĞµÄºóÌ¨»º³åÇøÊıÁ¿£»ÎÒÃÇÒ»°ãÖ»ÓÃÒ»¸öºóÌ¨»º³åÇøÀ´ÊµÏÖË«»º´æ¡£
+	//äº¤æ¢é“¾ä¸­çš„åå°ç¼“å†²åŒºæ•°é‡ï¼›æˆ‘ä»¬ä¸€èˆ¬åªç”¨ä¸€ä¸ªåå°ç¼“å†²åŒºæ¥å®ç°åŒç¼“å­˜ã€‚
 	sd.BufferCount = 1;
-	//½«ÒªäÖÈ¾µ½µÄ´°¿ÚµÄ¾ä±ú¡£
+	//å°†è¦æ¸²æŸ“åˆ°çš„çª—å£çš„å¥æŸ„ã€‚
 	sd.Windowed = TRUE;
 	sd.OutputWindow = hWnd;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
@@ -130,8 +130,8 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 
 void Graphics::DrawTestGraph()
 {
-//------------------------------------------------ÊäÈë×°Åä½×¶ÎIA
-	////ÊäÈë¶¥µãÊı¾İ
+//------------------------------------------------è¾“å…¥è£…é…é˜¶æ®µIA
+	////è¾“å…¥é¡¶ç‚¹æ•°æ®
 	//const CusMath::vector2d vertices[] = {
 
 	//	/*
@@ -162,7 +162,7 @@ void Graphics::DrawTestGraph()
 	ConstantBuffers cb =
 	{
 
-		//ĞĞÓÅÏÈ¾ØÕó£¬ĞĞÖ÷Ğò£¬¿ÉÒÔÖ±½Ó´«ÈëhlslµÄmul£¬ÎŞĞè×ªÖÃ
+		//è¡Œä¼˜å…ˆçŸ©é˜µï¼Œè¡Œä¸»åºï¼Œå¯ä»¥ç›´æ¥ä¼ å…¥hlslçš„mulï¼Œæ— éœ€è½¬ç½®
 		{
 			0.75f * std::cos(angle),std::sin(angle),0.f,0.f,
 			0.75f * -std::sin(angle),std::cos(angle),0.f,0.f,
@@ -170,16 +170,32 @@ void Graphics::DrawTestGraph()
 			0.f,0.f,0.f,1.f,
 		}
 	};
+	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
+	D3D11_BUFFER_DESC cdb;
+	cdb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cdb.Usage = D3D11_USAGE_DYNAMIC;
+	cdb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cdb.MiscFlags = 0;
+	cdb.ByteWidth = sizeof(cb);
+	cdb.StructureByteStride = 0;
+	D3D11_SUBRESOURCE_DATA csd = {};
+	csd.pSysMem = &cb;
+	pDevice->CreateBuffer(&cdb, &csd, pConstantBuffer.GetAddressOf());
+
+	pDeviceContext->VSSetConstantBuffers(0, 1, pConstantBuffer.GetAddressOf());
+
 	//************************************************************
-	VConstantBuffer<ConstantBuffers> vcb(*pDevice.Get(),cb);
-	vcb.TBind(*pDeviceContext.Get());
+	//VConstantBuffer<ConstantBuffers> vcb(*pDevice.Get(),cb);
+	//vcb.TBind(*pDeviceContext.Get());
+
+
 	VertexLayout vl;
 	vl << VertexType::Position2D;
 	vl.Build();
 	InputLayout il(pDevice.Get(),vs,vl);
 	il.TBind(*pDeviceContext.Get());
 
-	// ÉèÖÃÍ¼ÔªÍØÆË
+	// è®¾ç½®å›¾å…ƒæ‹“æ‰‘
 	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//pDeviceContext->VSSetShader(pVertexShader.Get(), nullptr, 0);
 
