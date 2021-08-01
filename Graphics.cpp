@@ -56,7 +56,6 @@ void Graphics::EndFrame()
 {
 	DrawTestGraph();
 	pDeviceContext->ClearRenderTargetView(pRenderTargetView.Get(), bg_color);
-	//pDeviceContext->Draw(3u, 0u);
 	DrawIndexed(6u);
 	pSwapChain->Present(0u, 0u);
 	
@@ -188,9 +187,5 @@ void Graphics::DrawTestGraph()
 	vl.Build();
 	InputLayout il(*this,vs,vl);
 	il.Bind(*this);
-
-	//pDeviceContext->VSSetShader(pVertexShader.Get(), nullptr, 0);
-
-	
 
 }
