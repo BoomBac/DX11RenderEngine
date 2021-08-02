@@ -7,6 +7,10 @@ public:
 	ConstantBuffer(Graphics& gfx,const T& buffer);
 	ConstantBuffer(Graphics& gfx);
 	void Update(Graphics& gfx,const T&buffer);
+	EBindableType GetType() const override
+	{
+		return EBindableType::ConstantBuffer;
+	}
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
 };

@@ -134,6 +134,7 @@
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputLayout.h" />
     <ClInclude Include="PixelShader.h" />
+    <ClInclude Include="Shape.hpp" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TransformBuffer.h" />
     <ClInclude Include="Utili.h" />

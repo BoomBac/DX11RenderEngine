@@ -8,7 +8,7 @@ class PixelShader :
 public:
     PixelShader(Graphics& gfx,const std::string& path);
     virtual void Bind(Graphics& gfx) override;
-    void TBind(ID3D11DeviceContext& pc);
+    virtual EBindableType GetType() const override;
 private:
     Microsoft::WRL::ComPtr<ID3D11PixelShader> pPShader = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> pVSBlob = nullptr;

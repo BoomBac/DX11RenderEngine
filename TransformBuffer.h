@@ -9,8 +9,9 @@ class TransformBuffer :
 public:
     TransformBuffer(Graphics& gfx,Drawable& object);
     virtual void Bind(Graphics& gfx) override;
+    virtual EBindableType GetType() const override;
 private:
-    VConstantBuffer<MVPTransform> vbuf;
+    VConstantBuffer<WorldTransform> vbuf;
     Drawable& object;
 };
 

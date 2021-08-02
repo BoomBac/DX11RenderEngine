@@ -9,12 +9,17 @@ public:
 	VertexBuffer(const Container<T>& vertics, Graphics& gfx);
 	
 	virtual void Bind(Graphics& gfx) override;
-
-	void tBind(ID3D11DeviceContext& pc);
+	virtual EBindableType GetType() const override;
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
 };
+
+template<typename T, template<typename U> typename Container>
+EBindableType VertexBuffer<T,Container>::GetType() const
+{
+	return EBindableType::VertexBuffer;
+}
 
 template<typename T, template<typename U> typename Container>
 VertexBuffer<T, Container>::VertexBuffer(const Container<T>& vertics, Graphics& gfx)
@@ -38,12 +43,4 @@ void VertexBuffer<T, Container>::Bind(Graphics& gfx)
 	UINT stride = sizeof(T);
 	UINT offset = 0u;
 	GetContext(gfx)->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
-}
-
-template<typename T, template<typename U> typename Container>
-void VertexBuffer<T, Container>::tBind(ID3D11DeviceContext& pc)
-{
-	UINT stride = sizeof(T);
-	UINT offset = 0u;
-	pc.IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
 }

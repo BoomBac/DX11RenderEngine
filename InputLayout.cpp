@@ -22,3 +22,8 @@ void InputLayout::Bind(Graphics& gfx)
 	GetContext(gfx)->IASetInputLayout(pInputLayout.Get());
 	GetContext(gfx)->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
+
+EBindableType InputLayout::GetType() const
+{
+	return EBindableType::InputLayout;
+}

@@ -54,6 +54,12 @@
     <Filter Include="Source Files\Render\Drawable">
       <UniqueIdentifier>{37d6de64-4116-4f06-87f7-acb16e6b30ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Render\shape">
+      <UniqueIdentifier>{fc066d60-0ee5-4123-a464-4da3d3109e59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\shape">
+      <UniqueIdentifier>{616703fc-7f23-4413-b98c-ea5d3770905d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="DX11RenderEngine.qrc">
@@ -113,7 +119,7 @@
       <Filter>Source Files\Render\Drawable</Filter>
     </ClCompile>
     <ClCompile Include="TransformBuffer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Render\Bindable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -170,8 +176,11 @@
     <ClInclude Include="Box.h">
       <Filter>Header Files\Render\Drawable</Filter>
     </ClInclude>
+    <ClInclude Include="Shape.hpp">
+      <Filter>Header Files\Render\shape</Filter>
+    </ClInclude>
     <ClInclude Include="TransformBuffer.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Render\Bindable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

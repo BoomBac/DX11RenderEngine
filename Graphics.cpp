@@ -16,26 +16,6 @@ template<typename T>
 using Vec = std::vector<T, std::allocator<T>>;
 
 
-//struct ConstantBuffers
-//{
-//	struct 
-//	{
-//		float elem[4][4];
-//	}transformation;
-//};
-//const ConstantBuffer cb =
-//{
-//	//行优先矩阵，行主序，可以直接传入hlsl的mul，无需转置
-//	{
-//		0.75f*std::cos(45.f),std::sin(45.f),0.f,0.f,
-//		0.75f * -std::sin(45.f),std::cos(45.f),0.f,0.f,
-//		0.f,0.f,1.f,0.f,
-//		0.f,0.f,0.f,1.f,
-//	}
-//};
-
-
-
 Graphics::Graphics(HWND hWnd)
 {
 	InitDx11(hWnd);
@@ -56,9 +36,12 @@ Graphics::~Graphics()
 void Graphics::EndFrame()
 {
 	pDeviceContext->ClearRenderTargetView(pRenderTargetView.Get(), bg_color);
-	box->Update(DirectX::XMMatrixRotationAxis({ 0.f,1.f,0.f }, Global::getInstance()->gTimer.Peek()));
+	//Drawable::UpdateCameraTransformation(DirectX::XMMatrixTranslation(0.f, 0.1f*Global::getInstance()->gTimer.Peek(), 0.f));
+	box->Update(DirectX::XMMatrixTranslation(0.f,0.f, 5.f*Global::getInstance()->gTimer.Peek())
+		*DirectX::XMMatrixRotationAxis({ 0.f,1.f,0.f }, Global::getInstance()->gTimer.Peek()));
 	box->Draw(*this);
-
+	box1->Update(DirectX::XMMatrixTranslation(Global::getInstance()->gTimer.Peek(), 0.f, 0.f));
+	box1->Draw(*this);
 	pSwapChain->Present(0u, 0u);
 	
 }

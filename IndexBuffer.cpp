@@ -22,3 +22,8 @@ void IndexBuffer::Bind(Graphics& gfx)
 {
 	GetContext(gfx)->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 }
+
+EBindableType IndexBuffer::GetType() const
+{
+	return EBindableType::IndexBuffer;
+}

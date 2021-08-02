@@ -13,7 +13,8 @@ void PixelShader::Bind(Graphics& gfx)
 	GetContext(gfx)->PSSetShader(pPShader.Get(), nullptr, 0);
 }
 
-void PixelShader::TBind(ID3D11DeviceContext& pc)
+EBindableType PixelShader::GetType() const
 {
-	pc.PSSetShader(pPShader.Get(), nullptr, 0);
+	return EBindableType::PixelShader;
 }
+

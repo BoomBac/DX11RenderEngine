@@ -14,3 +14,8 @@ void VertexShader::Bind(Graphics& gfx)
 {
 	GetContext(gfx)->VSSetShader(pVShader.Get(), nullptr, 0);
 }
+
+EBindableType VertexShader::GetType() const
+{
+	return EBindableType::VertexShader;
+}
