@@ -24,3 +24,8 @@ void Drawable::AddIndexBuf(std::unique_ptr<IndexBuffer> ibf, Graphics& gfx)
 	indexbuffer->Bind(gfx);
 }
 
+MVPTransform& Drawable::GetTransform()
+{
+	return transform;
+}
+

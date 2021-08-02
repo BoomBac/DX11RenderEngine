@@ -112,6 +112,7 @@
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="RenderViewport.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="TransformBuffer.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexLayout.cpp" />
     <ClCompile Include="VertexShader.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="InputLayout.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="TransformBuffer.h" />
     <ClInclude Include="Utili.h" />
     <ClInclude Include="VertexBuffer.hpp" />
     <ClInclude Include="VertexLayout.h" />

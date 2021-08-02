@@ -1,15 +1,28 @@
 #pragma once
 #include "Bindable.h"
-
 template<class T>
 class ConstantBuffer : public Bindable
 {
 public:
 	ConstantBuffer(Graphics& gfx,const T& buffer);
+	ConstantBuffer(Graphics& gfx);
 	void Update(Graphics& gfx,const T&buffer);
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pConstantBuffer;
 };
+
+template<class T>
+ConstantBuffer<T>::ConstantBuffer(Graphics& gfx)
+{
+	D3D11_BUFFER_DESC cdb;
+	cdb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cdb.Usage = D3D11_USAGE_DYNAMIC;
+	cdb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cdb.MiscFlags = 0;
+	cdb.ByteWidth = sizeof(T);
+	cdb.StructureByteStride = 0;
+	GetDevice(gfx)->CreateBuffer(&cdb, nullptr, pConstantBuffer.GetAddressOf());
+}
 
 template<class T>
 void ConstantBuffer<T>::Update(Graphics& gfx, const T& buffer)

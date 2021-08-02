@@ -7,5 +7,6 @@ class Box :
 public:
     Box() {};
     Box(const CusMath::vector3d& initPos, const int& size, Graphics& gfx);
+    void Update(const DirectX::XMMATRIX& transf);
 };
 

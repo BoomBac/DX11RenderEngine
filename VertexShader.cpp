@@ -2,17 +2,6 @@
 #include <d3dcompiler.h>
 #include "Utili.h"
 
-//namespace VShader
-//{
-//	std::wstring ToWide(const std::string& narrow)
-//	{
-//		wchar_t wide[512];
-//		mbstowcs_s(nullptr, wide, narrow.c_str(), _TRUNCATE);
-//		return wide;
-//	}
-//};
-
-
 VertexShader::VertexShader(Graphics& gfx, const std::string& path)
 {
 	// 编译创建顶点着色器

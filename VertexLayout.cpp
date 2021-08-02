@@ -57,8 +57,8 @@ VertexLayout::VertexLayout()
 D3D11_INPUT_ELEMENT_DESC* VertexLayout::Build()
 {
 	UINT offset = 0;
-	// \ÊÇÁ¬½Ó×÷ÓÃ£¬Á¬½Ó²»Í¬ĞĞ£¬±íÊ¾ÏÂÒ»ĞĞÔªËØÒ²ÊÇÕâÒ»ĞĞ
-	//²ÎÊı x,body
+	// \æ˜¯è¿æ¥ä½œç”¨ï¼Œè¿æ¥ä¸åŒè¡Œï¼Œè¡¨ç¤ºä¸‹ä¸€è¡Œå…ƒç´ ä¹Ÿæ˜¯è¿™ä¸€è¡Œ
+	//å‚æ•° x,body
 	#define ITER_VERTEX_TYPE(x,body) if(i==VertexType::x){\
 	using Map = Map<VertexType::x>;\
 	body;\
@@ -128,8 +128,9 @@ D3D11_INPUT_ELEMENT_DESC* VertexLayout::Build()
 			  D3D11_INPUT_PER_VERTEX_DATA, 0 }); offset += Map::offset;);
 		ITER_VERTEX_TYPE(Float4Color, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
 			  D3D11_INPUT_PER_VERTEX_DATA, 0 }); offset += Map::offset;);
-	#undef 	ITER_VERTEX_TYPE;
+
 	}
+	#undef 	ITER_VERTEX_TYPE;
 	return &des.at(0);
 }
 

@@ -26,6 +26,6 @@ private:
 	HRESULT InitDx11(HWND hWnd);
 	float* bg_color;
 	Box* box = nullptr;
-	void DrawTestGraph();
+	Box* box1 = nullptr;
 };
 
