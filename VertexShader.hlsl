@@ -1,11 +1,19 @@
+struct VSOut
+{
+	float3 color : Color;
+	float4 pos : SV_Position;
+};
+
 cbuffer CBuf
 {
 	row_major matrix MVPMartrix;
 };
 
-float4 main(float3 pos : Position) : SV_POSITION
+
+VSOut main(float3 pos : Position, float3 color : Color) //: SV_POSITION
 {
-	float4 respos = float4(pos,1.f);
-	respos = mul(respos, MVPMartrix);
+	VSOut respos;
+	respos.pos = mul(float4(pos, 1.f), MVPMartrix);
+	respos.color = color;
 	return respos;
 }

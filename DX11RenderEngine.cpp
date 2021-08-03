@@ -2,7 +2,9 @@
 #include <QLabel>
 #include <QTimer>
 #include "Global.h"
-
+#include "QScrollBar"
+#include "QPushButton"
+#include <QColorDialog>
 
 
 DX11RenderEngine::DX11RenderEngine(QWidget *parent)
@@ -11,7 +13,7 @@ DX11RenderEngine::DX11RenderEngine(QWidget *parent)
     ui.setupUi(this);
     this->setFixedSize(1280, 720);
 
-    //´´½¨×´Ì¬À¸Ïà¹Ø
+    //åˆ›å»ºçŠ¶æ€æ ç›¸å…³
     QLabel *lb_pos = new QLabel(QString("MousePos:"), this);
     ui.statusBar->addWidget(lb_pos);
     QLabel* lb_state = new QLabel(QString("MouseState:"), this);
@@ -29,24 +31,80 @@ DX11RenderEngine::DX11RenderEngine(QWidget *parent)
     connect(ui.renderView, &RenderViewport::MouseReleased, [=](QString state) {
         lb_state->setText(QString("MouseState:") + state);
         });
-    //³õÊ¼»¯dxäÖÈ¾ÊÓ¿Ú
+    connect(ui.hSBar_CameraRX, &QScrollBar::valueChanged, [=](const float& angle) {
+        ui.renderView->OnCameraSlideBarChanged(angle, (float)ui.hSBar_CameraRY->value(), (float)ui.hSBar_CameraRZ->value());
+        });
+	connect(ui.hSBar_CameraRY, &QScrollBar::valueChanged, [=](const float& angle) {
+		ui.renderView->OnCameraSlideBarChanged((float)ui.hSBar_CameraRX->value(), angle, (float)ui.hSBar_CameraRZ->value());
+		});
+	connect(ui.hSBar_CameraRZ, &QScrollBar::valueChanged, [=](const float& angle) {
+		ui.renderView->OnCameraSlideBarChanged((float)ui.hSBar_CameraRX->value(), (float)ui.hSBar_CameraRY->value(),angle );
+		});
+    //æ¨¡åž‹å˜æ¢ç»‘å®š
+    connect(ui.dSB_MTX, &QDoubleSpinBox::valueChanged, [=](const double& val) {
+        ui.renderView->SetSelectedObjectTransform({ (float)val,(float)ui.dSB_MTY->value(),
+            (float)ui.dSB_MTZ->value() }, char(0));
+        });
+	connect(ui.dSB_MTY, &QDoubleSpinBox::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ (float)ui.dSB_MTX->value(),(float)val,
+            (float)ui.dSB_MTZ->value() }, char(0));
+		});
+	connect(ui.dSB_MTZ, &QDoubleSpinBox::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ 
+            (float)ui.dSB_MTX->value(),(float)ui.dSB_MTY->value(),(float)val }, char(0));
+		});
+    connect(ui.dSB_MRX, &QDoubleSpinBox::valueChanged, [=](const double& val) {
+        ui.renderView->SetSelectedObjectTransform({
+           (float)val,(float)ui.dSB_MRY->value(),(float)ui.dSB_MRZ->value() }, char(1));
+        });
+	connect(ui.dSB_MRY, &QDoubleSpinBox::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({
+           (float)ui.dSB_MRX->value(),(float)val,(float)ui.dSB_MRZ->value() }, char(1));
+		});
+	connect(ui.dSB_MRZ, &QDoubleSpinBox::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({
+		   (float)ui.dSB_MRX->value(),(float)ui.dSB_MRY->value(),(float)val }, char(1));
+		});
+    connect(ui.dSB_MSX,&QDoubleSpinBox::valueChanged, [=](const double& val){
+        ui.renderView->SetSelectedObjectTransform(
+                { (float)val, (float)ui.dSB_MSY->value(),(float)ui.dSB_MSZ->value() }, char(2));
+        });
+	connect(ui.dSB_MSY, &QDoubleSpinBox::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform(
+			{ (float)ui.dSB_MSX->value(),(float)val, (float)ui.dSB_MSZ->value() }, char(2));
+		});
+	connect(ui.dSB_MSZ, &QDoubleSpinBox::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform(
+			{ (float)ui.dSB_MSX->value(),(float)ui.dSB_MSY->value(),(float)val,}, char(2));
+		});
+    //é€‰æ‹©èƒŒæ™¯é¢œè‰²å¯¹è¯æ¡†
+    connect(ui.bt_ChooseBC, &QPushButton::clicked, [=]() {
+        static float bgc[4] = { 0.f,0.f,0.f,1.f };
+        QColor color = QColorDialog::getColor(Qt::black, this, "choose color");
+        bgc[0] = color.redF();
+        bgc[1] = color.greenF();
+        bgc[2] = color.blueF();
+        ui.renderView->SetbgColor(bgc);
+        });
+
+    //åˆå§‹åŒ–dxæ¸²æŸ“è§†å£
     ui.renderView->InitialViewport();
 
-    //ÉèÖÃ¶¨Ê±Æ÷£¬´Ë´¦Ä£Äâtick£¬ºóÐø¿ÉÄÜ¸ü¸Ä
+    //è®¾ç½®å®šæ—¶å™¨ï¼Œæ­¤å¤„æ¨¡æ‹Ÿtickï¼ŒåŽç»­å¯èƒ½æ›´æ”¹
     QTimer *timer = new QTimer(this);
     timer->start(12);  //0.5s
     connect(timer, &QTimer::timeout, [=]()
     {
        lb_time->setText(QString::number(Global::getInstance()->gTimer.Peek(), 'f', 2));
        //lb_time->setText(QString("%1").arg(Global::getInstance()->gTimer.Peek()));
-    });  //Ã¿¸ô0.5s·¢³öÒ»
+    });  //æ¯éš”0.5så‘å‡ºä¸€
 }
 
 DX11RenderEngine::~DX11RenderEngine()
 {
 }
 
-//ËÆºõÃ¿Ö¡µ÷ÓÃ£¬ÔÝÊ±ÓÃËüÄ£·Âtick
+//ä¼¼ä¹Žæ¯å¸§è°ƒç”¨ï¼Œæš‚æ—¶ç”¨å®ƒæ¨¡ä»¿tick
 void DX11RenderEngine::paintEvent(QPaintEvent* e)
 {
     ui.renderView->UpdateViewport();

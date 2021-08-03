@@ -7,7 +7,7 @@
 DirectX::XMMATRIX Drawable::view = DirectX::XMMatrixLookAtLH({ 0.0f,50.0f, 0.0f, 0.0f },
 	{ 0.0f,0.0f, 0.0f, 0.0f }, { 0.0f,0.0f, 1.0f, 0.0f });
 
-DirectX::XMMATRIX Drawable::projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, 4.0f / 3.0f, 0.01f, 100.f);
+DirectX::XMMATRIX Drawable::projection = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, 4.0f / 3.0f, 0.01f, 1000.f);
 
 void Drawable::Draw(Graphics& gfx)
 {
@@ -43,5 +43,18 @@ void Drawable::UpdateCameraTransformation(const DirectX::XMMATRIX& tranf)
 	view = tranf*view;
 }
 
+void Drawable::SetActorLocation(const CusMath::vector3d& t)
+{
+	Location = t;
+}
 
+void Drawable::SetActorRotation(const CusMath::vector3d& r)
+{
+	Rotation = r;
+}
+
+void Drawable::SetActorScale(const CusMath::vector3d& s)
+{
+	Scale = s;
+}
 

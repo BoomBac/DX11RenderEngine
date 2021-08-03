@@ -3,6 +3,7 @@
 #include <vector>
 #include "IndexBuffer.h"
 #include <DirectXMath.h>
+#include "vector3D.h"
 
 class Graphics;
 class Bindable;
@@ -23,16 +24,27 @@ public:
 	void AddBind(std::unique_ptr<Bindable> bind);
 	void AddIndexBuf(std::unique_ptr<IndexBuffer> ibf, Graphics& gfx);
 	~Drawable() = default;
-	//作为可绘制对象的基类，定义了一个mvp矩阵，其中m可由子类更改
+	//返回mvp变换矩阵
 	WorldTransform& GetTransform();
 	//更新摄像机变换
 	static void UpdateCameraTransformation(const DirectX::XMMATRIX& tranf);
+	virtual void SetActorLocation(const CusMath::vector3d& t);
+	virtual void SetActorRotation(const CusMath::vector3d& r);
+	virtual void SetActorScale(const CusMath::vector3d& s);
 protected:
 	std::vector<std::unique_ptr<Bindable>> binds;
 	IndexBuffer* indexbuffer;
+	//mvp变换矩阵，所有Drawable共享一份view和projection
 	WorldTransform transform;
 	static DirectX::XMMATRIX view;
 	static DirectX::XMMATRIX projection;
+	//保存变换信息
+	CusMath::vector3d Location;
+	CusMath::vector3d Rotation;
+	CusMath::vector3d Scale;
+	//保存自创建以来，所有变换数据 0t 1r 2s
+	DirectX::XMMATRIX DonedTransforms[3] = { DirectX::XMMatrixIdentity(),DirectX::XMMatrixIdentity(),
+		DirectX::XMMatrixIdentity()};
 private:
 	virtual const std::vector<std::unique_ptr<Bindable>>& GetStaticBinds() const=0;
 };

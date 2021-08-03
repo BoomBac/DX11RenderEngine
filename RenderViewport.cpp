@@ -1,8 +1,7 @@
 #include "RenderViewport.h"
 #include <QMouseEvent>
 #include "Graphics.h"
-#include <QString>
-
+#include <QDebug>
 
 RenderViewport::RenderViewport(QWidget *parent)
 	: QWidget(parent)
@@ -17,10 +16,10 @@ RenderViewport::RenderViewport(QWidget *parent)
 
 RenderViewport::~RenderViewport()
 {
-	if (renderframe != nullptr)
+	if (graphicsIns != nullptr)
 	{
-		delete renderframe;
-		renderframe = nullptr;
+		delete graphicsIns;
+		graphicsIns = nullptr;
 	}
 		
 }
@@ -44,10 +43,42 @@ void RenderViewport::mouseReleaseEvent(QMouseEvent* e)
 }
 void RenderViewport::InitialViewport()
 {
-	//初始化renderViewport，传入hWnd初始化dx
-  renderframe = new Graphics((HWND)winId());
+	//鍒濆鍖杛enderViewport锛屼紶鍏Wnd鍒濆鍖杁x
+  graphicsIns = new Graphics((HWND)winId());
 }
 void RenderViewport::UpdateViewport()
 {
-	renderframe->EndFrame();
+	graphicsIns->EndFrame();
+}
+
+void RenderViewport::SetbgColor(float color[4])
+{
+	graphicsIns->SetVPBackColor(color);
+}
+
+void RenderViewport::SetSelectedObjectTransform(const CusMath::vector3d& pos, const char& flag)
+{
+	switch (flag)
+	{
+	case 0:
+	{
+		graphicsIns->SetSelectedObjectTranslate(pos);
+	}
+		break;
+	case 1:
+	{
+		graphicsIns->SetSelectedObjectRotation(pos);
+	}
+	break;
+	case 2:
+	{
+		graphicsIns->SetSelectedObjectScale(pos);
+	}
+		break;
+	};
+}
+
+void RenderViewport::OnCameraSlideBarChanged(const float& x, const float& y, const float& z)
+{
+	graphicsIns->SetCameraTransformation(x, y, z);
 }

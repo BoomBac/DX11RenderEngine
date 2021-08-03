@@ -5,7 +5,7 @@
 #include <d3dcompiler.h>
 #include <vector>
 #include "Global.h"
-
+#include <QDebug>
 #include "Box.h"
 
 #pragma comment(lib,"d3d11.lib") 
@@ -15,13 +15,15 @@
 template<typename T>
 using Vec = std::vector<T, std::allocator<T>>;
 
+static Drawable* SelectedObject = nullptr;
 
 Graphics::Graphics(HWND hWnd)
 {
 	InitDx11(hWnd);
-	static float color[] = { 1,0,0,1 };
+	static float color[] = { 0,0,0,1 };
 	bg_color = color;
 	box = new Box(CusMath::vector3d(0.f, 0.f, 0.f), 5, *this);
+	SelectedObject = box;
 	box1 = new Box(CusMath::vector3d(12.f, 0.f, 0.f), 3, *this);
 }
 
@@ -36,12 +38,12 @@ Graphics::~Graphics()
 void Graphics::EndFrame()
 {
 	pDeviceContext->ClearRenderTargetView(pRenderTargetView.Get(), bg_color);
-	//Drawable::UpdateCameraTransformation(DirectX::XMMatrixTranslation(0.f, 0.1f*Global::getInstance()->gTimer.Peek(), 0.f));
-	box->Update(DirectX::XMMatrixTranslation(0.f,0.f, 5.f*Global::getInstance()->gTimer.Peek())
-		*DirectX::XMMatrixRotationAxis({ 0.f,1.f,0.f }, Global::getInstance()->gTimer.Peek()));
+	//box->SetActorLocation({ 0.f,0.f, 20.f });
 	box->Draw(*this);
-	box1->Update(DirectX::XMMatrixTranslation(Global::getInstance()->gTimer.Peek(), 0.f, 0.f));
-	box1->Draw(*this);
+	//box1->SetActorLocation({ 0.f,0.f, Global::getInstance()->gTimer.Peek() });
+	//box1->Draw(*this);
+	//box1->Update(DirectX::XMMatrixTranslation(0.f, 0.f, 0.f));
+	//box1->Draw(*this);
 	pSwapChain->Present(0u, 0u);
 	
 }
@@ -49,6 +51,41 @@ void Graphics::EndFrame()
 void Graphics::DrawIndexed(const UINT& count)
 {
 	pDeviceContext->DrawIndexed(count, 0u, 0u);
+}
+
+#define TORAD(x) x*DirectX::XM_PI/180.f
+void Graphics::SetCameraTransformation(const float& x, const float& y, const float& z)
+{
+	static float preAngle[3] = { 0.f,0.f,0.f };	
+	Drawable::UpdateCameraTransformation(
+		DirectX::XMMatrixRotationRollPitchYaw(TORAD((x - preAngle[0])),
+			TORAD((y - preAngle[1])), TORAD((z - preAngle[2]))
+				));
+	preAngle[0] = x;
+	preAngle[1] = y;
+	preAngle[2] = z;
+}
+#undef TORAD
+void Graphics::SetVPBackColor(float color[4])
+{
+	bg_color = color;
+}
+
+
+
+void Graphics::SetSelectedObjectTranslate(const CusMath::vector3d& t)
+{
+	SelectedObject->SetActorLocation(t);
+}
+
+void Graphics::SetSelectedObjectRotation(const CusMath::vector3d& t)
+{
+	SelectedObject->SetActorRotation(t);
+}
+
+void Graphics::SetSelectedObjectScale(const CusMath::vector3d& t)
+{
+	SelectedObject->SetActorScale(t);
 }
 
 HRESULT Graphics::InitDx11(HWND hWnd)

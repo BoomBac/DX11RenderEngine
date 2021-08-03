@@ -18,19 +18,21 @@ Box::Box(const CusMath::vector3d& initPos, const int& size,Graphics& gfx)
 {
 	if (!isInitialzed())
 	{
-		std::vector<CusMath::vector3d> vertices
+		Postion3DColored v1{ {1.f,1.f,1.f} ,{1.f,1.f,1.f} };
+
+		std::vector<Postion3DColored> vertices
 		{
-			{initPos.x + size,initPos.y + size,initPos.z + size},
-			{initPos.x + size,initPos.y + size,initPos.z - size},
-			{initPos.x - size,initPos.y + size,initPos.z - size},
-			{initPos.x - size,initPos.y + size,initPos.z + size},
-			{initPos.x + size,initPos.y - size,initPos.z + size},
-			{initPos.x + size,initPos.y - size,initPos.z - size},
-			{initPos.x - size,initPos.y - size,initPos.z - size},
-			{initPos.x - size,initPos.y - size,initPos.z + size},
+			{{initPos.x + size,initPos.y + size,initPos.z + size},{1.f,0.f,0.f}},
+			{{initPos.x + size,initPos.y + size,initPos.z - size},{1.f,0.f,0.f}},
+			{{initPos.x - size,initPos.y + size,initPos.z - size},{1.f,0.f,0.f}},
+			{{initPos.x - size,initPos.y + size,initPos.z + size},{1.f,0.f,0.f}},
+			{{initPos.x + size,initPos.y - size,initPos.z + size},{0.f,1.f,0.f}},
+			{{initPos.x + size,initPos.y - size,initPos.z - size},{0.f,1.f,0.f}},
+			{{initPos.x - size,initPos.y - size,initPos.z - size},{0.f,1.f,0.f}},
+			{{initPos.x - size,initPos.y - size,initPos.z + size},{0.f,1.f,0.f}}
 		};
 		BindItem vb =
-			std::make_unique<VertexBuffer<CusMath::vector3d, Vec>>(vertices, gfx);
+			std::make_unique<VertexBuffer<Postion3DColored, Vec>>(vertices, gfx);
 		AddStaticBind(std::move(vb));
 		std::vector<UINT> indices
 		{
@@ -55,8 +57,7 @@ Box::Box(const CusMath::vector3d& initPos, const int& size,Graphics& gfx)
 		AddStaticBind(std::move(ps));
 
 		VertexLayout vl;
-		vl << VertexType::Position3D;
-		vl.Build();
+		vl << VertexType::Position3D << VertexType::Float3Color;
 		BindItem il = std::make_unique<InputLayout>(gfx, *dynamic_cast<VertexShader*>(vs.get()), vl);
 		AddStaticBind(std::move(vs));
 		AddStaticBind(std::move(il));
@@ -65,7 +66,9 @@ Box::Box(const CusMath::vector3d& initPos, const int& size,Graphics& gfx)
 	{
 		SetIndexbufferFromSBinds();
 	}
-
+	Location = { 0.f,0.f,0.f };
+	Rotation = { 0.f,0.f,0.f };
+	Scale = { 1.f,1.f,1.f };
 	//DirectX::XMVECTOR Eye = DirectX::XMVectorSet(0.0f,50.0f, 0.0f, 0.0f);
 	//DirectX::XMVECTOR At = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	//DirectX::XMVECTOR Up = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);

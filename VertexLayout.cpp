@@ -18,9 +18,9 @@ struct Map<VertexType::Position3D>
 template<>
 struct Map<VertexType::Float3Color>
 {
-	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
+	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
 	static constexpr const char* semantic = "Color";
-	static constexpr const UINT offset = 8;
+	static constexpr const UINT offset = 12;
 }; template<>
 struct Map<VertexType::RGBAColor>
 {
@@ -132,6 +132,11 @@ D3D11_INPUT_ELEMENT_DESC* VertexLayout::Build()
 	}
 	#undef 	ITER_VERTEX_TYPE;
 	return &des.at(0);
+}
+
+UINT VertexLayout::GetItemNum() const
+{
+	return (UINT)v.size();
 }
 
 VertexLayout& VertexLayout::operator<<(VertexType type)
