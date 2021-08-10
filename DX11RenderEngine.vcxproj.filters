@@ -121,6 +121,9 @@
     <ClCompile Include="TransformBuffer.cpp">
       <Filter>Source Files\Render\Bindable</Filter>
     </ClCompile>
+    <ClCompile Include="DepthStencil.cpp">
+      <Filter>Source Files\Render\Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="DX11RenderEngine.h">
@@ -180,6 +183,9 @@
       <Filter>Header Files\Render\shape</Filter>
     </ClInclude>
     <ClInclude Include="TransformBuffer.h">
+      <Filter>Header Files\Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthStencil.h">
       <Filter>Header Files\Render\Bindable</Filter>
     </ClInclude>
   </ItemGroup>

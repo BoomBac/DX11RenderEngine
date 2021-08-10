@@ -10,7 +10,8 @@ enum class EBindableType
 	InputLayout,
 	VertexShader,
 	PixelShader,
-	ConstantBuffer
+	ConstantBuffer,
+	DepthStencilBuffer
 };
 class Bindable : public GraphicsResource
 {

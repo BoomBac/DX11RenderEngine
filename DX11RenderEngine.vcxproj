@@ -106,6 +106,7 @@
   <ItemGroup>
     <ClCompile Include="Bindable.cpp" />
     <ClCompile Include="Box.cpp" />
+    <ClCompile Include="DepthStencil.cpp" />
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Global.cpp" />
     <ClCompile Include="Graphics.cpp" />
@@ -130,6 +131,7 @@
     <ClInclude Include="Bindable.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="DepthStencil.h" />
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="GraphicsResource.h" />

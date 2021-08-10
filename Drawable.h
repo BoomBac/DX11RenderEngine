@@ -28,6 +28,7 @@ public:
 	WorldTransform& GetTransform();
 	//更新摄像机变换
 	static void UpdateCameraTransformation(const DirectX::XMMATRIX& tranf);
+	virtual void OnCameraTransChanged() {};
 	virtual void SetActorLocation(const CusMath::vector3d& t);
 	virtual void SetActorRotation(const CusMath::vector3d& r);
 	virtual void SetActorScale(const CusMath::vector3d& s);

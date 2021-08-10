@@ -3,10 +3,11 @@
 #include <QDebug>
 #include "vector2D.h"
 #include <d3dcompiler.h>
-#include <vector>
 #include "Global.h"
 #include <QDebug>
+#include "DepthStencil.h"
 #include "Box.h"
+#include "Drawable.h"
 
 #pragma comment(lib,"d3d11.lib") 
 #pragma comment(lib,"dxgi.lib") 
@@ -15,6 +16,7 @@
 template<typename T>
 using Vec = std::vector<T, std::allocator<T>>;
 
+//当前渲染视口选中的物体
 static Drawable* SelectedObject = nullptr;
 
 Graphics::Graphics(HWND hWnd)
@@ -22,28 +24,36 @@ Graphics::Graphics(HWND hWnd)
 	InitDx11(hWnd);
 	static float color[] = { 0,0,0,1 };
 	bg_color = color;
-	box = new Box(CusMath::vector3d(0.f, 0.f, 0.f), 5, *this);
-	SelectedObject = box;
-	box1 = new Box(CusMath::vector3d(12.f, 0.f, 0.f), 3, *this);
+	// CusMath::vector3d(0.f, 0.f, 0.f),5.f,*this);//  Box(CusMath::vector3d(0.f, 0.f, 0.f), 5, *this);
+	SceneObjects.push_back(dynamic_cast<Drawable*>(new Box(CusMath::vector3d(0.f, 0.f, 0.f), 2, *this)));
+	SceneObjects.push_back(dynamic_cast<Drawable*>(new Box(CusMath::vector3d(0.f, 0.f, 0.f), 3, *this)));
+	SelectedObject = SceneObjects[0];
+
 }
 
 Graphics::~Graphics()
 {
-	if (box != nullptr)
-		delete box;
-	if (box1 != nullptr)
-		delete box1;
+	if (dsbuffer != nullptr)
+		delete dsbuffer;
+	if (!SceneObjects.empty())
+	{
+		for (auto i : SceneObjects)
+		{
+			delete i;
+		}
+	}
 }
 
 void Graphics::EndFrame()
 {
 	pDeviceContext->ClearRenderTargetView(pRenderTargetView.Get(), bg_color);
-	//box->SetActorLocation({ 0.f,0.f, 20.f });
-	box->Draw(*this);
-	//box1->SetActorLocation({ 0.f,0.f, Global::getInstance()->gTimer.Peek() });
-	//box1->Draw(*this);
+	dsbuffer->Clear(*this);
+	for (auto i : SceneObjects)
+	{
+		SceneObjects[0]->Draw(*this);
+	}
+	SceneObjects[1]->SetActorLocation({ 10.f,0.f,0.f });
 	//box1->Update(DirectX::XMMatrixTranslation(0.f, 0.f, 0.f));
-	//box1->Draw(*this);
 	pSwapChain->Present(0u, 0u);
 	
 }
@@ -64,6 +74,7 @@ void Graphics::SetCameraTransformation(const float& x, const float& y, const flo
 	preAngle[0] = x;
 	preAngle[1] = y;
 	preAngle[2] = z;
+	SelectedObject->OnCameraTransChanged();
 }
 #undef TORAD
 void Graphics::SetVPBackColor(float color[4])
@@ -147,8 +158,11 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	vp.Height = 600;
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
-
 	pDeviceContext->RSSetViewports(1, &vp);
+	//创建深度模板缓冲区
+	dsbuffer = new DepthStencil(800u, 600u, *this);
+	//dsbuffer->TBind(*this, pRenderTargetView.Get());
+
 	pDeviceContext->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), nullptr);
 	return hr;
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include "Bindable.h"
-#include <vector>
+
 
 
 class IndexBuffer : public Bindable
@@ -12,4 +12,5 @@ public:
 	virtual EBindableType GetType() const override;
 private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> pIndexBuffer = nullptr;
+
 };
