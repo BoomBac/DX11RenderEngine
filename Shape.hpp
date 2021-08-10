@@ -34,7 +34,7 @@ protected:
 template<class T>
 void Shape<T>::Update(const DirectX::XMMATRIX& transf/*=DirectX::XMMatrixIdentity()*/)
 {
-	transform.mWorld = transf * DonedTransforms[0] * DonedTransforms[1] * DonedTransforms[2] * view * projection;
+	transform.mWorld = transf * DonedTransforms[2] * DonedTransforms[0] * DonedTransforms[1] * view * projection;
 }
 
 template<class T>

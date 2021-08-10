@@ -26,7 +26,7 @@ Graphics::Graphics(HWND hWnd)
 	bg_color = color;
 	// CusMath::vector3d(0.f, 0.f, 0.f),5.f,*this);//  Box(CusMath::vector3d(0.f, 0.f, 0.f), 5, *this);
 	SceneObjects.push_back(dynamic_cast<Drawable*>(new Box(CusMath::vector3d(0.f, 0.f, 0.f), 2, *this)));
-	SceneObjects.push_back(dynamic_cast<Drawable*>(new Box(CusMath::vector3d(0.f, 0.f, 0.f), 3, *this)));
+	SceneObjects.push_back(dynamic_cast<Drawable*>(new Box(CusMath::vector3d(12.f, 0.f, 0.f), 3, *this)));
 	SelectedObject = SceneObjects[0];
 
 }
@@ -48,9 +48,9 @@ void Graphics::EndFrame()
 {
 	pDeviceContext->ClearRenderTargetView(pRenderTargetView.Get(), bg_color);
 	dsbuffer->Clear(*this);
-	for (auto i : SceneObjects)
+	for (const auto& i : SceneObjects)
 	{
-		SceneObjects[0]->Draw(*this);
+		i->Draw(*this);
 	}
 	SceneObjects[1]->SetActorLocation({ 10.f,0.f,0.f });
 	//box1->Update(DirectX::XMMatrixTranslation(0.f, 0.f, 0.f));
@@ -161,9 +161,9 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	pDeviceContext->RSSetViewports(1, &vp);
 	//创建深度模板缓冲区
 	dsbuffer = new DepthStencil(800u, 600u, *this);
-	//dsbuffer->TBind(*this, pRenderTargetView.Get());
+	dsbuffer->TBind(*this, pRenderTargetView.Get());
 
-	pDeviceContext->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), nullptr);
+	//pDeviceContext->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), nullptr);
 	return hr;
 }
 
