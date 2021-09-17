@@ -13,7 +13,7 @@ class RenderViewport : public QWidget
 public:
 	RenderViewport(QWidget *parent = Q_NULLPTR);
 	~RenderViewport();
-
+	virtual void keyPressEvent(QKeyEvent* event);  //键盘按下事件
 	virtual void mouseMoveEvent(QMouseEvent* e) override;
 	virtual void mousePressEvent(QMouseEvent* e) override;
 	virtual void mouseReleaseEvent(QMouseEvent* e) override;
@@ -38,4 +38,7 @@ private:
 	Ui::RenderViewport ui;
 	QString mouPos;
 	QString moubtState;
+	//鼠标位置,每当鼠标移动或者按下时赋值为当前鼠标位置
+	int posX = 0;
+	int posY = 0;
 };

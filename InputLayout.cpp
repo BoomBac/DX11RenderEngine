@@ -12,7 +12,7 @@ InputLayout::InputLayout(Graphics& gfx, const VertexShader& vs, VertexLayout& vl
 void InputLayout::Bind(Graphics& gfx)
 {
 	GetContext(gfx)->IASetInputLayout(pInputLayout.Get());
-	GetContext(gfx)->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	GetContext(gfx)->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 EBindableType InputLayout::GetType() const

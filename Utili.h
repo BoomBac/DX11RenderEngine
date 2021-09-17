@@ -2,6 +2,8 @@
 #include <string>
 constexpr float PI = 3.1415926f;
 
+#define Debug(msg) OutputDebugString(ToWide(std::string("MyDebug : ") + msg).c_str());
+
 inline std::wstring ToWide(const std::string& narrow)
 {
 	wchar_t wide[512];

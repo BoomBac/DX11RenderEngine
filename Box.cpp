@@ -18,8 +18,6 @@ Box::Box(const CusMath::vector3d& initPos, const int& size,Graphics& gfx)
 {
 	if (!isInitialzed())
 	{
-		Postion3DColored v1{ {1.f,1.f,1.f} ,{1.f,1.f,1.f} };
-
 		std::vector<Postion3DColored> vertices
 		{
 			{{initPos.x + size,initPos.y + size,initPos.z + size},{1.f,0.f,0.f}},
@@ -80,6 +78,7 @@ Box::Box(const CusMath::vector3d& initPos, const int& size,Graphics& gfx)
 	};
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx,*this);
 	AddBind(std::move(vcb));
+
 }
 
 

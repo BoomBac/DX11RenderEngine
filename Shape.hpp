@@ -34,7 +34,8 @@ protected:
 template<class T>
 void Shape<T>::Update(const DirectX::XMMATRIX& transf/*=DirectX::XMMatrixIdentity()*/)
 {
-	transform.mWorld = transf * DonedTransforms[2] * DonedTransforms[0] * DonedTransforms[1] * view * projection;
+	//先平移。如果先缩放，那么平移的轴距就会被缩放改变。如果先旋转，那么绕三个轴旋转就会变成绕世界原点的旋转
+	transform.mWorld = transf * DonedTransforms[1] * DonedTransforms[2] * DonedTransforms[0] *  view * projection;
 }
 
 template<class T>

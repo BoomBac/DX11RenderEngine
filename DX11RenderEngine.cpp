@@ -92,7 +92,7 @@ DX11RenderEngine::DX11RenderEngine(QWidget *parent)
 
     //设置定时器，此处模拟tick，后续可能更改
     QTimer *timer = new QTimer(this);
-    timer->start(12);  //0.5s
+    timer->start(24);  //0.5s
     connect(timer, &QTimer::timeout, [=]()
     {
        lb_time->setText(QString::number(Global::getInstance()->gTimer.Peek(), 'f', 2));

@@ -26,9 +26,22 @@ public:
 	~Drawable() = default;
 	//返回mvp变换矩阵
 	WorldTransform& GetTransform();
-	//更新摄像机变换
+	//更新摄像机变换,摄像机沿自身坐标系变换
 	static void UpdateCameraTransformation(const DirectX::XMMATRIX& tranf);
+	//更新摄像机变换,摄像机沿世界坐标系变换
+	static void UpdateCameraTransformationW(const DirectX::XMMATRIX& tranf, float detla);
+	//test
+	//camera朝向
+	static DirectX::XMVECTOR g_camera_forward;
+	static DirectX::XMVECTOR g_camera_right;
+	static DirectX::XMVECTOR g_camera_up;
+	static DirectX::XMMATRIX cameraTranslate;
+	static DirectX::XMMATRIX cameraRotation;
+	static void UpdateCameraTranslation(const DirectX::XMMATRIX& tranf);
+	//test
 	virtual void OnCameraTransChanged() {};
+
+	//设置物体变换
 	virtual void SetActorLocation(const CusMath::vector3d& t);
 	virtual void SetActorRotation(const CusMath::vector3d& r);
 	virtual void SetActorScale(const CusMath::vector3d& s);

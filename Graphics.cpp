@@ -1,10 +1,8 @@
 #include "Graphics.h"
 #include <d3d11.h>
-#include <QDebug>
 #include "vector2D.h"
 #include <d3dcompiler.h>
 #include "Global.h"
-#include <QDebug>
 #include "DepthStencil.h"
 #include "Box.h"
 #include "Drawable.h"
@@ -28,7 +26,6 @@ Graphics::Graphics(HWND hWnd)
 	SceneObjects.push_back(dynamic_cast<Drawable*>(new Box(CusMath::vector3d(0.f, 0.f, 0.f), 2, *this)));
 	SceneObjects.push_back(dynamic_cast<Drawable*>(new Box(CusMath::vector3d(12.f, 0.f, 0.f), 3, *this)));
 	SelectedObject = SceneObjects[0];
-
 }
 
 Graphics::~Graphics()
@@ -48,14 +45,17 @@ void Graphics::EndFrame()
 {
 	pDeviceContext->ClearRenderTargetView(pRenderTargetView.Get(), bg_color);
 	dsbuffer->Clear(*this);
+	//test
+	//SetCameraTranslation(0.f, 0.f, -0.05f);
+
 	for (const auto& i : SceneObjects)
 	{
 		i->Draw(*this);
 	}
+
 	SceneObjects[1]->SetActorLocation({ 10.f,0.f,0.f });
 	//box1->Update(DirectX::XMMatrixTranslation(0.f, 0.f, 0.f));
 	pSwapChain->Present(0u, 0u);
-	
 }
 
 void Graphics::DrawIndexed(const UINT& count)
@@ -66,17 +66,34 @@ void Graphics::DrawIndexed(const UINT& count)
 #define TORAD(x) x*DirectX::XM_PI/180.f
 void Graphics::SetCameraTransformation(const float& x, const float& y, const float& z)
 {
-	static float preAngle[3] = { 0.f,0.f,0.f };	
-	Drawable::UpdateCameraTransformation(
-		DirectX::XMMatrixRotationRollPitchYaw(TORAD((x - preAngle[0])),
-			TORAD((y - preAngle[1])), TORAD((z - preAngle[2]))
-				));
-	preAngle[0] = x;
-	preAngle[1] = y;
-	preAngle[2] = z;
+	Drawable::UpdateCameraTransformation( 
+		DirectX::XMMatrixRotationX(TORAD((-x)))
+		);
+	SelectedObject->OnCameraTransChanged();
+}
+
+void Graphics::SetCameraTransformationW(const float& x, const float& y, const float& z)
+{
+	static float angle = 0.f;
+	angle += -y;
+	static char str[4];
+	sprintf(str, "%f", angle);
+	Debug("Current Angle:" + str + "\n");
+	Drawable::UpdateCameraTransformationW(
+		DirectX::XMMatrixRotationY(TORAD((-y))), -y);
 	SelectedObject->OnCameraTransChanged();
 }
 #undef TORAD
+
+void Graphics::SetCameraTranslation(const float& x, const float& y, const float& z)
+{
+
+	Drawable::UpdateCameraTranslation(DirectX::XMMatrixTranslation(x, y, z));
+	SelectedObject->OnCameraTransChanged();
+}
+
+
+
 void Graphics::SetVPBackColor(float color[4])
 {
 	bg_color = color;
