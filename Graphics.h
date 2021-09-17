@@ -3,6 +3,7 @@
 #include <wrl/client.h>
 #include "vector3D.h"
 #include <vector>
+#include <camera.h>
 
 
 class ID3D11Device;
@@ -36,6 +37,7 @@ public:
 	void SetSelectedObjectRotation(const CusMath::vector3d& t);
 	void SetSelectedObjectScale(const CusMath::vector3d& t);
 
+	Camera camera;
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>pDeviceContext = nullptr;

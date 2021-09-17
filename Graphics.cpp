@@ -45,8 +45,6 @@ void Graphics::EndFrame()
 {
 	pDeviceContext->ClearRenderTargetView(pRenderTargetView.Get(), bg_color);
 	dsbuffer->Clear(*this);
-	//test
-	//SetCameraTranslation(0.f, 0.f, -0.05f);
 
 	for (const auto& i : SceneObjects)
 	{

@@ -106,6 +106,7 @@
   <ItemGroup>
     <ClCompile Include="Bindable.cpp" />
     <ClCompile Include="Box.cpp" />
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="DepthStencil.cpp" />
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="Global.cpp" />
@@ -130,6 +131,7 @@
   <ItemGroup>
     <ClInclude Include="Bindable.h" />
     <ClInclude Include="Box.h" />
+    <ClInclude Include="camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DepthStencil.h" />
     <ClInclude Include="Drawable.h" />

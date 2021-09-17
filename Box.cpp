@@ -59,6 +59,9 @@ Box::Box(const CusMath::vector3d& initPos, const int& size,Graphics& gfx)
 		BindItem il = std::make_unique<InputLayout>(gfx, *dynamic_cast<VertexShader*>(vs.get()), vl);
 		AddStaticBind(std::move(vs));
 		AddStaticBind(std::move(il));
+		//test
+		view = gfx.camera.view_matrix();
+		projection = gfx.camera.projection_matrix();
 	}
 	else
 	{
@@ -70,11 +73,12 @@ Box::Box(const CusMath::vector3d& initPos, const int& size,Graphics& gfx)
 	//DirectX::XMVECTOR Eye = DirectX::XMVectorSet(0.0f,50.0f, 0.0f, 0.0f);
 	//DirectX::XMVECTOR At = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	//DirectX::XMVECTOR Up = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+
 	transform = 
 	{
 		DirectX::XMMatrixIdentity()*
-		view*
-		projection
+		gfx.camera.view_matrix()*
+		gfx.camera.projection_matrix()
 	};
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx,*this);
 	AddBind(std::move(vcb));

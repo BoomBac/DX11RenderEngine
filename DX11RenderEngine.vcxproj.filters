@@ -124,6 +124,9 @@
     <ClCompile Include="DepthStencil.cpp">
       <Filter>Source Files\Render\Bindable</Filter>
     </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="DX11RenderEngine.h">
@@ -187,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="DepthStencil.h">
       <Filter>Header Files\Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Header Files\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
