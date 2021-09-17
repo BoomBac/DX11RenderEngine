@@ -1,4 +1,8 @@
 #include "camera.h"
+#include <string>
+#include "Utili.h"
+#include "QDebug"
+#include "QString"
 
 Camera::Camera()
 {
@@ -43,6 +47,21 @@ const DirectX::XMFLOAT3 Camera::location_f() const
 const DirectX::XMFLOAT3 Camera::rotation_f() const
 {
 	return this->rotation_f_;
+}
+
+const XMVECTOR Camera::forward() const
+{
+	return forward_;
+}
+
+const XMVECTOR Camera::right() const
+{
+	return right_;
+}
+
+const DirectX::XMVECTOR Camera::up() const
+{
+	return up_;
 }
 
 void Camera::SetLocation(const DirectX::XMVECTOR& pos)
@@ -117,4 +136,10 @@ void Camera::UpdateViewMatrix()
 	DirectX::XMVECTOR upDir = XMVector3TransformCoord(this->kDefaultUpVector_, cam_rotation_matrix);
 	//Rebuild view matrix
 	this->view_matrix_ =XMMatrixLookAtLH(this->location_v_, cam_target, upDir);
+
+	//calcalate direction
+	auto matrix = XMMatrixRotationRollPitchYaw(rotation_f_.x, rotation_f_.y,0.f);
+	this->forward_ = XMVector3Transform(kDefaultForwardVector_, matrix);
+	this->right_ = XMVector3Transform(kDefaultRightVector_, matrix);
+	this->up_ = XMVector3Transform(kDefaultUpVector_, matrix);
 }

@@ -22,6 +22,8 @@ Graphics::Graphics(HWND hWnd)
 	InitDx11(hWnd);
 	static float color[] = { 0,0,0,1 };
 	bg_color = color;
+	camera.SetProjection(75.f,4.f/3.f,0.1,1000.f);
+	cam_move_state_ = ECameraMovementState::kStop;
 	// CusMath::vector3d(0.f, 0.f, 0.f),5.f,*this);//  Box(CusMath::vector3d(0.f, 0.f, 0.f), 5, *this);
 	SceneObjects.push_back(dynamic_cast<Drawable*>(new Box(CusMath::vector3d(0.f, 0.f, 0.f), 2, *this)));
 	SceneObjects.push_back(dynamic_cast<Drawable*>(new Box(CusMath::vector3d(12.f, 0.f, 0.f), 3, *this)));
@@ -45,7 +47,7 @@ void Graphics::EndFrame()
 {
 	pDeviceContext->ClearRenderTargetView(pRenderTargetView.Get(), bg_color);
 	dsbuffer->Clear(*this);
-
+	UpdateCameraMovement();
 	for (const auto& i : SceneObjects)
 	{
 		i->Draw(*this);
@@ -85,7 +87,6 @@ void Graphics::SetCameraTransformationW(const float& x, const float& y, const fl
 
 void Graphics::SetCameraTranslation(const float& x, const float& y, const float& z)
 {
-
 	Drawable::UpdateCameraTranslation(DirectX::XMMatrixTranslation(x, y, z));
 	SelectedObject->OnCameraTransChanged();
 }
@@ -180,6 +181,40 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 
 	//pDeviceContext->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), nullptr);
 	return hr;
+}
+
+void Graphics::UpdateCameraMovement()
+{
+	switch (cam_move_state_)
+	{
+	case ECameraMovementState::kForward:
+		camera.AddPosition(camera.forward() * 0.6f);
+		break;
+	case ECameraMovementState::kBack:
+		camera.AddPosition(-camera.forward() * 0.6f);
+		break;
+	case ECameraMovementState::kRight:
+		camera.AddPosition(camera.right() * 0.6f);
+		break;
+	case ECameraMovementState::kLeft:
+		camera.AddPosition(-camera.right() * 0.6f);
+		break;
+	case ECameraMovementState::kUp:
+		camera.AddPosition(camera.up() * 0.6f);
+		break;
+	case ECameraMovementState::kDown:
+		camera.AddPosition(-camera.up() * 0.6f);
+		break;
+	case ECameraMovementState::kStop:
+		break;
+	default:
+		break;
+	}
+}
+
+void Graphics::UpdateCameraState(ECameraMovementState new_state)
+{
+	cam_move_state_ = new_state;
 }
 
 

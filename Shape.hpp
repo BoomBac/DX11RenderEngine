@@ -25,8 +25,7 @@ private:
 	{
 		return StaticBinds;
 	}
-	//传入变换矩阵
-	void Update(const DirectX::XMMATRIX& transf=DirectX::XMMatrixIdentity());
+	virtual void Update(const DirectX::XMMATRIX& transf=DirectX::XMMatrixIdentity()) override;
 protected:
 	void SetIndexbufferFromSBinds();
 };

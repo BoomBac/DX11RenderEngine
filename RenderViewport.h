@@ -14,6 +14,7 @@ public:
 	RenderViewport(QWidget *parent = Q_NULLPTR);
 	~RenderViewport();
 	virtual void keyPressEvent(QKeyEvent* event);  //键盘按下事件
+	virtual void keyReleaseEvent(QKeyEvent* event);  //键盘按下事件
 	virtual void mouseMoveEvent(QMouseEvent* e) override;
 	virtual void mousePressEvent(QMouseEvent* e) override;
 	virtual void mouseReleaseEvent(QMouseEvent* e) override;

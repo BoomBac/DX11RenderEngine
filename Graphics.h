@@ -36,6 +36,8 @@ public:
 	void SetSelectedObjectTranslate(const CusMath::vector3d& t);
 	void SetSelectedObjectRotation(const CusMath::vector3d& t);
 	void SetSelectedObjectScale(const CusMath::vector3d& t);
+	//从按键输入接收摄像机运动状态
+	void UpdateCameraState(ECameraMovementState new_state);
 
 	Camera camera;
 private:
@@ -47,5 +49,8 @@ private:
 	HRESULT InitDx11(HWND hWnd);
 	float* bg_color;
 	std::vector<Drawable*> SceneObjects;
+
+	ECameraMovementState cam_move_state_;
+	void UpdateCameraMovement();
 };
 

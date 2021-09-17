@@ -27,36 +27,75 @@ void RenderViewport::keyPressEvent(QKeyEvent* event)
 	{
 	case Qt::Key_W:
 	{
-		graphicsIns->SetCameraTranslation(0.f, 0.f, -1.f);
+		graphicsIns->UpdateCameraState(ECameraMovementState::kForward);
 	}
 	break;
 	case Qt::Key_S:
 	{
-		graphicsIns->SetCameraTranslation(0.f, 0.f, 1.f);
+		graphicsIns->UpdateCameraState(ECameraMovementState::kBack);
 	}
 	break;
 	case Qt::Key_A:
 	{
-		graphicsIns->SetCameraTranslation(1.f, 0.f, 0.f);
+		graphicsIns->UpdateCameraState(ECameraMovementState::kLeft);
 	}
 	break;
 	case Qt::Key_D:
 	{
-		graphicsIns->SetCameraTranslation(-1.f, 0.f, 0.f);
+		graphicsIns->UpdateCameraState(ECameraMovementState::kRight);
 	}
 	break;
 	case Qt::Key_Q:
 	{
-		graphicsIns->SetCameraTranslation(0.f, -1.f, 0.f);
+		graphicsIns->UpdateCameraState(ECameraMovementState::kUp);
 	}
 	break;
 	case Qt::Key_E:
 	{
-		graphicsIns->SetCameraTranslation(0.f, 1.f, 0.f);
+		graphicsIns->UpdateCameraState(ECameraMovementState::kDown);
 	}
 	break;
 	default:
 		break;
+	}
+}
+
+void RenderViewport::keyReleaseEvent(QKeyEvent* event)
+{
+	switch (event->key())
+	{
+	case Qt::Key_W:
+	{
+		graphicsIns->UpdateCameraState(ECameraMovementState::kStop);
+	}
+	break;
+	case Qt::Key_S:
+	{
+		graphicsIns->UpdateCameraState(ECameraMovementState::kStop);
+	}
+	break;
+	case Qt::Key_A:
+	{
+		graphicsIns->UpdateCameraState(ECameraMovementState::kStop);
+	}
+	break;
+	case Qt::Key_D:
+	{
+		graphicsIns->UpdateCameraState(ECameraMovementState::kStop);
+	}
+	break;
+	case Qt::Key_Q:
+	{
+		graphicsIns->UpdateCameraState(ECameraMovementState::kStop);
+	}
+	break;
+	case Qt::Key_E:
+	{
+		graphicsIns->UpdateCameraState(ECameraMovementState::kStop);
+	}
+	break;
+	default:
+	break;
 	}
 }
 
@@ -65,10 +104,11 @@ void RenderViewport::mouseMoveEvent(QMouseEvent* e)
 	//传入增量
 	float detlaX = (float)(e->pos().x() - posX);
 	float detlaY = (float)(e->pos().y() - posY);
-	//y 0 x
-	graphicsIns->SetCameraTransformation(detlaY,0.f,0.f);
-	graphicsIns->SetCameraTransformationW(0.f,detlaX,0.f);
+	graphicsIns->camera.AddRotation(detlaY * 0.01f, 0.f, 0.f);
+	graphicsIns->camera.AddRotation(0.f,detlaX * 0.01f, 0.f);
+	//状态栏文字
 	mouPos = QString(" x = %1, y = %2").arg(QString::number(e->pos().x())).arg(QString::number(e->pos().y()));
+
 	posX = e->pos().x();
 	posY = e->pos().y();
 	emit(MouseMoved(mouPos));

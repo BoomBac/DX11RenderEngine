@@ -45,11 +45,15 @@ public:
 	virtual void SetActorLocation(const CusMath::vector3d& t);
 	virtual void SetActorRotation(const CusMath::vector3d& r);
 	virtual void SetActorScale(const CusMath::vector3d& s);
+
+
+
 protected:
 	std::vector<std::unique_ptr<Bindable>> binds;
 	IndexBuffer* indexbuffer;
 	//mvp变换矩阵，所有Drawable共享一份view和projection
 	WorldTransform transform;
+	//test
 	static DirectX::XMMATRIX view;
 	static DirectX::XMMATRIX projection;
 	//保存变换信息
@@ -59,6 +63,8 @@ protected:
 	//保存自创建以来，所有变换数据 0t 1r 2s
 	DirectX::XMMATRIX DonedTransforms[3] = { DirectX::XMMatrixIdentity(),DirectX::XMMatrixIdentity(),
 		DirectX::XMMatrixIdentity()};
+	//更新物体变换
+	virtual void Update(const DirectX::XMMATRIX& transf = DirectX::XMMatrixIdentity()) {};
 private:
 	virtual const std::vector<std::unique_ptr<Bindable>>& GetStaticBinds() const=0;
 };

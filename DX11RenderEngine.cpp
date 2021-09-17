@@ -92,19 +92,19 @@ DX11RenderEngine::DX11RenderEngine(QWidget *parent)
 
     //设置定时器，此处模拟tick，后续可能更改
     QTimer *timer = new QTimer(this);
-    timer->start(24);  //0.5s
+    timer->start(16.7);  // fps = num/1000 16.7的话近似于60fps
     connect(timer, &QTimer::timeout, [=]()
     {
+        //每次修改界面内容都会调用paintEvent()
        lb_time->setText(QString::number(Global::getInstance()->gTimer.Peek(), 'f', 2));
-       //lb_time->setText(QString("%1").arg(Global::getInstance()->gTimer.Peek()));
-    });  //每隔0.5s发出一
+    }); 
 }
 
 DX11RenderEngine::~DX11RenderEngine()
 {
+
 }
 
-//似乎每帧调用，暂时用它模仿tick
 void DX11RenderEngine::paintEvent(QPaintEvent* e)
 {
     ui.renderView->UpdateViewport();

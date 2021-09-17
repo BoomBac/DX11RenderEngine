@@ -3,6 +3,17 @@
 
 using namespace DirectX;
 
+enum class ECameraMovementState : char
+{
+	kForward,
+	kBack,
+	kRight,
+	kLeft,
+	kUp,
+	kDown,
+	kStop
+};
+
 class Camera
 {
 public:
@@ -15,6 +26,9 @@ public:
 	const DirectX::XMVECTOR roation_v() const;
 	const DirectX::XMFLOAT3 location_f() const;
 	const DirectX::XMFLOAT3 rotation_f() const;
+	const XMVECTOR forward() const;
+	const XMVECTOR right() const;
+	const XMVECTOR up() const;
 
 	void SetLocation(const DirectX::XMVECTOR& pos);
 	void SetLocation(float x, float y, float z);
@@ -24,6 +38,8 @@ public:
 	void SetRotation(float x, float y, float z);
 	void AddRotation(const DirectX::XMVECTOR& rot);
 	void AddRotation(float x, float y, float z);
+
+	
 private:
 	void UpdateViewMatrix();
 	DirectX::XMMATRIX view_matrix_;
@@ -36,5 +52,10 @@ private:
 	const DirectX::XMVECTOR kDefaultForwardVector_ = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	const DirectX::XMVECTOR kDefaultRightVector_ = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	const DirectX::XMVECTOR kDefaultUpVector_ = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	//当前摄像机各方向
+	XMVECTOR forward_;
+	XMVECTOR right_;
+	XMVECTOR up_;
 };
 
