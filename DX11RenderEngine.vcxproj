@@ -104,68 +104,60 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Bindable.cpp" />
-    <ClCompile Include="Box.cpp" />
-    <ClCompile Include="camera.cpp" />
-    <ClCompile Include="DepthStencil.cpp" />
-    <ClCompile Include="Drawable.cpp" />
-    <ClCompile Include="Global.cpp" />
-    <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="GraphicsResource.cpp" />
-    <ClCompile Include="IndexBuffer.cpp" />
-    <ClCompile Include="InputLayout.cpp" />
-    <ClCompile Include="PixelShader.cpp" />
-    <ClCompile Include="RenderViewport.cpp" />
-    <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="TransformBuffer.cpp" />
-    <ClCompile Include="VertexBuffer.cpp" />
-    <ClCompile Include="VertexLayout.cpp" />
-    <ClCompile Include="VertexShader.cpp" />
+    <ClCompile Include="Private\Global.cpp" />
+    <ClCompile Include="Private\main.cpp" />
+    <ClCompile Include="Private\QtFrame\DX11RenderEngine.cpp" />
+    <ClCompile Include="Private\QtFrame\RenderViewport.cpp" />
+    <ClCompile Include="Private\Render\Bindable\Bindable.cpp" />
+    <ClCompile Include="Private\Render\Bindable\DepthStencil.cpp" />
+    <ClCompile Include="Private\Render\Bindable\IndexBuffer.cpp" />
+    <ClCompile Include="Private\Render\Bindable\InputLayout.cpp" />
+    <ClCompile Include="Private\Render\Bindable\PixelShader.cpp" />
+    <ClCompile Include="Private\Render\Bindable\TransformBuffer.cpp" />
+    <ClCompile Include="Private\Render\Bindable\VertexBuffer.cpp" />
+    <ClCompile Include="Private\Render\Bindable\VertexShader.cpp" />
+    <ClCompile Include="Private\Render\camera.cpp" />
+    <ClCompile Include="Private\Render\Drawable\Box.cpp" />
+    <ClCompile Include="Private\Render\Drawable\Drawable.cpp" />
+    <ClCompile Include="Private\Render\Graphics.cpp" />
+    <ClCompile Include="Private\Render\GraphicsResource.cpp" />
+    <ClCompile Include="Private\Render\VertexLayout.cpp" />
+    <ClCompile Include="Private\Tool\Timer.cpp" />
     <QtRcc Include="DX11RenderEngine.qrc" />
     <QtUic Include="DX11RenderEngine.ui" />
-    <QtMoc Include="DX11RenderEngine.h" />
-    <ClCompile Include="DX11RenderEngine.cpp" />
-    <ClCompile Include="main.cpp" />
+    <QtMoc Include="Public\QtFrame\DX11RenderEngine.h" />
     <QtUic Include="RenderViewport.ui" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bindable.h" />
-    <ClInclude Include="Box.h" />
-    <ClInclude Include="camera.h" />
-    <ClInclude Include="ConstantBuffer.h" />
-    <ClInclude Include="DepthStencil.h" />
-    <ClInclude Include="Drawable.h" />
-    <ClInclude Include="Global.h" />
-    <ClInclude Include="GraphicsResource.h" />
-    <ClInclude Include="Graphics.h" />
-    <ClInclude Include="IndexBuffer.h" />
-    <ClInclude Include="InputLayout.h" />
-    <ClInclude Include="PixelShader.h" />
-    <ClInclude Include="Shape.hpp" />
-    <ClInclude Include="Timer.h" />
-    <ClInclude Include="TransformBuffer.h" />
-    <ClInclude Include="Utili.h" />
-    <ClInclude Include="VertexBuffer.hpp" />
-    <ClInclude Include="VertexLayout.h" />
-    <ClInclude Include="VertexShader.h" />
-    <QtMoc Include="RenderViewport.h" />
+    <ClInclude Include="Public\Global.h" />
+    <ClInclude Include="Public\Render\Bindable\Bindable.h" />
+    <ClInclude Include="Public\Render\Bindable\ConstantBuffer.h" />
+    <ClInclude Include="Public\Render\Bindable\DepthStencil.h" />
+    <ClInclude Include="Public\Render\Bindable\IndexBuffer.h" />
+    <ClInclude Include="Public\Render\Bindable\InputLayout.h" />
+    <ClInclude Include="Public\Render\Bindable\PixelShader.h" />
+    <ClInclude Include="Public\Render\Bindable\TransformBuffer.h" />
+    <ClInclude Include="Public\Render\Bindable\VertexBuffer.hpp" />
+    <ClInclude Include="Public\Render\Bindable\VertexShader.h" />
+    <ClInclude Include="Public\Render\camera.h" />
+    <ClInclude Include="Public\Render\Drawable\Box.h" />
+    <ClInclude Include="Public\Render\Drawable\Drawable.h" />
+    <ClInclude Include="Public\Render\Graphics.h" />
+    <ClInclude Include="Public\Render\GraphicsResource.h" />
+    <ClInclude Include="Public\Render\Shape\Shape.hpp" />
+    <ClInclude Include="Public\Render\VertexLayout.h" />
+    <ClInclude Include="Public\Tool\Timer.h" />
+    <ClInclude Include="Public\Tool\Utili.h" />
+    <QtMoc Include="Public\QtFrame\RenderViewport.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl">
+    <FxCompile Include="Shaders\src\PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
-      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
-      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DisableOptimizations>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="VertexShader.hlsl">
+    <FxCompile Include="Shaders\src\VertexShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
-      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
-      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DisableOptimizations>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

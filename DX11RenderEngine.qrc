@@ -1,4 +1,4 @@
 <RCC>
-    <qresource prefix="DX11RenderEngine">
+    <qresource prefix="DX11RenderEngine\Public\QtFrame\">
     </qresource>
 </RCC>
