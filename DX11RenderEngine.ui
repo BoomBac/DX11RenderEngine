@@ -37,7 +37,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>1</number>
     </property>
     <property name="tabSpacing">
      <number>7</number>
@@ -78,79 +78,17 @@
       </rect>
      </property>
      <attribute name="label">
-      <string>Camera</string>
+      <string>Outline</string>
      </attribute>
-     <widget class="QWidget" name="formLayoutWidget">
+     <widget class="QListWidget" name="listWidget">
       <property name="geometry">
        <rect>
-        <x>9</x>
+        <x>0</x>
         <y>0</y>
-        <width>281</width>
-        <height>80</height>
+        <width>341</width>
+        <height>431</height>
        </rect>
       </property>
-      <layout class="QFormLayout" name="formLayout">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>RotateX</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>RotateY</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>RotateZ</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QScrollBar" name="hSBar_CameraRX">
-         <property name="minimum">
-          <number>-180</number>
-         </property>
-         <property name="maximum">
-          <number>180</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QScrollBar" name="hSBar_CameraRY">
-         <property name="minimum">
-          <number>-180</number>
-         </property>
-         <property name="maximum">
-          <number>180</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QScrollBar" name="hSBar_CameraRZ">
-         <property name="minimum">
-          <number>-180</number>
-         </property>
-         <property name="maximum">
-          <number>180</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="page_2">
@@ -198,7 +136,7 @@
        <item row="3" column="2">
         <widget class="QDoubleSpinBox" name="dSB_MSY">
          <property name="value">
-          <double>0.000000000000000</double>
+          <double>1.000000000000000</double>
          </property>
         </widget>
        </item>
@@ -235,7 +173,7 @@
           <double>10000.000000000000000</double>
          </property>
          <property name="value">
-          <double>0.000000000000000</double>
+          <double>1.000000000000000</double>
          </property>
         </widget>
        </item>
@@ -259,7 +197,7 @@
        <item row="3" column="3">
         <widget class="QDoubleSpinBox" name="dSB_MSZ">
          <property name="value">
-          <double>0.000000000000000</double>
+          <double>1.000000000000000</double>
          </property>
         </widget>
        </item>
@@ -301,13 +239,6 @@
            <string>Object</string>
           </property>
          </item>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="bt_test">
-         <property name="text">
-          <string>PushButton</string>
-         </property>
         </widget>
        </item>
       </layout>

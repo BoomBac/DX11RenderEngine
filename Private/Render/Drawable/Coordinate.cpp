@@ -63,7 +63,7 @@ Coordinate::Coordinate(Graphics& gfx, const float& size)
 	}
 	world_location_ = { 0.f,0.f,0.f };
 	world_rotation_ = { 0.f,0.f,0.f };
-	Scale = { 1.f,1.f,1.f };
+	scale_ = { 1.f,1.f,1.f };
 	transform =
 	{
 		DirectX::XMMatrixIdentity() *
@@ -80,12 +80,16 @@ void Coordinate::Draw(Graphics& gfx)
 	transform.mWorld = object_attached_->GetTranslateMartix() * transform.mWorld;
 	if (!is_world_)
 		transform.mWorld = object_attached_->GetRotationMartix() * transform.mWorld;
-
 	Drawable::Draw(gfx);
 }
 
 void Coordinate::SetCoordinateType(bool is_world)
 {
 	is_world_ = is_world;
+}
+
+bool Coordinate::GetCoordinateType() const
+{
+	return is_world_;
 }
 

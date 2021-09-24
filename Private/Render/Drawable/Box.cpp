@@ -73,7 +73,7 @@ Box::Box(const CusMath::vector3d& initPos, const int& size,Graphics& gfx)
 	}
 	world_location_ = initPos;
 	world_rotation_ = { 0.f,0.f,0.f };
-	Scale = { 1.f,1.f,1.f };
+	scale_ = { 1.f,1.f,1.f };
 	transform =
 	{
 		DirectX::XMMatrixTranslation(initPos.x,initPos.y,initPos.z)*

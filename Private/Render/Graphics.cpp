@@ -57,8 +57,6 @@ void Graphics::EndFrame()
 	{
 		i->Draw(*this);
 	}
-
-	//box1->Update(DirectX::XMMatrixTranslation(0.f, 0.f, 0.f));
 	pSwapChain->Present(0u, 0u);
 }
 
@@ -75,24 +73,41 @@ void Graphics::SetVPBackColor(float color[4])
 
 void Graphics::SetSelectedObjectTranslate(const CusMath::vector3d& t)
 {
-	p_selected_object_->SetWorldLocation(t);
+	if (dynamic_cast<Coordinate*>(p_coordinate_)->GetCoordinateType())
+	{
+		p_selected_object_->SetWorldLocation(t);
+	}
+	else
+	{
+		p_selected_object_->SetActorLocation(t);
+	}
 }
 
 void Graphics::SetSelectedObjectRotation(const CusMath::vector3d& t)
 {
-	p_selected_object_->SetWorldRotation(t);
+	if (dynamic_cast<Coordinate*>(p_coordinate_)->GetCoordinateType())
+	{
+		p_selected_object_->SetWorldRotation(t);
+	}
+	else
+	{
+		p_selected_object_->SetActorRotation(t);
+	}
 }
 
 void Graphics::SetSelectedObjectScale(const CusMath::vector3d& t)
 {
-	//SelectedObject->SetActorScale(t);
-	p_selected_object_->SetActorRotation(t);
-	//p_selected_object_->AddActorLocation(CusMath::vector3d{0.f,0.f,1.f});
+	p_selected_object_->SetActorScale(t);
 }
 
 void Graphics::SetCoordinateType(bool is_world)
 {
 	dynamic_cast<Coordinate*>(p_coordinate_)->SetCoordinateType(is_world);
+}
+
+bool Graphics::GetCoordinateType() const
+{
+	return dynamic_cast<Coordinate*>(p_coordinate_)->GetCoordinateType();
 }
 
 HRESULT Graphics::InitDx11(HWND hWnd)

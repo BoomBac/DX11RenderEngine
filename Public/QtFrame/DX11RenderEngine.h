@@ -16,7 +16,6 @@
 class DX11RenderEngine : public QMainWindow
 {
     Q_OBJECT
-
 public:
     DX11RenderEngine(QWidget *parent = Q_NULLPTR);
     ~DX11RenderEngine();
@@ -24,6 +23,9 @@ private:
     DISALLOW_COPY_AND_ASSIGN(DX11RenderEngine)
     void paintEvent(QPaintEvent* e);
     Ui::DX11RenderEngineClass ui;
+    //记录物体变换框数据
+    float transform_info_[6]{ 0.f,0.f,0.,0.f,0.f,0.f};
+    void ChangeCoordinateType(int index);
 };
 
 #endif

@@ -23,6 +23,7 @@ public:
 	virtual void Draw(Graphics& gfx) override;
 	//TODO(): add copy()
 	void SetCoordinateType(bool is_world);
+	bool GetCoordinateType() const;
 private:
 	DISALLOW_COPY_AND_ASSIGN(Coordinate)
 	Drawable* object_attached_;

@@ -30,9 +30,7 @@ public:
 	void DrawIndexed(const UINT& count);
 
 	void SetVPBackColor(float color[4]);
-	void SetSelectedObjectTranslate(const CusMath::vector3d& t);
-	void SetSelectedObjectRotation(const CusMath::vector3d& t);
-	void SetSelectedObjectScale(const CusMath::vector3d& t);
+
 	//从按键输入接收摄像机运动状态
 	void UpdateCameraState(ECameraMovementState new_state);
 	Camera camera_;
@@ -42,7 +40,12 @@ public:
 	static Drawable* p_coordinate_;
 
 	void SetCoordinateType(bool is_world);
-
+	//if world coord,return true
+	bool GetCoordinateType() const;
+	//这部分与Qt框架交互
+	void SetSelectedObjectTranslate(const CusMath::vector3d& t);
+	void SetSelectedObjectRotation(const CusMath::vector3d& t);
+	void SetSelectedObjectScale(const CusMath::vector3d& t);
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>pDeviceContext = nullptr;

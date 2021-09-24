@@ -157,18 +157,29 @@ void RenderViewport::SetSelectedObjectTransform(const CusMath::vector3d& pos, co
 	case 0:
 	{
 		graphicsIns->SetSelectedObjectTranslate(pos);
-		emit(ActorTransformChange(Graphics::p_selected_object_->GetWorldLocation(), '1'));
+		emit(ActorTransformChange(Graphics::p_selected_object_->GetWorldLocation(), '0'));
 	}
 		break;
 	case 1:
 	{
 		graphicsIns->SetSelectedObjectRotation(pos);
+		if (graphicsIns->GetCoordinateType())
+		{
+			object_rotation_changed_ = true;
+		}
+		//CusMath::vector3d rotation = Graphics::p_selected_object_->GetWorldRotation();
+		//if (Graphics::p_selected_object_->forward_direction().x == 0.f && Graphics::p_selected_object_->forward_direction().y == 0.f && Graphics::p_selected_object_->forward_direction().z == 1.f)
+		//	rotation.z += Graphics::p_selected_object_->GetActorRotation().z;
+		//if (Graphics::p_selected_object_->right_direction().x == 1.f && Graphics::p_selected_object_->right_direction().y == 0.f && Graphics::p_selected_object_->right_direction().z == 0.f)
+		//	rotation.x += Graphics::p_selected_object_->GetActorRotation().x;
+		//if (Graphics::p_selected_object_->up_direction().x == 0.f && Graphics::p_selected_object_->up_direction().y == 1.f && Graphics::p_selected_object_->up_direction().z == 0.f)
+		//	rotation.y += Graphics::p_selected_object_->GetActorRotation().y;
+		emit(ActorTransformChange(Graphics::p_selected_object_->GetWorldRotation(), '2'));
 	}
 	break;
 	case 2:
 	{
 		graphicsIns->SetSelectedObjectScale(pos);
-		//emit(ActorTransformChange(Graphics::p_selected_object_->GetWorldLocation(), '1'));
 	}
 		break;
 	};

@@ -35,13 +35,15 @@ public:
 	void SetbgColor(float color[4]);
 	void SetCoordinateType(bool is_world);
 	Graphics* graphicsIns = nullptr;
-
+	bool object_rotation_changed_ = true;
 
 signals:
 	void MouseMoved(QString& pos);
 	void MousePressed(QString& state);
 	void MouseReleased(QString& state);
-	//flag 0 1 2 w trs 3 4 5 o trs
+	//切换坐标轴类型时，物体空间信息框更新 
+	//flag 0 1 2 世界位移，旋转，缩放 
+	//3 4 局部位移，旋转
 	void ActorTransformChange(const CusMath::vector3d& new_tranf, char flag);
 public slots:
 	//Graphics和Window的中转函数

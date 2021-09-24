@@ -6,11 +6,9 @@
 
 
 namespace dx = DirectX;
-//eyePos,lookAt,upDirection   test
+
 DirectX::XMMATRIX Drawable::view;
 DirectX::XMMATRIX Drawable::projection;
-
-static dx::XMVECTOR g_camera_location = { 0.f,0.f,50.f };
 
 void Drawable::Draw(Graphics& gfx)
 {
@@ -80,7 +78,7 @@ void Drawable::SetActorRotation(const CusMath::vector3d& r)
 
 void Drawable::SetActorScale(const CusMath::vector3d& s)
 {
-	Scale = s;
+	scale_ = s;
 }
 
 void Drawable::AddActorLocation(const CusMath::vector3d& t)
@@ -115,9 +113,31 @@ DirectX::XMMATRIX Drawable::GetTranslateMartix() const
 
 DirectX::XMMATRIX Drawable::GetRotationMartix() const
 {
-	return 	DirectX::XMMATRIX(right_direction.x, right_direction.y, right_direction.z, 0.f,
-		up_direction.x, up_direction.y, up_direction.z, 0.f,
-		forward_direction.x, forward_direction.y, forward_direction.z, 0.f,
+	return 	DirectX::XMMATRIX(right_direction_.x, right_direction_.y, right_direction_.z, 0.f,
+		up_direction_.x, up_direction_.y, up_direction_.z, 0.f,
+		forward_direction_.x, forward_direction_.y, forward_direction_.z, 0.f,
 		0.f, 0.f, 0.f, 1.f);
+}
+
+DirectX::XMFLOAT3 Drawable::forward_direction() const
+{
+	return forward_direction_;
+}
+
+DirectX::XMFLOAT3 Drawable::right_direction() const
+{
+	return right_direction_;
+}
+
+DirectX::XMFLOAT3 Drawable::up_direction() const
+{
+	return up_direction_;
+}
+
+bool Drawable::IsOnWorldCoordinate() const
+{
+	return !(forward_direction_.x != 0.f || forward_direction_.y != 0.f || forward_direction_.z != 1.f ||
+		right_direction_.x != 1.f || right_direction_.y != 0.f || right_direction_.z != 0.f ||
+		up_direction_.x != 0.f || up_direction_.y != 1.f || up_direction_.z != 0.f);
 }
 
