@@ -5,8 +5,9 @@
 #include "Public/Global.h"
 #include "Public/Render/Bindable/DepthStencil.h"
 #include "Public/Render/Drawable/Box.h"
-#include "Public/Render/Drawable/Drawable.h"
+
 #include "Public/Tool/Utili.h"
+#include "Public/Render/Drawable/Coordinate.h"
 
 #pragma comment(lib,"d3d11.lib") 
 #pragma comment(lib,"dxgi.lib") 
@@ -15,20 +16,23 @@
 template<typename T>
 using Vec = std::vector<T, std::allocator<T>>;
 
-//当前渲染视口选中的物体
-static Drawable* SelectedObject = nullptr;
+Drawable* Graphics::p_selected_object_ = nullptr;
+Drawable* Graphics::p_coordinate_ = nullptr;
 
 Graphics::Graphics(HWND hWnd)
 {
 	InitDx11(hWnd);
 	static float color[] = { 0,0,0,1 };
 	bg_color = color;
-	camera.SetProjection(75.f,4.f/3.f,0.1,1000.f);
+	camera_.SetProjection(75.f,4.f/3.f,0.1,1000.f);
 	cam_move_state_ = ECameraMovementState::kStop;
-	// CusMath::vector3d(0.f, 0.f, 0.f),5.f,*this);//  Box(CusMath::vector3d(0.f, 0.f, 0.f), 5, *this);
 	SceneObjects.push_back(dynamic_cast<Drawable*>(new Box(CusMath::vector3d(0.f, 0.f, 0.f), 2, *this)));
 	SceneObjects.push_back(dynamic_cast<Drawable*>(new Box(CusMath::vector3d(12.f, 0.f, 0.f), 3, *this)));
-	SelectedObject = SceneObjects[0];
+	SceneObjects[1]->SetActorLocation({ 10.f,0.f,0.f });
+	p_selected_object_ = SceneObjects[0];
+	//创建坐标轴
+	p_coordinate_ = new Coordinate(*this, 10.f);
+	SceneObjects.push_back(dynamic_cast<Drawable*>(p_coordinate_));
 }
 
 Graphics::~Graphics()
@@ -46,7 +50,7 @@ Graphics::~Graphics()
 
 void Graphics::EndFrame()
 {
-	pDeviceContext->ClearRenderTargetView(pRenderTargetView.Get(), bg_color);
+	pDeviceContext->ClearRenderTargetView(p_render_targetview_.Get(), bg_color);
 	dsbuffer->Clear(*this);
 	UpdateCameraMovement();
 	for (const auto& i : SceneObjects)
@@ -54,7 +58,6 @@ void Graphics::EndFrame()
 		i->Draw(*this);
 	}
 
-	SceneObjects[1]->SetActorLocation({ 10.f,0.f,0.f });
 	//box1->Update(DirectX::XMMatrixTranslation(0.f, 0.f, 0.f));
 	pSwapChain->Present(0u, 0u);
 }
@@ -64,56 +67,32 @@ void Graphics::DrawIndexed(const UINT& count)
 	pDeviceContext->DrawIndexed(count, 0u, 0u);
 }
 
-#define TORAD(x) x*DirectX::XM_PI/180.f
-void Graphics::SetCameraTransformation(const float& x, const float& y, const float& z)
-{
-	Drawable::UpdateCameraTransformation( 
-		DirectX::XMMatrixRotationX(TORAD((-x)))
-		);
-	SelectedObject->OnCameraTransChanged();
-}
-
-void Graphics::SetCameraTransformationW(const float& x, const float& y, const float& z)
-{
-	static float angle = 0.f;
-	angle += -y;
-	static char str[4];
-	sprintf(str, "%f", angle);
-	Debug("Current Angle:" + str + "\n");
-	Drawable::UpdateCameraTransformationW(
-		DirectX::XMMatrixRotationY(TORAD((-y))), -y);
-	SelectedObject->OnCameraTransChanged();
-}
-#undef TORAD
-
-void Graphics::SetCameraTranslation(const float& x, const float& y, const float& z)
-{
-	Drawable::UpdateCameraTranslation(DirectX::XMMatrixTranslation(x, y, z));
-	SelectedObject->OnCameraTransChanged();
-}
-
-
 
 void Graphics::SetVPBackColor(float color[4])
 {
 	bg_color = color;
 }
 
-
-
 void Graphics::SetSelectedObjectTranslate(const CusMath::vector3d& t)
 {
-	SelectedObject->SetActorLocation(t);
+	p_selected_object_->SetWorldLocation(t);
 }
 
 void Graphics::SetSelectedObjectRotation(const CusMath::vector3d& t)
 {
-	SelectedObject->SetActorRotation(t);
+	p_selected_object_->SetWorldRotation(t);
 }
 
 void Graphics::SetSelectedObjectScale(const CusMath::vector3d& t)
 {
-	SelectedObject->SetActorScale(t);
+	//SelectedObject->SetActorScale(t);
+	p_selected_object_->SetActorRotation(t);
+	//p_selected_object_->AddActorLocation(CusMath::vector3d{0.f,0.f,1.f});
+}
+
+void Graphics::SetCoordinateType(bool is_world)
+{
+	dynamic_cast<Coordinate*>(p_coordinate_)->SetCoordinateType(is_world);
 }
 
 HRESULT Graphics::InitDx11(HWND hWnd)
@@ -162,7 +141,7 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	ID3D11Texture2D* backBuffer;
 	pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
 	if(backBuffer!=nullptr)
-		hr = pDevice->CreateRenderTargetView(backBuffer, NULL, pRenderTargetView.GetAddressOf());
+		hr = pDevice->CreateRenderTargetView(backBuffer, NULL, p_render_targetview_.GetAddressOf());
 	else
 	{
 		qDebug() << "backBuffer is null!";
@@ -178,9 +157,7 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	pDeviceContext->RSSetViewports(1, &vp);
 	//创建深度模板缓冲区
 	dsbuffer = new DepthStencil(800u, 600u, *this);
-	dsbuffer->TBind(*this, pRenderTargetView.Get());
-
-	//pDeviceContext->OMSetRenderTargets(1, pRenderTargetView.GetAddressOf(), nullptr);
+	dsbuffer->Bind(*this);
 	return hr;
 }
 
@@ -189,22 +166,22 @@ void Graphics::UpdateCameraMovement()
 	switch (cam_move_state_)
 	{
 	case ECameraMovementState::kForward:
-		camera.AddPosition(camera.forward() * 0.6f);
+		camera_.AddPosition(camera_.forward() * 0.6f);
 		break;
 	case ECameraMovementState::kBack:
-		camera.AddPosition(-camera.forward() * 0.6f);
+		camera_.AddPosition(-camera_.forward() * 0.6f);
 		break;
 	case ECameraMovementState::kRight:
-		camera.AddPosition(camera.right() * 0.6f);
+		camera_.AddPosition(camera_.right() * 0.6f);
 		break;
 	case ECameraMovementState::kLeft:
-		camera.AddPosition(-camera.right() * 0.6f);
+		camera_.AddPosition(-camera_.right() * 0.6f);
 		break;
 	case ECameraMovementState::kUp:
-		camera.AddPosition(camera.up() * 0.6f);
+		camera_.AddPosition(camera_.up() * 0.6f);
 		break;
 	case ECameraMovementState::kDown:
-		camera.AddPosition(-camera.up() * 0.6f);
+		camera_.AddPosition(-camera_.up() * 0.6f);
 		break;
 	case ECameraMovementState::kStop:
 		break;
@@ -216,6 +193,11 @@ void Graphics::UpdateCameraMovement()
 void Graphics::UpdateCameraState(ECameraMovementState new_state)
 {
 	cam_move_state_ = new_state;
+}
+
+ID3D11RenderTargetView* Graphics::pp_render_targetview()
+{
+	return p_render_targetview_.Get();
 }
 
 

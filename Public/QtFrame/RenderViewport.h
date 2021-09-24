@@ -1,15 +1,23 @@
-#pragma once
+#ifndef DX11ENGINE_QTFRAME_RENDERVIEWPORT_H
+#define DX11ENGINE_QTFRAME_RENDERVIEWPORT_H
+
+#ifndef DISALLOW_COPY_AND_ASSIGN
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+    TypeName(const TypeName &) = delete;   \
+    TypeName &operator=(const TypeName &) = delete;
+#endif
+
 
 #include <QWidget>
 #include "ui_RenderViewport.h"
-#include "vector3D.h"
 
-class Graphics;
+#include "vector3D.h"
+#include "Public/Render/Graphics.h"
+
 
 class RenderViewport : public QWidget
 {
 	Q_OBJECT
-
 public:
 	RenderViewport(QWidget *parent = Q_NULLPTR);
 	~RenderViewport();
@@ -22,20 +30,23 @@ public:
 	void InitialViewport();
 	//每帧更新
 	void UpdateViewport();
-	Graphics* graphicsIns = nullptr;
-
-	//Graphics和Window的中转函数
-	void SetbgColor(float color[4]);
 	//设置当前选中物体的变换，flag 0:translate,1:rotate,2:scale
 	void SetSelectedObjectTransform(const CusMath::vector3d& pos, const char& flag);
+	void SetbgColor(float color[4]);
+	void SetCoordinateType(bool is_world);
+	Graphics* graphicsIns = nullptr;
+
+
 signals:
 	void MouseMoved(QString& pos);
 	void MousePressed(QString& state);
 	void MouseReleased(QString& state);
+	//flag 0 1 2 w trs 3 4 5 o trs
+	void ActorTransformChange(const CusMath::vector3d& new_tranf, char flag);
 public slots:
 	//Graphics和Window的中转函数
-	void OnCameraSlideBarChanged(const float& x, const float& y, const float& z);
 private:
+	DISALLOW_COPY_AND_ASSIGN(RenderViewport)
 	Ui::RenderViewport ui;
 	QString mouPos;
 	QString moubtState;
@@ -43,3 +54,5 @@ private:
 	int posX = 0;
 	int posY = 0;
 };
+
+#endif // DX11ENGINE_QTFRAME_RENDERVIEWPORT_H

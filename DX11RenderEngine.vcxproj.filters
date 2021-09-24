@@ -88,9 +88,6 @@
     <ClCompile Include="Private\Render\VertexLayout.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Render\Bindable\Bindable.cpp">
-      <Filter>Source Files\Render\Bindable</Filter>
-    </ClCompile>
     <ClCompile Include="Private\Render\Bindable\DepthStencil.cpp">
       <Filter>Source Files\Render\Bindable</Filter>
     </ClCompile>
@@ -127,12 +124,15 @@
     <ClCompile Include="Private\Global.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Render\Drawable\Coordinate.cpp">
+      <Filter>Source Files\Render\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="DX11RenderEngine.h">
+    <QtMoc Include="Public\QtFrame\DX11RenderEngine.h">
       <Filter>Header Files\QtFrame</Filter>
     </QtMoc>
-    <QtMoc Include="RenderViewport.h">
+    <QtMoc Include="Public\QtFrame\RenderViewport.h">
       <Filter>Header Files\QtFrame</Filter>
     </QtMoc>
   </ItemGroup>
@@ -167,7 +167,7 @@
     <ClInclude Include="Public\Render\Drawable\Drawable.h">
       <Filter>Header Files\Render\Drawable</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Render\Bindable\Bindable.h">
+    <ClInclude Include="Public\Render\Bindable\BindableInterface.h">
       <Filter>Header Files\Render\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="Public\Render\Bindable\ConstantBuffer.h">
@@ -193,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="Public\Render\Bindable\VertexShader.h">
       <Filter>Header Files\Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Drawable\Coordinate.h">
+      <Filter>Header Files\Render\Drawable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

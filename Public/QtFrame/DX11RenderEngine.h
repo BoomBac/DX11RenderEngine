@@ -1,11 +1,16 @@
-#pragma once
+#ifndef DX11ENGINE_QTFRAME_DX11RENDERENGINE_H
+#define DX11ENGINE_QTFRAME_DX11RENDERENGINE_H
+
+#ifndef DISALLOW_COPY_AND_ASSIGN
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+    TypeName(const TypeName &) = delete;   \
+    TypeName &operator=(const TypeName &) = delete;
+#endif
 
 
 #include <QtWidgets/QMainWindow>
+
 #include "ui_DX11RenderEngine.h"
-
-
-class Graphics;
 
 
 class DX11RenderEngine : public QMainWindow
@@ -15,9 +20,10 @@ class DX11RenderEngine : public QMainWindow
 public:
     DX11RenderEngine(QWidget *parent = Q_NULLPTR);
     ~DX11RenderEngine();
-    HWND hWnd;
 private:
-    Ui::DX11RenderEngineClass ui;
-protected:
+    DISALLOW_COPY_AND_ASSIGN(DX11RenderEngine)
     void paintEvent(QPaintEvent* e);
+    Ui::DX11RenderEngineClass ui;
 };
+
+#endif

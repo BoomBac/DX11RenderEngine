@@ -48,7 +48,7 @@
        <x>0</x>
        <y>0</y>
        <width>371</width>
-       <height>461</height>
+       <height>470</height>
       </rect>
      </property>
      <attribute name="label">
@@ -74,7 +74,7 @@
        <x>0</x>
        <y>0</y>
        <width>371</width>
-       <height>461</height>
+       <height>470</height>
       </rect>
      </property>
      <attribute name="label">
@@ -159,7 +159,7 @@
        <x>0</x>
        <y>0</y>
        <width>371</width>
-       <height>461</height>
+       <height>470</height>
       </rect>
      </property>
      <attribute name="label">
@@ -175,67 +175,138 @@
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="2" column="3">
-        <widget class="QDoubleSpinBox" name="dSB_MSZ">
+       <item row="1" column="1">
+        <widget class="QDoubleSpinBox" name="dSB_MTX">
+         <property name="buttonSymbols">
+          <enum>QAbstractSpinBox::UpDownArrows</enum>
+         </property>
+         <property name="minimum">
+          <double>-10000.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>10000.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>RotateL</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QDoubleSpinBox" name="dSB_MSY">
          <property name="value">
-          <double>1.000000000000000</double>
+          <double>0.000000000000000</double>
          </property>
         </widget>
        </item>
        <item row="1" column="3">
-        <widget class="QDoubleSpinBox" name="dSB_MRZ"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Scale</string>
+        <widget class="QDoubleSpinBox" name="dSB_MTZ">
+         <property name="minimum">
+          <double>-10000.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>10000.000000000000000</double>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>RotateW</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QDoubleSpinBox" name="dSB_MRY">
+         <property name="minimum">
+          <double>-180.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>180.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QDoubleSpinBox" name="dSB_MSX">
+         <property name="maximum">
+          <double>10000.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>0.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QDoubleSpinBox" name="dSB_MRZ">
+         <property name="minimum">
+          <double>-180.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>180.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
         <widget class="QLabel" name="label_6">
          <property name="text">
           <string>Translate</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
-        <widget class="QDoubleSpinBox" name="dSB_MTZ"/>
-       </item>
-       <item row="0" column="2">
-        <widget class="QDoubleSpinBox" name="dSB_MTY"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>Rotate</string>
+       <item row="3" column="3">
+        <widget class="QDoubleSpinBox" name="dSB_MSZ">
+         <property name="value">
+          <double>0.000000000000000</double>
          </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QDoubleSpinBox" name="dSB_MTY">
+         <property name="minimum">
+          <double>-10000.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>10000.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QDoubleSpinBox" name="dSB_MRX">
+         <property name="minimum">
+          <double>-180.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>180.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QComboBox" name="CB_Coord">
+         <property name="currentText">
+          <string>World</string>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <item>
+          <property name="text">
+           <string>World</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Object</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QDoubleSpinBox" name="dSB_MTX">
-         <property name="buttonSymbols">
-          <enum>QAbstractSpinBox::UpDownArrows</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QDoubleSpinBox" name="dSB_MRX"/>
-       </item>
-       <item row="1" column="2">
-        <widget class="QDoubleSpinBox" name="dSB_MRY"/>
-       </item>
-       <item row="2" column="1">
-        <widget class="QDoubleSpinBox" name="dSB_MSX">
-         <property name="value">
-          <double>1.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QDoubleSpinBox" name="dSB_MSY">
-         <property name="value">
-          <double>1.000000000000000</double>
+        <widget class="QPushButton" name="bt_test">
+         <property name="text">
+          <string>PushButton</string>
          </property>
         </widget>
        </item>
@@ -250,7 +321,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

@@ -8,11 +8,14 @@
 #include "Public/Global.h"
 #include "Public/Render/Drawable/Box.h"
 #include "Public/Render/Shape/Shape.hpp"
+#include "Public/Render/Graphics.h"
+#include "Public/Render/GraphicsResource.h"
+
 
 
 template<typename T>
 using Vec = std::vector<T, std::allocator<T>>;
-using BindItem = std::unique_ptr<Bindable>;
+using BindItem = std::unique_ptr<BindableInterface>;
 
 
 Box::Box(const CusMath::vector3d& initPos, const int& size,Graphics& gfx)
@@ -57,29 +60,28 @@ Box::Box(const CusMath::vector3d& initPos, const int& size,Graphics& gfx)
 
 		VertexLayout vl;
 		vl << VertexType::Position3D << VertexType::Float3Color;
-		BindItem il = std::make_unique<InputLayout>(gfx, *dynamic_cast<VertexShader*>(vs.get()), vl);
+		BindItem il = std::make_unique<InputLayout>(gfx, *dynamic_cast<VertexShader*>(vs.get()), vl, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		AddStaticBind(std::move(vs));
 		AddStaticBind(std::move(il));
 		//test
-		view = gfx.camera.view_matrix();
-		projection = gfx.camera.projection_matrix();
+		view = gfx.camera_.view_matrix();
+		projection = gfx.camera_.projection_matrix();
 	}
 	else
 	{
 		SetIndexbufferFromSBinds();
 	}
-	Location = { 0.f,0.f,0.f };
-	Rotation = { 0.f,0.f,0.f };
+	world_location_ = initPos;
+	world_rotation_ = { 0.f,0.f,0.f };
 	Scale = { 1.f,1.f,1.f };
-	transform = 
+	transform =
 	{
-		DirectX::XMMatrixIdentity()*
+		DirectX::XMMatrixTranslation(initPos.x,initPos.y,initPos.z)*
 		view*
 		projection
 	};
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx,*this);
 	AddBind(std::move(vcb));
-
 }
 
 

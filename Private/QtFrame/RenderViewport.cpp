@@ -1,6 +1,7 @@
 #include <QMouseEvent>
 #include "Public\Render\Graphics.h"
 #include "Public\QtFrame\RenderViewport.h"
+#include "Public\Render\Drawable\Drawable.h"
 
 RenderViewport::RenderViewport(QWidget *parent)
 	: QWidget(parent)
@@ -104,8 +105,8 @@ void RenderViewport::mouseMoveEvent(QMouseEvent* e)
 	//传入增量
 	float detlaX = (float)(e->pos().x() - posX);
 	float detlaY = (float)(e->pos().y() - posY);
-	graphicsIns->camera.AddRotation(detlaY * 0.01f, 0.f, 0.f);
-	graphicsIns->camera.AddRotation(0.f,detlaX * 0.01f, 0.f);
+	graphicsIns->camera_.AddRotation(detlaY * 0.01f, 0.f, 0.f);
+	graphicsIns->camera_.AddRotation(0.f,detlaX * 0.01f, 0.f);
 	//状态栏文字
 	mouPos = QString(" x = %1, y = %2").arg(QString::number(e->pos().x())).arg(QString::number(e->pos().y()));
 
@@ -144,6 +145,11 @@ void RenderViewport::SetbgColor(float color[4])
 	graphicsIns->SetVPBackColor(color);
 }
 
+void RenderViewport::SetCoordinateType(bool is_world)
+{
+	graphicsIns->SetCoordinateType(is_world);
+}
+
 void RenderViewport::SetSelectedObjectTransform(const CusMath::vector3d& pos, const char& flag)
 {
 	switch (flag)
@@ -151,6 +157,7 @@ void RenderViewport::SetSelectedObjectTransform(const CusMath::vector3d& pos, co
 	case 0:
 	{
 		graphicsIns->SetSelectedObjectTranslate(pos);
+		emit(ActorTransformChange(Graphics::p_selected_object_->GetWorldLocation(), '1'));
 	}
 		break;
 	case 1:
@@ -161,12 +168,8 @@ void RenderViewport::SetSelectedObjectTransform(const CusMath::vector3d& pos, co
 	case 2:
 	{
 		graphicsIns->SetSelectedObjectScale(pos);
+		//emit(ActorTransformChange(Graphics::p_selected_object_->GetWorldLocation(), '1'));
 	}
 		break;
 	};
-}
-
-void RenderViewport::OnCameraSlideBarChanged(const float& x, const float& y, const float& z)
-{
-	graphicsIns->SetCameraTransformation(x, y, z);
 }

@@ -108,7 +108,6 @@
     <ClCompile Include="Private\main.cpp" />
     <ClCompile Include="Private\QtFrame\DX11RenderEngine.cpp" />
     <ClCompile Include="Private\QtFrame\RenderViewport.cpp" />
-    <ClCompile Include="Private\Render\Bindable\Bindable.cpp" />
     <ClCompile Include="Private\Render\Bindable\DepthStencil.cpp" />
     <ClCompile Include="Private\Render\Bindable\IndexBuffer.cpp" />
     <ClCompile Include="Private\Render\Bindable\InputLayout.cpp" />
@@ -118,6 +117,7 @@
     <ClCompile Include="Private\Render\Bindable\VertexShader.cpp" />
     <ClCompile Include="Private\Render\camera.cpp" />
     <ClCompile Include="Private\Render\Drawable\Box.cpp" />
+    <ClCompile Include="Private\Render\Drawable\Coordinate.cpp" />
     <ClCompile Include="Private\Render\Drawable\Drawable.cpp" />
     <ClCompile Include="Private\Render\Graphics.cpp" />
     <ClCompile Include="Private\Render\GraphicsResource.cpp" />
@@ -130,7 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Public\Global.h" />
-    <ClInclude Include="Public\Render\Bindable\Bindable.h" />
+    <ClInclude Include="Public\Render\Bindable\BindableInterface.h" />
     <ClInclude Include="Public\Render\Bindable\ConstantBuffer.h" />
     <ClInclude Include="Public\Render\Bindable\DepthStencil.h" />
     <ClInclude Include="Public\Render\Bindable\IndexBuffer.h" />
@@ -141,6 +141,7 @@
     <ClInclude Include="Public\Render\Bindable\VertexShader.h" />
     <ClInclude Include="Public\Render\camera.h" />
     <ClInclude Include="Public\Render\Drawable\Box.h" />
+    <ClInclude Include="Public\Render\Drawable\Coordinate.h" />
     <ClInclude Include="Public\Render\Drawable\Drawable.h" />
     <ClInclude Include="Public\Render\Graphics.h" />
     <ClInclude Include="Public\Render\GraphicsResource.h" />

@@ -14,14 +14,11 @@ private:
     public:
         ~CGarbo()
         {
-
             if (m_instance)
             {
                 qDebug() << "deleteeeeeeeeeeeeeeeeeeeeeee";
                 delete(m_instance);
             }
-                
-
         }
     };
     static CGarbo gc;

@@ -6,17 +6,17 @@
 VertexShader::VertexShader(Graphics& gfx, const std::string& path)
 {
 	// 编译创建顶点着色器
-	D3DReadFileToBlob(ToWide(path.c_str()).c_str(), &pVSBlob);
-	GetDevice(gfx)->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr,
-		pVShader.GetAddressOf());
+	D3DReadFileToBlob(ToWide(path.c_str()).c_str(), &p_blob_);
+	GetDevice(gfx)->CreateVertexShader(p_blob_->GetBufferPointer(), p_blob_->GetBufferSize(), nullptr,
+		p_vertx_shader_.GetAddressOf());
 }
 
 void VertexShader::Bind(Graphics& gfx)
 {
-	GetContext(gfx)->VSSetShader(pVShader.Get(), nullptr, 0);
+	GetContext(gfx)->VSSetShader(p_vertx_shader_.Get(), nullptr, 0);
 }
 
 EBindableType VertexShader::GetType() const
 {
-	return EBindableType::VertexShader;
+	return EBindableType::kVertexShader;
 }

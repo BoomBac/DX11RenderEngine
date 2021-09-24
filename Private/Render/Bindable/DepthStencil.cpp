@@ -1,7 +1,7 @@
 #include "Public\Render\Bindable\DepthStencil.h"
 #include <QDebug>
 
-DepthStencil::DepthStencil(UINT x, UINT y, Graphics& gfx):w(x),h(y)
+DepthStencil::DepthStencil(UINT x, UINT y, Graphics& gfx):w_(x),h_(y)
 {
 	qDebug() << "DepthStencil construct";
 	D3D11_TEXTURE2D_DESC dsd;
@@ -24,17 +24,13 @@ DepthStencil::DepthStencil(UINT x, UINT y, Graphics& gfx):w(x),h(y)
 
 void DepthStencil::Bind(Graphics& gfx)
 {
-	//GetContext(gfx)->OMSetRenderTargets(1, &mRenderTargetView, pDepthStencilView.Get());
-}
-
-void DepthStencil::TBind(Graphics& gfx, ID3D11RenderTargetView* rTV)
-{
-	GetContext(gfx)->OMSetRenderTargets(1, &rTV, pDepthStencilView.Get());
+	auto adress = gfx.pp_render_targetview();
+	GetContext(gfx)->OMSetRenderTargets(1, &adress, pDepthStencilView.Get());
 }
 
 EBindableType DepthStencil::GetType() const
 {
-	return EBindableType::DepthStencilBuffer;
+	return EBindableType::kDepthStencilBuffer;
 }
 
 void DepthStencil::Clear(Graphics& gfx)

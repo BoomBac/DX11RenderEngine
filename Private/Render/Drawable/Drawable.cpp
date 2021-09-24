@@ -1,7 +1,7 @@
 #include "Public/Render/Drawable/Drawable.h"
 #include "Public/Tool/Utili.h"
 #include "Public/Render/Graphics.h"
-#include "Public/Render/Bindable/Bindable.h"
+#include "Public/Render/Bindable/BindableInterface.h"
 #include "Public/Render/Bindable/IndexBuffer.h"
 
 
@@ -10,17 +10,11 @@ namespace dx = DirectX;
 DirectX::XMMATRIX Drawable::view;
 DirectX::XMMATRIX Drawable::projection;
 
-DirectX::XMMATRIX Drawable::cameraTranslate = DirectX::XMMatrixTranslation(0.f, 0.f, 50.f);
-DirectX::XMMATRIX Drawable::cameraRotation = DirectX::XMMatrixIdentity();
-DirectX::XMVECTOR Drawable::g_camera_forward = { 0.f,0.f,-1.f };
-DirectX::XMVECTOR Drawable::g_camera_right = {-1.f,0.f,0.f};
-DirectX::XMVECTOR Drawable::g_camera_up = {0.f,1.f,0.f};
-
 static dx::XMVECTOR g_camera_location = { 0.f,0.f,50.f };
 
 void Drawable::Draw(Graphics& gfx)
 {
-	view = gfx.camera.view_matrix();
+	view = gfx.camera_.view_matrix();
 	for (auto& i : binds)
 	{
 		i->Bind(gfx);
@@ -30,10 +24,10 @@ void Drawable::Draw(Graphics& gfx)
 		i->Bind(gfx);
 	}
 	Update();
-	gfx.DrawIndexed(indexbuffer->count);
+	gfx.DrawIndexed(indexbuffer->size_);
 }
 
-void Drawable::AddBind(std::unique_ptr<Bindable> bind)
+void Drawable::AddBind(std::unique_ptr<BindableInterface> bind)
 {
 	binds.push_back(std::move(bind));
 }
@@ -49,79 +43,81 @@ WorldTransform& Drawable::GetTransform()
 	return transform;
 }
 
-void Drawable::UpdateCameraTransformation(const DirectX::XMMATRIX& tranf)
+void Drawable::SetWorldLocation(const CusMath::vector3d& t)
 {
-	//cameraRotation = tranf * cameraRotation;
-	g_camera_forward = dx::XMVector3Transform(g_camera_forward, tranf);//tranf * g_camera_direction ;
-	g_camera_right = dx::XMVector3Transform(g_camera_right, tranf);//tranf * g_camera_direction ;
-	g_camera_up = dx::XMVector3Transform(g_camera_up, tranf);//tranf * g_camera_direction ;
-	//view = view * tranf;
-
-	char buf[4];
-	std::string str;
-	for (int i = 0; i < 3; i++)
-	{
-		sprintf(buf, "%f", g_camera_forward.m128_f32[i]);
-		str.append(buf);
-		str.append(", ");
-	}
-	Debug("CameraForward:" + str + "\n");
-}
-void Drawable::UpdateCameraTransformationW(const DirectX::XMMATRIX& tranf, float detla)
-{	
-	g_camera_forward = dx::XMVector3Transform(g_camera_forward, tranf);//tranf * g_camera_direction ;
-	g_camera_right = dx::XMVector3Transform(g_camera_right, tranf);//tranf * g_camera_direction ;
-	g_camera_up = dx::XMVector3Transform(g_camera_up, tranf);
+	world_location_ = t;
 }
 
-
-// 前进方向为z，那么在世界空间的前进距离就是物体坐标系的前进方向乘其前方向的世界空间方向
-void Drawable::UpdateCameraTranslation(const DirectX::XMMATRIX& tranf)
-{	
-//	view = view * tranf;
-	cameraTranslate = tranf * cameraTranslate ;
-	//前进
-	//
-	if (g_camera_forward.m128_f32[2] < 0.f)
-	g_camera_location = dx::XMVector3Transform(g_camera_location, DirectX::XMMatrixTranslation( - g_camera_forward.m128_f32[0],
-		- g_camera_forward.m128_f32[1],+ g_camera_forward.m128_f32[2]));
-	else
-	{
-		g_camera_location = dx::XMVector3Transform(g_camera_location, DirectX::XMMatrixTranslation(-g_camera_forward.m128_f32[0],
-			g_camera_forward.m128_f32[1], +g_camera_forward.m128_f32[2]));
-	}
-
-	char buf[4];
-	std::string str;
-	for (int i = 0; i < 3; i++)
-	{
-		sprintf(buf, "%f", g_camera_location.m128_f32[i]);
-		str.append(buf);
-		str.append(" ");
-	}
-	Debug("camera_location: " + str + '\n');
-	//std::string str;
-	//for (int i = 0; i < 3; i++)
-	//{
-	//	sprintf(buf, "%f", g_camera_forward.m128_f32[i]);
-	//	str.append(buf);
-	//	str.append(", ");
-	//}
-	//Debug("CameraDirection:" + str + "\n");
+void Drawable::AddWorldLocation(const CusMath::vector3d& t)
+{
+	world_location_ += t;
 }
 
 void Drawable::SetActorLocation(const CusMath::vector3d& t)
 {
-	Location = t;
+	object_location_ = t;
+}
+
+void Drawable::SetWorldRotation(const CusMath::vector3d& r)
+{
+	world_rotation_ = r;
+}
+
+void Drawable::AddWorldRotation(const CusMath::vector3d& r)
+{
+	world_rotation_ += r;
+}
+
+void Drawable::AddActorRotation(const CusMath::vector3d& r)
+{
+	object_rotation_ += r;
 }
 
 void Drawable::SetActorRotation(const CusMath::vector3d& r)
 {
-	Rotation = r;
+	object_rotation_ = r;
 }
 
 void Drawable::SetActorScale(const CusMath::vector3d& s)
 {
 	Scale = s;
+}
+
+void Drawable::AddActorLocation(const CusMath::vector3d& t)
+{
+	object_location_ += t;
+}
+
+const CusMath::vector3d Drawable::GetActorLocation() const
+{
+	return object_location_;
+}
+
+const CusMath::vector3d Drawable::GetWorldLocation() const
+{
+	return world_location_;
+}
+
+const CusMath::vector3d Drawable::GetActorRotation() const
+{
+	return object_rotation_;
+}
+
+const CusMath::vector3d Drawable::GetWorldRotation() const
+{
+	return world_rotation_;
+}
+
+DirectX::XMMATRIX Drawable::GetTranslateMartix() const
+{
+	return DonedTransforms[0];
+}
+
+DirectX::XMMATRIX Drawable::GetRotationMartix() const
+{
+	return 	DirectX::XMMATRIX(right_direction.x, right_direction.y, right_direction.z, 0.f,
+		up_direction.x, up_direction.y, up_direction.z, 0.f,
+		forward_direction.x, forward_direction.y, forward_direction.z, 0.f,
+		0.f, 0.f, 0.f, 1.f);
 }
 

@@ -14,16 +14,16 @@ IndexBuffer::IndexBuffer(const std::vector<UINT>& indices, Graphics& gfx)
 	D3D11_SUBRESOURCE_DATA InitData;
 	ZeroMemory(&InitData, sizeof(InitData));
 	InitData.pSysMem = &indices.at(0);
-	GetDevice(gfx)->CreateBuffer(&Ibd, &InitData, pIndexBuffer.GetAddressOf());
-	count = indices.size();
+	GetDevice(gfx)->CreateBuffer(&Ibd, &InitData, p_index_buffe_r.GetAddressOf());
+	size_ = indices.size();
 }
 
 void IndexBuffer::Bind(Graphics& gfx)
 {
-	GetContext(gfx)->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
+	GetContext(gfx)->IASetIndexBuffer(p_index_buffe_r.Get(), DXGI_FORMAT_R32_UINT, 0);
 }
 
 EBindableType IndexBuffer::GetType() const
 {
-	return EBindableType::IndexBuffer;
+	return EBindableType::kIndexBuffer;
 }
