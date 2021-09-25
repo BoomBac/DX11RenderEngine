@@ -6,52 +6,46 @@
 #include "Public/Render/Bindable/InputLayout.h"
 #include "Public/Render/Bindable/TransformBuffer.h"
 #include "Public/Global.h"
-#include "Public/Render/Shape/Box.h"
+#include "Public\Render\Shape\Plane.h"
 #include "Public/Render/Shape/Shape.hpp"
 #include "Public/Render/Graphics.h"
 #include "Public/Render/GraphicsResource.h"
-
-
 
 template<typename T>
 using Vec = std::vector<T, std::allocator<T>>;
 using BindItem = std::unique_ptr<BindableInterface>;
 
-
-Box::Box(const int& size,Graphics& gfx)
+Plane::Plane(int row, int col, const int& size, Graphics& gfx)
 {
-	const CusMath::vector3d initPos(0.f, 0.f, 0.f);
 	if (!isInitialzed())
 	{
-		std::vector<Postion3DColored> vertices
+		std::vector<Postion3DColored> vertices;
+		Postion3DColored vertex;
+		for (int i = 0; i <= row; i++)
 		{
-			{{initPos.x + size,initPos.y + size,initPos.z + size},{1.f,0.f,0.f}},
-			{{initPos.x + size,initPos.y + size,initPos.z - size},{1.f,0.f,0.f}},
-			{{initPos.x - size,initPos.y + size,initPos.z - size},{1.f,0.f,0.f}},
-			{{initPos.x - size,initPos.y + size,initPos.z + size},{1.f,0.f,0.f}},
-			{{initPos.x + size,initPos.y - size,initPos.z + size},{0.f,1.f,0.f}},
-			{{initPos.x + size,initPos.y - size,initPos.z - size},{0.f,1.f,0.f}},
-			{{initPos.x - size,initPos.y - size,initPos.z - size},{0.f,1.f,0.f}},
-			{{initPos.x - size,initPos.y - size,initPos.z + size},{0.f,1.f,0.f}}
-		};
+			for (int j = 0; j <= col; j++)
+			{
+				vertex.pos = { (float)(-size / 2 + j * (size / col)) ,0.f,float(size / 2 - i * (size / row)) };
+				vertex.color = { 1.f,1.f,1.f };
+				vertices.push_back(vertex);
+			}
+		}
 		BindItem vb =
 			std::make_unique<VertexBuffer<Postion3DColored, Vec>>(vertices, gfx);
 		AddStaticBind(std::move(vb));
-		std::vector<UINT> indices
+		std::vector<UINT> indices;
+		for (int i = 0; i < vertices.size(); i++)
 		{
-			3,0,1,
-			3,1,2,//top
-			1,0,4,
-			1,4,5,//right
-			2,1,5,
-			2,5,6,//front
-			6,5,4,
-			6,4,7,//bot
-			3,2,6,
-			3,6,7,//left
-			0,3,7,
-			7,4,0//back
-		};
+			if (i % (col+1) < col && i / (row+1) < row)
+			{
+				indices.push_back(i);
+				indices.push_back(i+1);
+				indices.push_back(i+col+1);
+				indices.push_back(i+1);
+				indices.push_back(i + col + 2);
+				indices.push_back(i +col+ 1);
+			}
+		}
 		auto ib = std::make_unique<IndexBuffer>(indices, gfx);
 		AddStaticIndexBuf(std::move(ib), gfx);
 
@@ -72,18 +66,14 @@ Box::Box(const int& size,Graphics& gfx)
 	{
 		SetIndexbufferFromSBinds();
 	}
-	world_location_ = initPos;
+	world_location_ = {0.f,0.f,0.f};
 	world_rotation_ = { 0.f,0.f,0.f };
 	scale_ = { 1.f,1.f,1.f };
 	transform =
 	{
-		DirectX::XMMatrixTranslation(initPos.x,initPos.y,initPos.z)*
-		view*
+		view *
 		projection
 	};
-	BindItem vcb = std::make_unique<TransformBuffer>(gfx,*this);
+	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
 	AddBind(std::move(vcb));
-	SetWorldLocation(initPos);
 }
-
-

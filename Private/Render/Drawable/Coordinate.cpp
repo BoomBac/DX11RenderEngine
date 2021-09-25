@@ -15,7 +15,7 @@ Coordinate::Coordinate(Graphics& gfx, const float& size)
 	if (!isInitialzed())
 	{
 		CusMath::vector3d pos = gfx.p_selected_object_ == nullptr ? CusMath::vector3d{0.f, 0.f, 0.f} : gfx.p_selected_object_->GetWorldLocation();
-		object_attached_ = gfx.p_selected_object_;
+		p_object_attached_ = gfx.p_selected_object_;
 		std::vector<Postion3DColored> vertices
 		{
 			{pos,{0.f,0.f,0.f} },
@@ -59,6 +59,7 @@ Coordinate::Coordinate(Graphics& gfx, const float& size)
 	}
 	else
 	{
+		return;
 		SetIndexbufferFromSBinds();
 	}
 	world_location_ = { 0.f,0.f,0.f };
@@ -77,9 +78,10 @@ Coordinate::Coordinate(Graphics& gfx, const float& size)
 
 void Coordinate::Draw(Graphics& gfx)
 {
-	transform.mWorld = object_attached_->GetTranslateMartix() * transform.mWorld;
+	if (p_object_attached_ == nullptr) return;
+	transform.mWorld = p_object_attached_->GetTranslateMartix() * transform.mWorld;
 	if (!is_world_)
-		transform.mWorld = object_attached_->GetRotationMartix() * transform.mWorld;
+		transform.mWorld = p_object_attached_->GetRotationMartix() * transform.mWorld;
 	Drawable::Draw(gfx);
 }
 
@@ -91,5 +93,10 @@ void Coordinate::SetCoordinateType(bool is_world)
 bool Coordinate::GetCoordinateType() const
 {
 	return is_world_;
+}
+
+void Coordinate::SetAttachedObject(Drawable* object)
+{
+	p_object_attached_ = object;
 }
 

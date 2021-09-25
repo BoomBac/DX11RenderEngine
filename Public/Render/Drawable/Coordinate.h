@@ -24,9 +24,10 @@ public:
 	//TODO(): add copy()
 	void SetCoordinateType(bool is_world);
 	bool GetCoordinateType() const;
+	void SetAttachedObject(Drawable* object);
 private:
 	DISALLOW_COPY_AND_ASSIGN(Coordinate)
-	Drawable* object_attached_;
+	Drawable* p_object_attached_;
 	bool is_world_;
 };
 

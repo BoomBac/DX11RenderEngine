@@ -22,10 +22,13 @@ public:
 private:
     DISALLOW_COPY_AND_ASSIGN(DX11RenderEngine)
     void paintEvent(QPaintEvent* e);
+    virtual void keyPressEvent(QKeyEvent* event) override;
     Ui::DX11RenderEngineClass ui;
     //记录物体变换框数据
     float transform_info_[6]{ 0.f,0.f,0.,0.f,0.f,0.f};
     void ChangeCoordinateType(int index);
+
+    void OnOutlineItemChanged(int row);
 };
 
 #endif

@@ -3,6 +3,7 @@
 #include <QScrollBar>
 #include <QPushButton>
 #include <QColorDialog>
+#include <QListWidget>
 
 #include "Public/Global.h"
 #include "Public/QtFrame/DX11RenderEngine.h"
@@ -10,16 +11,17 @@
 #include "QComboBox"
 #include "Public/QtFrame/RenderViewport.h"
 #include "Public/Render/Drawable/Drawable.h"
+#include "qevent.h"
 
 
-DX11RenderEngine::DX11RenderEngine(QWidget *parent)
+DX11RenderEngine::DX11RenderEngine(QWidget* parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
     this->setFixedSize(1280, 720);
-    
+
     //创建状态栏相关
-    QLabel *lb_pos = new QLabel(QString("MousePos:"), this);
+    QLabel* lb_pos = new QLabel(QString("MousePos:"), this);
     ui.statusBar->addWidget(lb_pos);
     QLabel* lb_state = new QLabel(QString("MouseState:"), this);
     ui.statusBar->addWidget(lb_state);
@@ -39,17 +41,33 @@ DX11RenderEngine::DX11RenderEngine(QWidget *parent)
     connect(ui.renderView, &RenderViewport::ActorTransformChange, [=](const CusMath::vector3d& tranf, char flag) {
         if (flag == '0')
         {
-			transform_info_[0] = tranf.x;
-			transform_info_[1] = tranf.y;
-			transform_info_[2] = tranf.z;
+            transform_info_[0] = tranf.x;
+            transform_info_[1] = tranf.y;
+            transform_info_[2] = tranf.z;
         }
         else if (flag == '2')
         {
-			transform_info_[3] = tranf.x;
-			transform_info_[4] = tranf.y;
-			transform_info_[5] = tranf.z;
+            transform_info_[3] = tranf.x;
+            transform_info_[4] = tranf.y;
+            transform_info_[5] = tranf.z;
         }
         });
+    //世界大纲
+    connect(ui.renderView, &RenderViewport::SceneObjectAdd, [=](const char* name){
+        QString s(name);
+        ui.L_OutLine->addItem(s);
+        });
+
+    //currentRowChanged
+	connect(ui.L_OutLine, &QListWidget::currentRowChanged,this,&DX11RenderEngine::OnOutlineItemChanged);
+    //添加模型
+    //AddSceneObject
+    connect(ui.bt_addBox, &QPushButton::clicked, [=]() {
+        ui.renderView->AddSceneObject('0');
+        });
+	connect(ui.bt_addPlane, &QPushButton::clicked, [=]() {
+		ui.renderView->AddSceneObject('1');
+		});
     //更改坐标轴类型
     connect(ui.CB_Coord, &QComboBox::currentIndexChanged,this,&DX11RenderEngine::ChangeCoordinateType);
 
@@ -123,6 +141,22 @@ void DX11RenderEngine::paintEvent(QPaintEvent* e)
     ui.renderView->UpdateViewport();
 }
 
+void DX11RenderEngine::keyPressEvent(QKeyEvent* event)
+{
+    switch (event->key())
+    {
+    case Qt::Key_Delete:
+        {
+        auto row = ui.L_OutLine->currentRow();
+		auto p = ui.L_OutLine->takeItem(row);
+        ui.renderView->DeleteSceneObject(row+1);
+		delete p;
+        //qDebug() << ui.L_OutLine->currentRow();
+        }
+        break;
+    }
+}
+
 void DX11RenderEngine::ChangeCoordinateType(int index)
 {
     //存储变到世界坐标前，局部坐标的分量
@@ -186,3 +220,52 @@ void DX11RenderEngine::ChangeCoordinateType(int index)
     }
 }
 
+void DX11RenderEngine::OnOutlineItemChanged(int row)
+{
+	ui.dSB_MTX->blockSignals(true);
+	ui.dSB_MTY->blockSignals(true);
+	ui.dSB_MTZ->blockSignals(true);
+	ui.dSB_MRX->blockSignals(true);
+	ui.dSB_MRY->blockSignals(true);
+	ui.dSB_MRZ->blockSignals(true);
+	ui.dSB_MSX->blockSignals(true);
+	ui.dSB_MSY->blockSignals(true);
+	ui.dSB_MSZ->blockSignals(true);
+    if (row > -1)
+    {
+        double tranf[9];
+        ui.renderView->SetSelectObject(row + 1, tranf);
+		ui.dSB_MTX->setValue(tranf[0]);
+		ui.dSB_MTY->setValue(tranf[1]);
+		ui.dSB_MTZ->setValue(tranf[2]);
+		ui.dSB_MRX->setValue(tranf[3]);
+		ui.dSB_MRY->setValue(tranf[4]);
+		ui.dSB_MRZ->setValue(tranf[5]);
+		ui.dSB_MSX->setValue(tranf[6]);
+		ui.dSB_MSY->setValue(tranf[7]);
+		ui.dSB_MSZ->setValue(tranf[8]);
+    }
+    else
+    {
+        ui.renderView->SetSelectObject(-1, nullptr);
+		ui.dSB_MTX->setValue(0.f);
+		ui.dSB_MTY->setValue(0.f);
+		ui.dSB_MTZ->setValue(0.f);
+		ui.dSB_MRX->setValue(0.f);
+		ui.dSB_MRY->setValue(0.f);
+		ui.dSB_MRZ->setValue(0.f);
+		ui.dSB_MSX->setValue(1.f);
+		ui.dSB_MSY->setValue(1.f);
+		ui.dSB_MSZ->setValue(1.f);
+    }
+	ui.dSB_MTX->blockSignals(false);
+	ui.dSB_MTY->blockSignals(false);
+	ui.dSB_MTZ->blockSignals(false);
+	ui.dSB_MRX->blockSignals(false);
+	ui.dSB_MRY->blockSignals(false);
+	ui.dSB_MRZ->blockSignals(false);
+	ui.dSB_MSX->blockSignals(false);
+	ui.dSB_MSY->blockSignals(false);
+	ui.dSB_MSZ->blockSignals(false);
+
+}

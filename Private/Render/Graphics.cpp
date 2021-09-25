@@ -4,10 +4,12 @@
 #include <d3dcompiler.h>
 #include "Public/Global.h"
 #include "Public/Render/Bindable/DepthStencil.h"
-#include "Public/Render/Drawable/Box.h"
+#include "Public/Render/Shape/Box.h"
 
 #include "Public/Tool/Utili.h"
 #include "Public/Render/Drawable/Coordinate.h"
+#include "Public/Render/GeometryFactory.h"
+#include <utility>
 
 #pragma comment(lib,"d3d11.lib") 
 #pragma comment(lib,"dxgi.lib") 
@@ -19,6 +21,12 @@ using Vec = std::vector<T, std::allocator<T>>;
 Drawable* Graphics::p_selected_object_ = nullptr;
 Drawable* Graphics::p_coordinate_ = nullptr;
 
+
+namespace
+{
+
+}
+
 Graphics::Graphics(HWND hWnd)
 {
 	InitDx11(hWnd);
@@ -26,22 +34,31 @@ Graphics::Graphics(HWND hWnd)
 	bg_color = color;
 	camera_.SetProjection(75.f,4.f/3.f,0.1,1000.f);
 	cam_move_state_ = ECameraMovementState::kStop;
-	SceneObjects.push_back(dynamic_cast<Drawable*>(new Box(CusMath::vector3d(0.f, 0.f, 0.f), 2, *this)));
-	SceneObjects.push_back(dynamic_cast<Drawable*>(new Box(CusMath::vector3d(12.f, 0.f, 0.f), 3, *this)));
-	SceneObjects[1]->SetActorLocation({ 10.f,0.f,0.f });
-	p_selected_object_ = SceneObjects[0];
+
+	outline_notify_ = new Subject();
 	//创建坐标轴
 	p_coordinate_ = new Coordinate(*this, 10.f);
-	SceneObjects.push_back(dynamic_cast<Drawable*>(p_coordinate_));
+	scene_objects_.push_back(dynamic_cast<Drawable*>(p_coordinate_));
+
+	GeometryFactory factory(this);
+
+	//factory.GenerateGeometry(EGeometryType::kBox);
+	//factory.GenerateGeometry(EGeometryType::kPlane);
+
+	//SetSelectObject(scene_objects_[1]);
 }
+
+
 
 Graphics::~Graphics()
 {
 	if (dsbuffer != nullptr)
 		delete dsbuffer;
-	if (!SceneObjects.empty())
+	if (outline_notify_ != nullptr)
+		delete outline_notify_;
+	if (!scene_objects_.empty())
 	{
-		for (auto i : SceneObjects)
+		for (auto i : scene_objects_)
 		{
 			delete i;
 		}
@@ -53,7 +70,7 @@ void Graphics::EndFrame()
 	pDeviceContext->ClearRenderTargetView(p_render_targetview_.Get(), bg_color);
 	dsbuffer->Clear(*this);
 	UpdateCameraMovement();
-	for (const auto& i : SceneObjects)
+	for (const auto& i : scene_objects_)
 	{
 		i->Draw(*this);
 	}
@@ -98,6 +115,34 @@ void Graphics::SetSelectedObjectRotation(const CusMath::vector3d& t)
 void Graphics::SetSelectedObjectScale(const CusMath::vector3d& t)
 {
 	p_selected_object_->SetActorScale(t);
+}
+
+void Graphics::AddSceneObject(Drawable* object, std::string object_name)
+{
+	scene_objects_.push_back(object);
+	scene_outline_.insert(std::pair<int, std::string>(scene_objects_.size() - 1, object_name));
+	last_add_object_name_ = object_name;
+	outline_notify_->NotifyObserver(true);
+}
+
+void Graphics::DeleteSceneObject(int index)
+{
+	auto it = scene_objects_.begin();
+	it += index;
+	scene_objects_.erase(it);
+}
+
+void Graphics::SetSelectObject(const int& index)
+{
+	if (index!=-1)
+	SetSelectObject(scene_objects_[index]);
+	else
+	SetSelectObject(nullptr);
+}
+void Graphics::SetSelectObject(Drawable* object)
+{
+	p_selected_object_ = object;
+	dynamic_cast<Coordinate*>(p_coordinate_)->SetAttachedObject(p_selected_object_);
 }
 
 void Graphics::SetCoordinateType(bool is_world)

@@ -106,6 +106,11 @@ const CusMath::vector3d Drawable::GetWorldRotation() const
 	return world_rotation_;
 }
 
+const CusMath::vector3d Drawable::GetWorldScale() const
+{
+	return scale_;
+}
+
 DirectX::XMMATRIX Drawable::GetTranslateMartix() const
 {
 	return DonedTransforms[0];

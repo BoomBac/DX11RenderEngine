@@ -2,6 +2,7 @@
 #include "Public\Render\Graphics.h"
 #include "Public\QtFrame\RenderViewport.h"
 #include "Public\Render\Drawable\Drawable.h"
+#include "Public\Render\GeometryFactory.h"
 
 RenderViewport::RenderViewport(QWidget *parent)
 	: QWidget(parent)
@@ -134,6 +135,7 @@ void RenderViewport::InitialViewport()
 {
 	//初始化renderViewport，传入hWnd初始化dx
 	graphicsIns = new Graphics((HWND)winId());
+	graphicsIns->outline_notify_->AddObserver(this);
 }
 void RenderViewport::UpdateViewport()
 {
@@ -148,6 +150,50 @@ void RenderViewport::SetbgColor(float color[4])
 void RenderViewport::SetCoordinateType(bool is_world)
 {
 	graphicsIns->SetCoordinateType(is_world);
+}
+
+void RenderViewport::AddSceneObject(char type)
+{
+	if (type=='0')
+	{
+		GeometryFactory::GenerateGeometry(EGeometryType::kBox);
+	}
+	else if(type=='1')
+		GeometryFactory::GenerateGeometry(EGeometryType::kPlane);
+
+}
+
+void RenderViewport::SetSelectObject(int index, double tranf_info[9])
+{
+	graphicsIns->SetSelectObject(index);
+	if (index != -1)
+	{
+		auto tranf = graphicsIns->p_selected_object_->GetWorldLocation();
+		tranf_info[0] = tranf.x;
+		tranf_info[1] = tranf.y;
+		tranf_info[2] = tranf.z;
+		tranf = graphicsIns->p_selected_object_->GetWorldRotation();
+		tranf_info[3] = tranf.x;
+		tranf_info[4] = tranf.y;
+		tranf_info[5] = tranf.z;
+		tranf = graphicsIns->p_selected_object_->GetWorldScale();
+		tranf_info[6] = tranf.x;
+		tranf_info[7] = tranf.y;
+		tranf_info[8] = tranf.z;
+	}
+}
+
+void RenderViewport::DeleteSceneObject(const int& index)
+{
+	graphicsIns->DeleteSceneObject(index);
+}
+
+void RenderViewport::OnOutlineChanged(bool is_add)
+{
+	if (is_add)
+	{
+		emit(SceneObjectAdd(graphicsIns->last_add_object_name_.c_str()));
+	}
 }
 
 void RenderViewport::SetSelectedObjectTransform(const CusMath::vector3d& pos, const char& flag)

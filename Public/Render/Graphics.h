@@ -2,11 +2,12 @@
 
 #include <wrl/client.h>
 #include <vector>
+#include <map>
 #include <qwindowdefs_win.h>
 
 #include "vector3D.h"
 #include "Public/Render/camera.h"
-
+#include "Public/Tool/Subject.h"
 
 
 class ID3D11Device;
@@ -46,6 +47,16 @@ public:
 	void SetSelectedObjectTranslate(const CusMath::vector3d& t);
 	void SetSelectedObjectRotation(const CusMath::vector3d& t);
 	void SetSelectedObjectScale(const CusMath::vector3d& t);
+	//工厂类添加元素
+	void AddSceneObject(Drawable* object, std::string object_name);
+	
+	void DeleteSceneObject(int index);
+
+	Subject* outline_notify_;
+	std::map<int, std::string> scene_outline_;
+	std::string last_add_object_name_;
+
+	void SetSelectObject(const int& index);
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>pDeviceContext = nullptr;
@@ -54,9 +65,14 @@ private:
 	DepthStencil* dsbuffer;
 	HRESULT InitDx11(HWND hWnd);
 	float* bg_color;
-	std::vector<Drawable*> SceneObjects;
+	// 容纳所有场景物体的容器,0 号元素是坐标轴
+	std::vector<Drawable*> scene_objects_;
+	// 将场景元素和他们的名字对应
+	//int 为其在scene_objects_中的索引，string则为其显示在ui上的名字
 
 	ECameraMovementState cam_move_state_;
 	void UpdateCameraMovement();
+
+	void SetSelectObject(Drawable* object);
 };
 

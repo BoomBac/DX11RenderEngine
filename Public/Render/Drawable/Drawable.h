@@ -15,6 +15,15 @@
 #include "Public/Render/Graphics.h"
 #include "Public/Render/Bindable/BindableInterface.h"
 
+
+enum class EGeometryType
+{
+	kBox,
+	kPlane,
+	kCustom
+};
+
+
 // mvp在一起
 struct WorldTransform
 {
@@ -50,6 +59,7 @@ public:
 	const CusMath::vector3d GetWorldLocation() const;
 	const CusMath::vector3d GetActorRotation() const;
 	const CusMath::vector3d GetWorldRotation() const;
+	const CusMath::vector3d GetWorldScale() const;
 
 	DirectX::XMMATRIX GetTranslateMartix() const;
 	DirectX::XMMATRIX GetRotationMartix() const;

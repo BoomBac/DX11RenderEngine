@@ -275,6 +275,9 @@
       <height>191</height>
      </rect>
     </property>
+    <property name="currentRow">
+     <number>-1</number>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

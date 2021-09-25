@@ -109,9 +109,6 @@
     <ClCompile Include="Private\Render\Bindable\VertexShader.cpp">
       <Filter>Source Files\Render\Bindable</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Render\Drawable\Box.cpp">
-      <Filter>Source Files\Render\Drawable</Filter>
-    </ClCompile>
     <ClCompile Include="Private\Render\Drawable\Drawable.cpp">
       <Filter>Source Files\Render\Drawable</Filter>
     </ClCompile>
@@ -126,6 +123,18 @@
     </ClCompile>
     <ClCompile Include="Private\Render\Drawable\Coordinate.cpp">
       <Filter>Source Files\Render\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Drawable\Box.cpp">
+      <Filter>Source Files\Render\shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Shape\Plane.cpp">
+      <Filter>Source Files\Render\shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\GeometryFactory.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Public\Tool\Subject.cpp">
+      <Filter>Source Files\Tool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -161,9 +170,6 @@
     <ClInclude Include="Public\Render\Shape\Shape.hpp">
       <Filter>Header Files\Render\shape</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Render\Drawable\Box.h">
-      <Filter>Header Files\Render\Drawable</Filter>
-    </ClInclude>
     <ClInclude Include="Public\Render\Drawable\Drawable.h">
       <Filter>Header Files\Render\Drawable</Filter>
     </ClInclude>
@@ -196,6 +202,21 @@
     </ClInclude>
     <ClInclude Include="Public\Render\Drawable\Coordinate.h">
       <Filter>Header Files\Render\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Shape\Box.h">
+      <Filter>Header Files\Render\shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Shape\Plane.h">
+      <Filter>Header Files\Render\shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\GeometryFactory.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Tool\Subject.h">
+      <Filter>Header Files\Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Tool\ObserverInterface.h">
+      <Filter>Header Files\Tool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
