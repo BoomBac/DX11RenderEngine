@@ -14,6 +14,7 @@ public:
 	void AddStaticBind(std::unique_ptr<BindableInterface> bind);
 	void AddStaticIndexBuf(std::unique_ptr<IndexBuffer> ibf, Graphics& gfx);
 	//更新常量缓冲区中的世界变换
+	virtual  ~Shape();
 	virtual void SetWorldLocation(const CusMath::vector3d& t) override;
 	virtual void AddWorldLocation(const CusMath::vector3d& t) override;
 	virtual void SetActorLocation(const CusMath::vector3d& t) override;
@@ -37,6 +38,12 @@ private:
 protected:
 	void SetIndexbufferFromSBinds();
 };
+
+template<class T>
+Shape<T>::~Shape()
+{
+
+}
 
 template<class T>
 void Shape<T>::AdjustRotation(const CusMath::vector3d& transf, const CusMath::vector3d& coordinate, DirectX::XMMATRIX* target_martix)

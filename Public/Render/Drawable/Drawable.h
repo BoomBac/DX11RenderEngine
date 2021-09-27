@@ -41,7 +41,7 @@ public:
 	virtual void Draw(Graphics& gfx);
 	void AddBind(std::unique_ptr<BindableInterface> bind);
 	void AddIndexBuf(std::unique_ptr<IndexBuffer> ibf, Graphics& gfx);
-	~Drawable() = default;
+	virtual ~Drawable();
 	//返回mvp变换矩阵，对于每一个物体而言，vp都是共享一份的
 	WorldTransform& GetTransform();
 	//设置物体变换
@@ -69,6 +69,7 @@ public:
 	DirectX::XMFLOAT3 up_direction() const;
 
 	bool IsOnWorldCoordinate() const;
+	bool visiblity_ = true;
 protected:
 	std::vector<std::unique_ptr<BindableInterface>> binds;
 	IndexBuffer* indexbuffer;

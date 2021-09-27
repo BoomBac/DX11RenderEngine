@@ -12,6 +12,7 @@ DirectX::XMMATRIX Drawable::projection;
 
 void Drawable::Draw(Graphics& gfx)
 {
+	if (!visiblity_) return;
 	view = gfx.camera_.view_matrix();
 	for (auto& i : binds)
 	{
@@ -34,6 +35,11 @@ void Drawable::AddIndexBuf(std::unique_ptr<IndexBuffer> ibf, Graphics& gfx)
 {
 	indexbuffer = ibf.get();
 	indexbuffer->Bind(gfx);
+}
+
+Drawable::~Drawable()
+{
+
 }
 
 WorldTransform& Drawable::GetTransform()

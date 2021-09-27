@@ -40,6 +40,7 @@ public:
 	void AddSceneObject(char type);
 	void SetSelectObject(int index,double tranf_info[9]);
 	void DeleteSceneObject(const int& index);
+	int InitOutline(std::string* item_name);
 
 	Graphics* graphicsIns = nullptr;
 	bool object_rotation_changed_ = true;

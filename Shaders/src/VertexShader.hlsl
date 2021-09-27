@@ -10,10 +10,10 @@ cbuffer CBuf
 };
 
 
-VSOut main(float3 pos : Position, float3 color : Color) //: SV_POSITION
+VSOut main(float3 pos : Position, float2 uv : Texcoord, float3 normal : Normal) //: SV_POSITION
 {
 	VSOut respos;
 	respos.pos = mul(float4(pos, 1.f), MVPMartrix);
-	respos.color = color;
+	respos.color = abs(normal);
 	return respos;
 }

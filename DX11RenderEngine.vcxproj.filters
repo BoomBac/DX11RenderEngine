@@ -136,6 +136,12 @@
     <ClCompile Include="Public\Tool\Subject.cpp">
       <Filter>Source Files\Tool</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Render\Shape\Model.cpp">
+      <Filter>Source Files\Render\shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\ModelResFactory.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Public\QtFrame\DX11RenderEngine.h">
@@ -217,6 +223,12 @@
     </ClInclude>
     <ClInclude Include="Public\Tool\ObserverInterface.h">
       <Filter>Header Files\Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Shape\Model.h">
+      <Filter>Header Files\Render\shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\ModelResFactory.h">
+      <Filter>Header Files\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

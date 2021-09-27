@@ -1,9 +1,8 @@
 #include "Public\Render\Bindable\DepthStencil.h"
-#include <QDebug>
+
 
 DepthStencil::DepthStencil(UINT x, UINT y, Graphics& gfx):w_(x),h_(y)
 {
-	qDebug() << "DepthStencil construct";
 	D3D11_TEXTURE2D_DESC dsd;
 	dsd.Width = x;		//与后台尺寸一致
 	dsd.Height = y;

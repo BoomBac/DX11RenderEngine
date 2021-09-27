@@ -2,6 +2,7 @@
 #include <d3d11.h>
 #include <vector>
 #include "vector3D.h"
+#include "vector2D.h"
 
 enum class VertexType : UINT
 {
@@ -17,6 +18,12 @@ struct Postion3DColored
 {
 	CusMath::vector3d pos;
 	CusMath::vector3d color;
+};
+struct Postion3DTN
+{
+	CusMath::vector3d pos;
+	CusMath::vector2d uv;
+	CusMath::vector3d normal;
 };
 
 

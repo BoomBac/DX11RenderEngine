@@ -22,6 +22,7 @@ void Subject::RemoveObserver(ObserverInterface* observer)
 
 void Subject::NotifyObserver(bool is_add)
 {
+	if (observer_list_.empty()) return;
 	for (auto o : observer_list_)
 	{
 		o->OnOutlineChanged(is_add);

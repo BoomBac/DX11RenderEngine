@@ -10,6 +10,7 @@
 #include "Public/Render/Drawable/Coordinate.h"
 #include "Public/Render/GeometryFactory.h"
 #include <utility>
+#include "Public/Render/ModelResFactory.h"
 
 #pragma comment(lib,"d3d11.lib") 
 #pragma comment(lib,"dxgi.lib") 
@@ -34,18 +35,13 @@ Graphics::Graphics(HWND hWnd)
 	bg_color = color;
 	camera_.SetProjection(75.f,4.f/3.f,0.1,1000.f);
 	cam_move_state_ = ECameraMovementState::kStop;
-
 	outline_notify_ = new Subject();
-	//创建坐标轴
-	p_coordinate_ = new Coordinate(*this, 10.f);
-	scene_objects_.push_back(dynamic_cast<Drawable*>(p_coordinate_));
-
-	GeometryFactory factory(this);
-
-	//factory.GenerateGeometry(EGeometryType::kBox);
-	//factory.GenerateGeometry(EGeometryType::kPlane);
-
-	//SetSelectObject(scene_objects_[1]);
+	//初始化工厂类
+	GeometryFactory geo_factory(this);
+	ModelResFactory mres_factory(this);
+	mres_factory.AddResource(0);
+	//初始化坐标轴和场景物体
+	InitSceneObject();
 }
 
 
@@ -80,6 +76,7 @@ void Graphics::EndFrame()
 void Graphics::DrawIndexed(const UINT& count)
 {
 	pDeviceContext->DrawIndexed(count, 0u, 0u);
+	//pDeviceContext->Draw(26u,0u);
 }
 
 
@@ -129,7 +126,28 @@ void Graphics::DeleteSceneObject(int index)
 {
 	auto it = scene_objects_.begin();
 	it += index;
+	delete *it;
 	scene_objects_.erase(it);
+}
+
+void Graphics::InitSceneObject()
+{
+	//创建坐标轴
+	//p_coordinate_ = new Coordinate(*this, 10.f);
+	//scene_objects_.push_back(dynamic_cast<Drawable*>(p_coordinate_));
+	GeometryFactory::GenerateGeometry(EGeometryType::kCustom);
+	//GeometryFactory::GenerateGeometry(EGeometryType::kCustom);
+	//GeometryFactory::GenerateGeometry(EGeometryType::kBox);
+}
+
+int Graphics::InitOutline(std::string* item_name)
+{
+	int i = 0;
+	for (auto object : scene_outline_)
+	{
+		item_name[i] = object.second; ++i;
+	}
+	return i;
 }
 
 void Graphics::SetSelectObject(const int& index)

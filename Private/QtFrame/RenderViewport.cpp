@@ -188,6 +188,11 @@ void RenderViewport::DeleteSceneObject(const int& index)
 	graphicsIns->DeleteSceneObject(index);
 }
 
+int RenderViewport::InitOutline(std::string* item_name)
+{
+	return graphicsIns->InitOutline(item_name);
+}
+
 void RenderViewport::OnOutlineChanged(bool is_add)
 {
 	if (is_add)

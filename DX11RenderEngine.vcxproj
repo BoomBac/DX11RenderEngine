@@ -122,6 +122,8 @@
     <ClCompile Include="Private\Render\GeometryFactory.cpp" />
     <ClCompile Include="Private\Render\Graphics.cpp" />
     <ClCompile Include="Private\Render\GraphicsResource.cpp" />
+    <ClCompile Include="Private\Render\ModelResFactory.cpp" />
+    <ClCompile Include="Private\Render\Shape\Model.cpp" />
     <ClCompile Include="Private\Render\Shape\Plane.cpp" />
     <ClCompile Include="Private\Render\VertexLayout.cpp" />
     <ClCompile Include="Private\Tool\Timer.cpp" />
@@ -148,7 +150,9 @@
     <ClInclude Include="Public\Render\GeometryFactory.h" />
     <ClInclude Include="Public\Render\Graphics.h" />
     <ClInclude Include="Public\Render\GraphicsResource.h" />
+    <ClInclude Include="Public\Render\ModelResFactory.h" />
     <ClInclude Include="Public\Render\Shape\Box.h" />
+    <ClInclude Include="Public\Render\Shape\Model.h" />
     <ClInclude Include="Public\Render\Shape\Plane.h" />
     <ClInclude Include="Public\Render\Shape\Shape.hpp" />
     <ClInclude Include="Public\Render\VertexLayout.h" />
@@ -162,10 +166,14 @@
     <FxCompile Include="Shaders\src\PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
     </FxCompile>
     <FxCompile Include="Shaders\src\VertexShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

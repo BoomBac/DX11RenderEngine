@@ -31,13 +31,13 @@
     <property name="geometry">
      <rect>
       <x>860</x>
-      <y>40</y>
+      <y>20</y>
       <width>371</width>
-      <height>311</height>
+      <height>341</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>2</number>
     </property>
     <property name="tabSpacing">
      <number>7</number>
@@ -48,7 +48,7 @@
        <x>0</x>
        <y>0</y>
        <width>371</width>
-       <height>203</height>
+       <height>260</height>
       </rect>
      </property>
      <attribute name="label">
@@ -68,26 +68,13 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="page">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>371</width>
-       <height>203</height>
-      </rect>
-     </property>
-     <attribute name="label">
-      <string>Outline</string>
-     </attribute>
-    </widget>
     <widget class="QWidget" name="page_4">
      <property name="geometry">
       <rect>
        <x>0</x>
        <y>0</y>
        <width>371</width>
-       <height>203</height>
+       <height>260</height>
       </rect>
      </property>
      <attribute name="label">
@@ -234,47 +221,73 @@
       </layout>
      </widget>
     </widget>
-    <widget class="QWidget" name="page_2">
+    <widget class="QWidget" name="page">
      <attribute name="label">
       <string>Model</string>
      </attribute>
-     <widget class="QWidget" name="verticalLayoutWidget">
+     <widget class="QListWidget" name="L_ModelList">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>241</width>
-        <height>101</height>
+        <x>20</x>
+        <y>0</y>
+        <width>251</width>
+        <height>231</height>
        </rect>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QPushButton" name="bt_addBox">
-         <property name="text">
-          <string>Box</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="bt_addPlane">
-         <property name="text">
-          <string>Plane</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+     </widget>
+     <widget class="QPushButton" name="bt_chooseModel">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>0</y>
+        <width>81</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>choose model</string>
+      </property>
      </widget>
     </widget>
    </widget>
    <widget class="QListWidget" name="L_OutLine">
     <property name="geometry">
      <rect>
-      <x>870</x>
-      <y>390</y>
-      <width>341</width>
+      <x>860</x>
+      <y>380</y>
+      <width>241</width>
       <height>191</height>
      </rect>
     </property>
+    <property name="currentRow">
+     <number>-1</number>
+    </property>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>1100</x>
+      <y>380</y>
+      <width>91</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QPushButton" name="bt_addBox">
+       <property name="text">
+        <string>Box</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="bt_addPlane">
+       <property name="text">
+        <string>Plane</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

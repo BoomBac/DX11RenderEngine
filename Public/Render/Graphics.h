@@ -51,6 +51,10 @@ public:
 	void AddSceneObject(Drawable* object, std::string object_name);
 	
 	void DeleteSceneObject(int index);
+	//在构造时添加模型，最多16个，数量到RenderEngine修改
+	void InitSceneObject();
+	//将构造时创建的物品添加到outline。
+	int InitOutline(std::string* item_name);
 
 	Subject* outline_notify_;
 	std::map<int, std::string> scene_outline_;

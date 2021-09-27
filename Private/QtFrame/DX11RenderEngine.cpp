@@ -3,6 +3,7 @@
 #include <QScrollBar>
 #include <QPushButton>
 #include <QColorDialog>
+#include <QFileDialog>
 #include <QListWidget>
 
 #include "Public/Global.h"
@@ -12,6 +13,7 @@
 #include "Public/QtFrame/RenderViewport.h"
 #include "Public/Render/Drawable/Drawable.h"
 #include "qevent.h"
+#include "Public/Render/ModelResFactory.h"
 
 
 DX11RenderEngine::DX11RenderEngine(QWidget* parent)
@@ -68,6 +70,15 @@ DX11RenderEngine::DX11RenderEngine(QWidget* parent)
 	connect(ui.bt_addPlane, &QPushButton::clicked, [=]() {
 		ui.renderView->AddSceneObject('1');
 		});
+
+    //导入模型
+    connect(ui.bt_chooseModel, &QPushButton::clicked, [=]() {
+		QString curPath = QCoreApplication::applicationDirPath();   //QDir::currentPath();初始目录
+		QString dlgTitle = "choose a model file"; //对话框标题
+		QString filter = "模型文件(*.obj);;所有文件(*.*)"; //筛选器
+		QString aFileName = QFileDialog::getOpenFileName(this,dlgTitle,curPath,filter); //返回文件名
+        ModelResFactory::LoadFile(aFileName.toStdString());
+        });
     //更改坐标轴类型
     connect(ui.CB_Coord, &QComboBox::currentIndexChanged,this,&DX11RenderEngine::ChangeCoordinateType);
 
@@ -120,7 +131,14 @@ DX11RenderEngine::DX11RenderEngine(QWidget* parent)
 
     //初始化dx渲染视口
     ui.renderView->InitialViewport();
-
+    //arr接收场景构造时创建的物体名称，暂时最多16个
+    std::string arr[16];
+    auto size = ui.renderView->InitOutline(arr);
+    qDebug() <<"object count" << size;
+    for (int i = 0; i < size; i++)
+    {
+		ui.L_OutLine->addItem(QString::fromStdString(arr[i]));
+    }
     //设置定时器，此处模拟tick，后续可能更改
     QTimer *timer = new QTimer(this);
     timer->start(16.7);  // fps = num/1000 16.7的话近似于60fps
@@ -129,6 +147,7 @@ DX11RenderEngine::DX11RenderEngine(QWidget* parent)
         //每次修改界面内容都会调用paintEvent()
        lb_time->setText(QString::number(Global::getInstance()->gTimer.Peek(), 'f', 2));
     }); 
+    
 }
 
 DX11RenderEngine::~DX11RenderEngine()

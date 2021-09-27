@@ -1,6 +1,7 @@
 #include "Public\Render\GeometryFactory.h"
 #include "Public\Render\Shape\Box.h"
 #include "Public\Render\Shape\Plane.h"
+#include "Public\Render\Shape\Model.h"
 
 Graphics* GeometryFactory::gfx = nullptr;
 
@@ -15,7 +16,7 @@ void GeometryFactory::GenerateGeometry(EGeometryType g_type)
 	Drawable* new_object = nullptr;
 	static int box_count = 0;
 	static int plane_count = 0;
-	static int custom_count = 0;
+	static int model_count = 0;
 	char object_name[64];
 	switch (g_type)
 	{
@@ -32,6 +33,10 @@ void GeometryFactory::GenerateGeometry(EGeometryType g_type)
 	}
 		break;
 	case EGeometryType::kCustom:
+	{
+		new_object = new Model(*gfx);
+		sprintf(object_name, "Model_%d", model_count++);
+	}
 		break;
 	default:
 		break;
