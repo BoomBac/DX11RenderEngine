@@ -8,6 +8,7 @@
 #include "vector3D.h"
 #include "Public/Render/camera.h"
 #include "Public/Tool/Subject.h"
+#include <d3d11.h>
 
 
 class ID3D11Device;
@@ -61,11 +62,16 @@ public:
 	std::string last_add_object_name_;
 
 	void SetSelectObject(const int& index);
+
+	ID3D11Device* GetDevice();
+	ID3D11DeviceContext* GetContext();
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>pDeviceContext = nullptr;
 	Microsoft::WRL::ComPtr<IDXGISwapChain>pSwapChain = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>p_render_targetview_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState>p_sampler_state_ = nullptr;
+
 	DepthStencil* dsbuffer;
 	HRESULT InitDx11(HWND hWnd);
 	float* bg_color;

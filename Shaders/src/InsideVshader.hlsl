@@ -1,7 +1,7 @@
 struct VSOut
 {
+	float3 color : Color;
 	float4 pos : SV_Position;
-	float2 uv : Texcoord;
 };
 
 cbuffer CBuf
@@ -10,10 +10,10 @@ cbuffer CBuf
 };
 
 
-VSOut main(float3 pos : Position, float2 uv : Texcoord, float3 normal : Normal) //: SV_POSITION
+VSOut main(float3 pos : Position, float3 color : Color) //: SV_POSITION
 {
 	VSOut respos;
 	respos.pos = mul(float4(pos, 1.f), MVPMartrix);
-	respos.uv = uv;
+	respos.color = color;
 	return respos;
 }

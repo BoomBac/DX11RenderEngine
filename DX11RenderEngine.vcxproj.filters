@@ -60,6 +60,12 @@
     <Filter Include="Source Files\QtFrame">
       <UniqueIdentifier>{b4f234c3-4a94-4b36-b1af-26d2104a5543}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Render\ResManage">
+      <UniqueIdentifier>{78dcf7f4-c440-4411-8b6c-2e7e72c45b0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\ResManage">
+      <UniqueIdentifier>{3b5ee738-1e56-41aa-993b-f9f3fd4d7696}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="DX11RenderEngine.qrc">
@@ -141,6 +147,21 @@
     </ClCompile>
     <ClCompile Include="Private\Render\ModelResFactory.cpp">
       <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Texture.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Mesh.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\ResManage\MeshFactory.cpp">
+      <Filter>Source Files\Render\ResManage</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\ResManage\TextureFactory.cpp">
+      <Filter>Source Files\Render\ResManage</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\ResManage\ResManage.cpp">
+      <Filter>Source Files\Render\ResManage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -230,6 +251,21 @@
     <ClInclude Include="Public\Render\ModelResFactory.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
+    <ClInclude Include="Public\Render\Texture.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Mesh.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\ResManage\MeshFactory.h">
+      <Filter>Header Files\Render\ResManage</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\ResManage\TextureFactory.h">
+      <Filter>Header Files\Render\ResManage</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\ResManage\ResManage.h">
+      <Filter>Header Files\Render\ResManage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="RenderViewport.ui">
@@ -241,6 +277,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\src\VertexShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\src\InsideVshader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\src\InsidePshader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

@@ -55,6 +55,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <ExternalIncludePath>$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
   </PropertyGroup>
@@ -62,11 +63,11 @@
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>Y:\Project_VS2019\DLLMath;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Z:\Download\DirectXTK-master\DirectXTK-master\Inc;Y:\Project_VS2019\DLLMath;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link />
     <Link>
-      <AdditionalLibraryDirectories>Y:\Project_VS2019\DLLMath\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>Z:\Download\DirectXTK-master\DirectXTK-master\Bin\Desktop_2019_Win10\x64\Debug;Y:\Project_VS2019\DLLMath\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DLLMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -122,9 +123,14 @@
     <ClCompile Include="Private\Render\GeometryFactory.cpp" />
     <ClCompile Include="Private\Render\Graphics.cpp" />
     <ClCompile Include="Private\Render\GraphicsResource.cpp" />
+    <ClCompile Include="Private\Render\Mesh.cpp" />
     <ClCompile Include="Private\Render\ModelResFactory.cpp" />
+    <ClCompile Include="Private\Render\ResManage\MeshFactory.cpp" />
+    <ClCompile Include="Private\Render\ResManage\ResManage.cpp" />
+    <ClCompile Include="Private\Render\ResManage\TextureFactory.cpp" />
     <ClCompile Include="Private\Render\Shape\Model.cpp" />
     <ClCompile Include="Private\Render\Shape\Plane.cpp" />
+    <ClCompile Include="Private\Render\Texture.cpp" />
     <ClCompile Include="Private\Render\VertexLayout.cpp" />
     <ClCompile Include="Private\Tool\Timer.cpp" />
     <ClCompile Include="Public\Tool\Subject.cpp" />
@@ -150,11 +156,16 @@
     <ClInclude Include="Public\Render\GeometryFactory.h" />
     <ClInclude Include="Public\Render\Graphics.h" />
     <ClInclude Include="Public\Render\GraphicsResource.h" />
+    <ClInclude Include="Public\Render\Mesh.h" />
     <ClInclude Include="Public\Render\ModelResFactory.h" />
+    <ClInclude Include="Public\Render\ResManage\MeshFactory.h" />
+    <ClInclude Include="Public\Render\ResManage\ResManage.h" />
+    <ClInclude Include="Public\Render\ResManage\TextureFactory.h" />
     <ClInclude Include="Public\Render\Shape\Box.h" />
     <ClInclude Include="Public\Render\Shape\Model.h" />
     <ClInclude Include="Public\Render\Shape\Plane.h" />
     <ClInclude Include="Public\Render\Shape\Shape.hpp" />
+    <ClInclude Include="Public\Render\Texture.h" />
     <ClInclude Include="Public\Render\VertexLayout.h" />
     <ClInclude Include="Public\Tool\ObserverInterface.h" />
     <ClInclude Include="Public\Tool\Subject.h" />
@@ -163,6 +174,18 @@
     <QtMoc Include="Public\QtFrame\RenderViewport.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Shaders\src\InsidePshader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Shaders\src\InsideVshader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
     <FxCompile Include="Shaders\src\PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>

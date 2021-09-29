@@ -5,6 +5,11 @@
 
 Graphics* GeometryFactory::gfx = nullptr;
 
+namespace
+{
+	static int model_count = 0;
+}
+
 GeometryFactory::GeometryFactory(Graphics* g)
 {
 	gfx = g;
@@ -16,7 +21,7 @@ void GeometryFactory::GenerateGeometry(EGeometryType g_type)
 	Drawable* new_object = nullptr;
 	static int box_count = 0;
 	static int plane_count = 0;
-	static int model_count = 0;
+
 	char object_name[64];
 	switch (g_type)
 	{
@@ -45,4 +50,16 @@ void GeometryFactory::GenerateGeometry(EGeometryType g_type)
 	gfx->AddSceneObject(new_object, object_name);
 }
 
+void GeometryFactory::GenerateGeometry(const char* file_name)
+{
+	assert(gfx != nullptr);
+	Drawable* new_object = nullptr;
+	new_object = new Model(*gfx,file_name);
+	std::string name(file_name);
+	char id[64];
+	sprintf(id, "_%d", model_count++);
+	std::string s_id(id);
+	if (new_object != nullptr)
+		gfx->AddSceneObject(new_object, (name+s_id).c_str());
+}
 

@@ -1,20 +1,29 @@
-#include "Public/Render/Graphics.h"
 #include <d3d11.h>
-#include "vector2D.h"
 #include <d3dcompiler.h>
+#include <utility>
+
+
+
+#include "Public/Render/Graphics.h"
 #include "Public/Global.h"
 #include "Public/Render/Bindable/DepthStencil.h"
 #include "Public/Render/Shape/Box.h"
-
 #include "Public/Tool/Utili.h"
 #include "Public/Render/Drawable/Coordinate.h"
 #include "Public/Render/GeometryFactory.h"
-#include <utility>
 #include "Public/Render/ModelResFactory.h"
+#include "vector2D.h"
+#include <Public/Render/ResManage/MeshFactory.h>
+#include <Public/Render/ResManage/TextureFactory.h>
+
+
+
 
 #pragma comment(lib,"d3d11.lib") 
 #pragma comment(lib,"dxgi.lib") 
 #pragma comment(lib,"D3DCompiler.lib")
+
+
 
 template<typename T>
 using Vec = std::vector<T, std::allocator<T>>;
@@ -37,9 +46,11 @@ Graphics::Graphics(HWND hWnd)
 	cam_move_state_ = ECameraMovementState::kStop;
 	outline_notify_ = new Subject();
 	//初始化工厂类
+	ResManage::InitResManage(this);
 	GeometryFactory geo_factory(this);
-	ModelResFactory mres_factory(this);
-	mres_factory.AddResource(0);
+	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/height.jpg");
+	MeshFactory::getInstance().AddMesh("C:/Users/BoomBac/Desktop/zzz.obj");
+
 	//初始化坐标轴和场景物体
 	InitSceneObject();
 }
@@ -76,7 +87,6 @@ void Graphics::EndFrame()
 void Graphics::DrawIndexed(const UINT& count)
 {
 	pDeviceContext->DrawIndexed(count, 0u, 0u);
-	//pDeviceContext->Draw(26u,0u);
 }
 
 
@@ -133,9 +143,9 @@ void Graphics::DeleteSceneObject(int index)
 void Graphics::InitSceneObject()
 {
 	//创建坐标轴
-	//p_coordinate_ = new Coordinate(*this, 10.f);
-	//scene_objects_.push_back(dynamic_cast<Drawable*>(p_coordinate_));
-	GeometryFactory::GenerateGeometry(EGeometryType::kCustom);
+	p_coordinate_ = new Coordinate(*this, 10.f);
+	scene_objects_.push_back(dynamic_cast<Drawable*>(p_coordinate_));
+	GeometryFactory::GenerateGeometry("zzz.obj");
 	//GeometryFactory::GenerateGeometry(EGeometryType::kCustom);
 	//GeometryFactory::GenerateGeometry(EGeometryType::kBox);
 }
@@ -161,6 +171,16 @@ void Graphics::SetSelectObject(Drawable* object)
 {
 	p_selected_object_ = object;
 	dynamic_cast<Coordinate*>(p_coordinate_)->SetAttachedObject(p_selected_object_);
+}
+
+ID3D11Device* Graphics::GetDevice()
+{
+	return pDevice.Get();
+}
+
+ID3D11DeviceContext* Graphics::GetContext()
+{
+	return pDeviceContext.Get();
 }
 
 void Graphics::SetCoordinateType(bool is_world)
@@ -224,7 +244,6 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	{
 		qDebug() << "backBuffer is null!";
 	}
-
 	D3D11_VIEWPORT vp;
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
@@ -236,6 +255,20 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	//创建深度模板缓冲区
 	dsbuffer = new DepthStencil(800u, 600u, *this);
 	dsbuffer->Bind(*this);
+	//创建贴图采样描述
+	D3D11_SAMPLER_DESC sample_desc;
+	ZeroMemory(&sample_desc, sizeof(sample_desc));
+	sample_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sample_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sample_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sample_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sample_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sample_desc.MinLOD = 0;
+	sample_desc.MaxLOD = D3D11_FLOAT32_MAX;
+	hr = pDevice->CreateSamplerState(&sample_desc, p_sampler_state_.GetAddressOf());
+	pDeviceContext->PSSetSamplers(0u, 1u, p_sampler_state_.GetAddressOf());
+
+	
 	return hr;
 }
 

@@ -14,6 +14,8 @@
 #include "Public/Render/Drawable/Drawable.h"
 #include "qevent.h"
 #include "Public/Render/ModelResFactory.h"
+#include <Public/Render/ResManage/MeshFactory.h>
+#include <Public/Render/GeometryFactory.h>
 
 
 DX11RenderEngine::DX11RenderEngine(QWidget* parent)
@@ -77,7 +79,18 @@ DX11RenderEngine::DX11RenderEngine(QWidget* parent)
 		QString dlgTitle = "choose a model file"; //对话框标题
 		QString filter = "模型文件(*.obj);;所有文件(*.*)"; //筛选器
 		QString aFileName = QFileDialog::getOpenFileName(this,dlgTitle,curPath,filter); //返回文件名
-        ModelResFactory::LoadFile(aFileName.toStdString());
+        if (MeshFactory::getInstance().AddMesh(aFileName.toStdString()))
+        {
+            QFileInfo fi(aFileName);
+            ui.L_ModelList->addItem(aFileName);
+           // GeometryFactory::GenerateGeometry(fi.fileName().toStdString().c_str());
+        }
+        });
+    //创建导入的模型
+    connect(ui.L_ModelList, &QListWidget::itemDoubleClicked, [=](QListWidgetItem* item) {
+             QFileInfo fi(item->text());
+             qDebug() << fi.fileName();
+             GeometryFactory::GenerateGeometry(fi.fileName().toStdString().c_str());
         });
     //更改坐标轴类型
     connect(ui.CB_Coord, &QComboBox::currentIndexChanged,this,&DX11RenderEngine::ChangeCoordinateType);
