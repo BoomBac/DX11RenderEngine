@@ -21,11 +21,12 @@ public:
 	Model(Graphics& gfx,const char* res_key);
 	Model (Graphics& gfx);
 	~Model();
-
+	virtual void Draw(Graphics& gfx) override;
 	//TODO(): add copy()
+
 private:
 	DISALLOW_COPY_AND_ASSIGN(Model)
-	virtual void Draw(Graphics& gfx) override;
+
 	std::vector<std::unique_ptr<BindableInterface>> binds_;
 	virtual const std::vector<std::unique_ptr<BindableInterface>>& GetStaticBinds() const override;
 	std::vector<std::shared_ptr<Texture>> textures_;

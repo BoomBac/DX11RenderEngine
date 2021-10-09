@@ -33,7 +33,7 @@ Model::Model(Graphics& gfx)
 	world_location_ = {0.f,0.f,0.f};
 	world_rotation_ = { 0.f,0.f,0.f };
 	scale_ = { 1.f,1.f,1.f };
-	transform =
+	v_cons_buf_.mvp_matrix_ =
 	{
 		DirectX::XMMatrixTranslation(world_location_.x,world_location_.y,world_location_.z) *
 		view *
@@ -66,12 +66,13 @@ Model::Model(Graphics& gfx, const char* res_key)
 	world_location_ = { 0.f,0.f,0.f };
 	world_rotation_ = { 0.f,0.f,0.f };
 	scale_ = { 1.f,1.f,1.f };
-	transform =
+	v_cons_buf_.mvp_matrix_ =
 	{
 		DirectX::XMMatrixTranslation(world_location_.x,world_location_.y,world_location_.z) *
 		view *
 		projection
 	};
+	v_cons_buf_.camera_pos = gfx.camera_.location_f();
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
 	AddBind(std::move(vcb));
 	textures_.push_back(TextureFactory::GetInstance().GetTexture("height.jpg"));

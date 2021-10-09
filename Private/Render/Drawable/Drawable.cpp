@@ -14,6 +14,7 @@ void Drawable::Draw(Graphics& gfx)
 {
 	if (!visiblity_) return;
 	view = gfx.camera_.view_matrix();
+	v_cons_buf_.camera_pos = gfx.camera_.location_f();
 	for (auto& i : binds)
 	{
 		i->Bind(gfx);
@@ -44,7 +45,7 @@ Drawable::~Drawable()
 
 WorldTransform& Drawable::GetTransform()
 {
-	return transform;
+	return v_cons_buf_;
 }
 
 void Drawable::SetWorldLocation(const CusMath::vector3d& t)

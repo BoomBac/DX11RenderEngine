@@ -4,15 +4,15 @@
 #include "vector3D.h"
 #include "vector2D.h"
 
-enum class VertexType : UINT
+enum class EVertexType : UINT
 {
-	Position2D,
-	Position3D,
-	Float3Color,
-	Float4Color,
-	RGBAColor,
-	Normal,
-	Texture2D,
+	kPosition2D,
+	kPosition3D,
+	kFloat3Color,
+	kFloat4Color,
+	kRGBAColor,
+	kNormal,
+	kTexture2D,
 };
 struct Postion3DColored
 {
@@ -32,10 +32,10 @@ class VertexLayout
 public:
 	VertexLayout();
 	D3D11_INPUT_ELEMENT_DESC* Build();
-	VertexLayout& operator <<(VertexType type);
+	VertexLayout& operator <<(EVertexType type);
 	UINT GetItemNum() const;
 private:
-	std::vector<VertexType> v;
+	std::vector<EVertexType> v;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> des;
 };
 

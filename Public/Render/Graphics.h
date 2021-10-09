@@ -11,12 +11,14 @@
 #include <d3d11.h>
 
 
+
 class ID3D11Device;
 class ID3D11DeviceContext;
 class IDXGISwapChain;
 class ID3D11RenderTargetView;
 class DepthStencil;
 class Drawable;
+class Light;
 
 class Graphics
 {
@@ -40,6 +42,7 @@ public:
 	//当前渲染视口选中的物体
 	static Drawable* p_selected_object_;
 	static Drawable* p_coordinate_;
+	Drawable* p_light_;
 
 	void SetCoordinateType(bool is_world);
 	//if world coord,return true
@@ -79,8 +82,8 @@ private:
 	std::vector<Drawable*> scene_objects_;
 	// 将场景元素和他们的名字对应
 	//int 为其在scene_objects_中的索引，string则为其显示在ui上的名字
-
 	ECameraMovementState cam_move_state_;
+
 	void UpdateCameraMovement();
 
 	void SetSelectObject(Drawable* object);

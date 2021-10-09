@@ -15,7 +15,10 @@
 #include "vector2D.h"
 #include <Public/Render/ResManage/MeshFactory.h>
 #include <Public/Render/ResManage/TextureFactory.h>
-
+//#include "Public/Render/Light/Light.h"
+#include "Public/Render/Light/DirectionalLight.h"
+#include "Public/Render/Light/PointLight.h"
+#include "Public/Render/Light/SpotLight.h"
 
 
 
@@ -49,7 +52,21 @@ Graphics::Graphics(HWND hWnd)
 	ResManage::InitResManage(this);
 	GeometryFactory geo_factory(this);
 	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/height.jpg");
-	MeshFactory::getInstance().AddMesh("C:/Users/BoomBac/Desktop/zzz.obj");
+
+	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/point_light.obj");
+	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/directional_light.obj");
+	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/spot_light.obj");
+	//创建坐标轴
+	p_coordinate_ = new Coordinate(*this, 10.f);
+	scene_objects_.push_back(dynamic_cast<Drawable*>(p_coordinate_));
+	//p_light_ = new DirectionalLight(*this);
+	//AddSceneObject(p_light_, "DirectionalLight");
+	//p_light_ = new PointLight(*this);
+	//AddSceneObject(p_light_, "PointLight");
+	p_light_ = new SpotLight(*this);
+	AddSceneObject(p_light_, "SpotLight");
+
+	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/cat.obj");
 
 	//初始化坐标轴和场景物体
 	InitSceneObject();
@@ -77,6 +94,7 @@ void Graphics::EndFrame()
 	pDeviceContext->ClearRenderTargetView(p_render_targetview_.Get(), bg_color);
 	dsbuffer->Clear(*this);
 	UpdateCameraMovement();
+
 	for (const auto& i : scene_objects_)
 	{
 		i->Draw(*this);
@@ -142,10 +160,8 @@ void Graphics::DeleteSceneObject(int index)
 
 void Graphics::InitSceneObject()
 {
-	//创建坐标轴
-	p_coordinate_ = new Coordinate(*this, 10.f);
-	scene_objects_.push_back(dynamic_cast<Drawable*>(p_coordinate_));
-	GeometryFactory::GenerateGeometry("zzz.obj");
+
+	GeometryFactory::GenerateGeometry("cat.obj");
 	//GeometryFactory::GenerateGeometry(EGeometryType::kCustom);
 	//GeometryFactory::GenerateGeometry(EGeometryType::kBox);
 }
@@ -157,6 +173,7 @@ int Graphics::InitOutline(std::string* item_name)
 	{
 		item_name[i] = object.second; ++i;
 	}
+
 	return i;
 }
 

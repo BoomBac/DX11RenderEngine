@@ -67,7 +67,7 @@ bool MeshFactory::GetMesh(std::string file_path, std::vector<Postion3DTN>** pv, 
 
 void MeshFactory::LoadMesh(std::string file_path, std::vector<Postion3DTN>& vertics, std::vector<UINT>& indices)
 {
-	EMeshType g_mesh_type = EMeshType::kNormalOnly;
+	EMeshType g_mesh_type = EMeshType::kNone;
 	ifstream ifs(file_path, ios::in);
 	if (!ifs.is_open())
 	{
@@ -96,13 +96,21 @@ void MeshFactory::LoadMesh(std::string file_path, std::vector<Postion3DTN>& vert
 		}
 		else if (type == "vt")
 		{
-			g_mesh_type = EMeshType::kUVAndNormal;
+			g_mesh_type = EMeshType::kUVOnly;
 			ss >> x;
 			ss >> y;
 			uv.push_back(CusMath::vector2d{ x,y });
 		}
 		else if (type == "vn")
 		{
+			if (g_mesh_type == EMeshType::kNone)
+			{
+				g_mesh_type = EMeshType::kNormalOnly;
+			}
+			if (g_mesh_type == EMeshType::kUVOnly)
+			{
+				g_mesh_type = EMeshType::kUVAndNormal;
+			}
 			ss >> x;
 			ss >> y;
 			ss >> z;
@@ -172,6 +180,43 @@ void MeshFactory::LoadMesh(std::string file_path, std::vector<Postion3DTN>& vert
 					{
 						sett.insert(arr[i + 1]);
 						vertics.push_back(Postion3DTN{ postion[arr[i]], CusMath::vector2d{0.f,0.f}, normal[arr[i + 1]] });
+					}
+					if (i >= 4)
+					{
+						indices.push_back(arr[1]);
+						indices.push_back(arr[i - 1]);
+						indices.push_back(arr[i + 1]);
+					}
+				}
+				delete[] arr;
+			}
+			if (g_mesh_type == EMeshType::kUVOnly)
+			{
+				auto s = ss.str();
+				int count = -1;
+				for (int i = 0; i < s.length(); i++)
+				{
+					if (s[i] == 'f' || s[i] == '/')
+					{
+						s[i] = ' ';
+						count++;
+					}
+				}
+				count += 3;
+				stringstream l_ss(s);
+				static set<float> sett;
+				int* arr = new int[count];
+				for (int i = 0; i < count; i++)
+				{
+					l_ss >> arr[i];
+					arr[i] -= 1;
+				}
+				for (int i = 0; i < count - 1; i += 2)
+				{
+					if (sett.find(arr[i + 1]) == sett.end())
+					{
+						sett.insert(arr[i + 1]);
+						vertics.push_back(Postion3DTN{ postion[arr[i]], uv[arr[i + 1]], CusMath::vector3d{0.f,0.f,0.f} });
 					}
 					if (i >= 4)
 					{

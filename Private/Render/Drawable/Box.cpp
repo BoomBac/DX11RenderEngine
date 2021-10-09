@@ -60,7 +60,7 @@ Box::Box(const int& size,Graphics& gfx)
 		AddStaticBind(std::move(ps));
 
 		VertexLayout vl;
-		vl << VertexType::Position3D << VertexType::Float3Color;
+		vl << EVertexType::kPosition3D << EVertexType::kFloat3Color;
 		BindItem il = std::make_unique<InputLayout>(gfx, *dynamic_cast<VertexShader*>(vs.get()), vl, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		AddStaticBind(std::move(vs));
 		AddStaticBind(std::move(il));
@@ -75,7 +75,7 @@ Box::Box(const int& size,Graphics& gfx)
 	world_location_ = initPos;
 	world_rotation_ = { 0.f,0.f,0.f };
 	scale_ = { 1.f,1.f,1.f };
-	transform =
+	v_cons_buf_.mvp_matrix_ =
 	{
 		DirectX::XMMatrixTranslation(initPos.x,initPos.y,initPos.z)*
 		view*

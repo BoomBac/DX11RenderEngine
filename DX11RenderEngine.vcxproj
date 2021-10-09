@@ -112,6 +112,7 @@
     <ClCompile Include="Private\Render\Bindable\DepthStencil.cpp" />
     <ClCompile Include="Private\Render\Bindable\IndexBuffer.cpp" />
     <ClCompile Include="Private\Render\Bindable\InputLayout.cpp" />
+    <ClCompile Include="Private\Render\Bindable\LightBuffer.cpp" />
     <ClCompile Include="Private\Render\Bindable\PixelShader.cpp" />
     <ClCompile Include="Private\Render\Bindable\TransformBuffer.cpp" />
     <ClCompile Include="Private\Render\Bindable\VertexBuffer.cpp" />
@@ -123,6 +124,10 @@
     <ClCompile Include="Private\Render\GeometryFactory.cpp" />
     <ClCompile Include="Private\Render\Graphics.cpp" />
     <ClCompile Include="Private\Render\GraphicsResource.cpp" />
+    <ClCompile Include="Private\Render\Light\DirectionalLight.cpp" />
+    <ClCompile Include="Private\Render\Light\Light.cpp" />
+    <ClCompile Include="Private\Render\Light\PointLight.cpp" />
+    <ClCompile Include="Private\Render\Light\SpotLight.cpp" />
     <ClCompile Include="Private\Render\Mesh.cpp" />
     <ClCompile Include="Private\Render\ModelResFactory.cpp" />
     <ClCompile Include="Private\Render\ResManage\MeshFactory.cpp" />
@@ -133,6 +138,7 @@
     <ClCompile Include="Private\Render\Texture.cpp" />
     <ClCompile Include="Private\Render\VertexLayout.cpp" />
     <ClCompile Include="Private\Tool\Timer.cpp" />
+    <ClCompile Include="Public\Render\Light\LightAttribute.h" />
     <ClCompile Include="Public\Tool\Subject.cpp" />
     <QtRcc Include="DX11RenderEngine.qrc" />
     <QtUic Include="DX11RenderEngine.ui" />
@@ -146,6 +152,7 @@
     <ClInclude Include="Public\Render\Bindable\DepthStencil.h" />
     <ClInclude Include="Public\Render\Bindable\IndexBuffer.h" />
     <ClInclude Include="Public\Render\Bindable\InputLayout.h" />
+    <ClInclude Include="Public\Render\Bindable\LightBuffer.h" />
     <ClInclude Include="Public\Render\Bindable\PixelShader.h" />
     <ClInclude Include="Public\Render\Bindable\TransformBuffer.h" />
     <ClInclude Include="Public\Render\Bindable\VertexBuffer.hpp" />
@@ -156,6 +163,10 @@
     <ClInclude Include="Public\Render\GeometryFactory.h" />
     <ClInclude Include="Public\Render\Graphics.h" />
     <ClInclude Include="Public\Render\GraphicsResource.h" />
+    <ClInclude Include="Public\Render\Light\DirectionalLight.h" />
+    <ClInclude Include="Public\Render\Light\Light.h" />
+    <ClInclude Include="Public\Render\Light\PointLight.h" />
+    <ClInclude Include="Public\Render\Light\SpotLight.h" />
     <ClInclude Include="Public\Render\Mesh.h" />
     <ClInclude Include="Public\Render\ModelResFactory.h" />
     <ClInclude Include="Public\Render\ResManage\MeshFactory.h" />
@@ -186,11 +197,29 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
+    <FxCompile Include="Shaders\src\Lambert.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
     <FxCompile Include="Shaders\src\PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
+    </FxCompile>
+    <FxCompile Include="Shaders\src\p_raw_color.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Shaders\src\RawColor.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\src\VertexShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

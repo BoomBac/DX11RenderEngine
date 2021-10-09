@@ -66,6 +66,12 @@
     <Filter Include="Source Files\Render\ResManage">
       <UniqueIdentifier>{3b5ee738-1e56-41aa-993b-f9f3fd4d7696}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Render\Light">
+      <UniqueIdentifier>{159e7407-d816-42fe-be40-632e382bde03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\Light">
+      <UniqueIdentifier>{aebc07e0-3ba8-4642-9408-b0e21fa4ada7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="DX11RenderEngine.qrc">
@@ -162,6 +168,24 @@
     </ClCompile>
     <ClCompile Include="Private\Render\ResManage\ResManage.cpp">
       <Filter>Source Files\Render\ResManage</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Light\Light.cpp">
+      <Filter>Source Files\Render\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Bindable\LightBuffer.cpp">
+      <Filter>Source Files\Render\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Light\DirectionalLight.cpp">
+      <Filter>Source Files\Render\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Light\SpotLight.cpp">
+      <Filter>Source Files\Render\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Public\Render\Light\LightAttribute.h">
+      <Filter>Header Files\Render\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Light\PointLight.cpp">
+      <Filter>Source Files\Render\Light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -266,6 +290,21 @@
     <ClInclude Include="Public\Render\ResManage\ResManage.h">
       <Filter>Header Files\Render\ResManage</Filter>
     </ClInclude>
+    <ClInclude Include="Public\Render\Light\Light.h">
+      <Filter>Header Files\Render\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Bindable\LightBuffer.h">
+      <Filter>Header Files\Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Light\DirectionalLight.h">
+      <Filter>Header Files\Render\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Light\SpotLight.h">
+      <Filter>Header Files\Render\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Light\PointLight.h">
+      <Filter>Header Files\Render\Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="RenderViewport.ui">
@@ -283,6 +322,15 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\src\InsidePshader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\src\Lambert.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\src\RawColor.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\src\p_raw_color.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

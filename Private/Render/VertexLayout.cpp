@@ -1,46 +1,46 @@
 #include "Public/Render/VertexLayout.h"
 
-template<VertexType> struct Map;
+template<EVertexType> struct Map;
 template<> 
-struct Map<VertexType::Position2D>
+struct Map<EVertexType::kPosition2D>
 {
 	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
 	static constexpr const char* semantic = "Position";
 	static constexpr const UINT offset = 8;
 };
 template<>
-struct Map<VertexType::Position3D>
+struct Map<EVertexType::kPosition3D>
 {
 	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
 	static constexpr const char* semantic = "Position";
     static constexpr const UINT offset = 12;
 };
 template<>
-struct Map<VertexType::Float3Color>
+struct Map<EVertexType::kFloat3Color>
 {
 	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
 	static constexpr const char* semantic = "Color";
 	static constexpr const UINT offset = 12;
 }; template<>
-struct Map<VertexType::RGBAColor>
+struct Map<EVertexType::kRGBAColor>
 {
 	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	static constexpr const char* semantic = "Color";
 	static constexpr const UINT offset = 4;
 }; template<>
-struct Map<VertexType::Normal>
+struct Map<EVertexType::kNormal>
 {
 	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
 	static constexpr const char* semantic = "Normal";
 	static constexpr const UINT offset = 12;
 }; template<>
-struct Map<VertexType::Texture2D>
+struct Map<EVertexType::kTexture2D>
 {
 	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
 	static constexpr const char* semantic = "Texcoord";
 	static constexpr const UINT offset = 8;
 };  template<>
-struct Map<VertexType::Float4Color>
+struct Map<EVertexType::kFloat4Color>
 {
 	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	static constexpr const char* semantic = "Color";
@@ -59,8 +59,8 @@ D3D11_INPUT_ELEMENT_DESC* VertexLayout::Build()
 	UINT offset = 0;
 	// \是连接作用，连接不同行，表示下一行元素也是这一行
 	//参数 x,body
-	#define ITER_VERTEX_TYPE(x,body) if(i==VertexType::x){\
-	using Map = Map<VertexType::x>;\
+	#define ITER_VERTEX_TYPE(x,body) if(i==EVertexType::x){\
+	using Map = Map<EVertexType::x>;\
 	body;\
 	}
 	for (const auto &i : v)
@@ -114,19 +114,19 @@ D3D11_INPUT_ELEMENT_DESC* VertexLayout::Build()
 		default:
 			break;
 		}*/
-		ITER_VERTEX_TYPE(Position2D, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
+		ITER_VERTEX_TYPE(kPosition2D, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
 					  D3D11_INPUT_PER_VERTEX_DATA, 0 }); offset += Map::offset;);
-		ITER_VERTEX_TYPE(Position3D, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
+		ITER_VERTEX_TYPE(kPosition3D, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
 			  D3D11_INPUT_PER_VERTEX_DATA, 0 }); offset += Map::offset;);
-		ITER_VERTEX_TYPE(Float3Color, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
+		ITER_VERTEX_TYPE(kFloat3Color, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
 			  D3D11_INPUT_PER_VERTEX_DATA, 0 }); offset += Map::offset;);
-		ITER_VERTEX_TYPE(RGBAColor, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
+		ITER_VERTEX_TYPE(kRGBAColor, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
 			  D3D11_INPUT_PER_VERTEX_DATA, 0 }); offset += Map::offset;);
-		ITER_VERTEX_TYPE(Normal, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
+		ITER_VERTEX_TYPE(kNormal, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
 			  D3D11_INPUT_PER_VERTEX_DATA, 0 }); offset += Map::offset;);
-		ITER_VERTEX_TYPE(Texture2D, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
+		ITER_VERTEX_TYPE(kTexture2D, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
 			  D3D11_INPUT_PER_VERTEX_DATA, 0 }); offset += Map::offset;);
-		ITER_VERTEX_TYPE(Float4Color, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
+		ITER_VERTEX_TYPE(kFloat4Color, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
 			  D3D11_INPUT_PER_VERTEX_DATA, 0 }); offset += Map::offset;);
 
 	}
@@ -139,7 +139,7 @@ UINT VertexLayout::GetItemNum() const
 	return (UINT)v.size();
 }
 
-VertexLayout& VertexLayout::operator<<(VertexType type)
+VertexLayout& VertexLayout::operator<<(EVertexType type)
 {
 	v.push_back(type);
 	return *this;

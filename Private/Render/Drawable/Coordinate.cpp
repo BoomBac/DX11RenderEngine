@@ -44,12 +44,12 @@ Coordinate::Coordinate(Graphics& gfx, const float& size)
 		auto ib = std::make_unique<IndexBuffer>(indices, gfx);
 		AddStaticIndexBuf(std::move(ib), gfx);
 
-		BindItem vs = std::make_unique<VertexShader>(gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/InsideVshader.cso");
+		BindItem vs = std::make_unique<VertexShader>(gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/RawColor.cso");
 		BindItem ps = std::make_unique<PixelShader>(gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/InsidePshader.cso");
 		AddStaticBind(std::move(ps));
 
 		VertexLayout vl;
-		vl << VertexType::Position3D << VertexType::Float3Color;
+		vl << EVertexType::kPosition3D << EVertexType::kFloat3Color;
 		BindItem il = std::make_unique<InputLayout>(gfx, *dynamic_cast<VertexShader*>(vs.get()), vl, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 		AddStaticBind(std::move(vs));
 		AddStaticBind(std::move(il));
@@ -65,7 +65,7 @@ Coordinate::Coordinate(Graphics& gfx, const float& size)
 	world_location_ = { 0.f,0.f,0.f };
 	world_rotation_ = { 0.f,0.f,0.f };
 	scale_ = { 1.f,1.f,1.f };
-	transform =
+	v_cons_buf_ =
 	{
 		DirectX::XMMatrixIdentity() *
 		view *
@@ -79,9 +79,9 @@ Coordinate::Coordinate(Graphics& gfx, const float& size)
 void Coordinate::Draw(Graphics& gfx)
 {
 	if (p_object_attached_ == nullptr) return;
-	transform.mWorld = p_object_attached_->GetTranslateMartix() * transform.mWorld;
+	v_cons_buf_.mvp_matrix_ = p_object_attached_->GetTranslateMartix() * v_cons_buf_.mvp_matrix_;
 	if (!is_world_)
-		transform.mWorld = p_object_attached_->GetRotationMartix() * transform.mWorld;
+		v_cons_buf_.mvp_matrix_ = p_object_attached_->GetRotationMartix() * v_cons_buf_.mvp_matrix_;
 	Drawable::Draw(gfx);
 }
 

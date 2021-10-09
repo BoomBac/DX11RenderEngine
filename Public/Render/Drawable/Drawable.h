@@ -27,7 +27,9 @@ enum class EGeometryType
 // mvp在一起
 struct WorldTransform
 {
-	DirectX::XMMATRIX mWorld; //4x4
+	DirectX::XMMATRIX mvp_matrix_; //4x4
+	DirectX::XMMATRIX world_matrix_; //4x4
+	DirectX::XMFLOAT3 camera_pos;
 };
 
 
@@ -74,7 +76,7 @@ protected:
 	std::vector<std::unique_ptr<BindableInterface>> binds;
 	IndexBuffer* indexbuffer;
 	//mvp变换矩阵，所有Drawable共享一份view和projection
-	WorldTransform transform;
+	WorldTransform v_cons_buf_;
 	//物体自身坐标轴
 	DirectX::XMFLOAT3 forward_direction_ = DirectX::XMFLOAT3(0.f, 0.f, 1.f);
 	DirectX::XMFLOAT3 right_direction_ = DirectX::XMFLOAT3(1.f, 0.f, 0.f);

@@ -5,7 +5,7 @@
 
 Camera::Camera()
 {
-	this->location_f_ = DirectX::XMFLOAT3(0.0f, 0.0f, -50.0f);
+	this->location_f_ = DirectX::XMFLOAT3(0.0f, 10.0f, -50.0f);
 	this->location_v_ = DirectX::XMLoadFloat3(&this->location_f_);
 	this->rotation_f_ = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	this->rotation_v_ = DirectX::XMLoadFloat3(&this->rotation_f_);

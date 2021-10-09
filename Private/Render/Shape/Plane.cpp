@@ -10,6 +10,8 @@
 #include "Public/Render/Shape/Shape.hpp"
 #include "Public/Render/Graphics.h"
 #include "Public/Render/GraphicsResource.h"
+#include "Public/Render/Bindable/ConstantBuffer.h"
+#include "Public/Render/Bindable/LightBuffer.h"
 
 template<typename T>
 using Vec = std::vector<T, std::allocator<T>>;
@@ -26,7 +28,7 @@ Plane::Plane(int row, int col, const int& size, Graphics& gfx)
 			for (int j = 0; j <= col; j++)
 			{
 				vertex.pos = { (float)(-size / 2 + j * (size / col)) ,0.f,float(size / 2 - i * (size / row)) };
-				vertex.color = { 1.f,1.f,1.f };
+				vertex.color = { 0.f,0.f,0.f };
 				vertices.push_back(vertex);
 			}
 		}
@@ -50,14 +52,16 @@ Plane::Plane(int row, int col, const int& size, Graphics& gfx)
 		AddStaticIndexBuf(std::move(ib), gfx);
 
 		BindItem vs = std::make_unique<VertexShader>(gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/InsideVshader.cso");
-		BindItem ps = std::make_unique<PixelShader>(gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/InsidePshader.cso");
+		BindItem ps = std::make_unique<PixelShader>(gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/Lambert.cso");
 		AddStaticBind(std::move(ps));
 
 		VertexLayout vl;
-		vl << VertexType::Position3D << VertexType::Float3Color;
+		vl << EVertexType::kPosition3D << EVertexType::kFloat3Color;
 		BindItem il = std::make_unique<InputLayout>(gfx, *dynamic_cast<VertexShader*>(vs.get()), vl, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		AddStaticBind(std::move(vs));
 		AddStaticBind(std::move(il));
+		BindItem pcb = std::make_unique<LightBuffer<LightSet>>(gfx,*dynamic_cast<Light*>(gfx.p_light_));
+		AddStaticBind(std::move(pcb));
 		//test
 		view = gfx.camera_.view_matrix();
 		projection = gfx.camera_.projection_matrix();
@@ -69,10 +73,14 @@ Plane::Plane(int row, int col, const int& size, Graphics& gfx)
 	world_location_ = {0.f,0.f,0.f};
 	world_rotation_ = { 0.f,0.f,0.f };
 	scale_ = { 1.f,1.f,1.f };
-	transform =
+	v_cons_buf_.mvp_matrix_ =
 	{
 		view *
 		projection
+	};
+	v_cons_buf_.world_matrix_ =
+	{
+		DirectX::XMMatrixIdentity()
 	};
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
 	AddBind(std::move(vcb));

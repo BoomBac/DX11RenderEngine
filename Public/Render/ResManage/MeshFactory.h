@@ -14,8 +14,10 @@
 
 enum class EMeshType
 {
+	kNone,
 	kUVAndNormal,
-	kNormalOnly
+	kNormalOnly,
+	kUVOnly
 };
 
 class MeshFactory
