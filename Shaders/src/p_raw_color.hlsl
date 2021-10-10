@@ -1,4 +1,10 @@
+cbuffer LightShader
+{
+	float3 color : COLOR;
+	float intensity : ALPHA;
+}
+
 float4 main() : SV_TARGET
 {
-	return float4(1.0f, 1.0f, 1.0f, 1.0f);
+	return intensity * float4(color, 1.f);
 }

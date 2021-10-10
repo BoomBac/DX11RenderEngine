@@ -7,40 +7,40 @@
     TypeName &operator=(const TypeName &) = delete;
 #endif
 
-#include <DirectXMath.h>
+
 
 #include "BindableInterface.h"
 #include "ConstantBuffer.h"
-#include "Public/Render/Light/Light.h"
+
 
 
 template<class T>
-class LightBuffer :
+class PSConstantBuffer :
 	public BindableInterface
 {
 public:
-	LightBuffer(Graphics& gfx, Light& object);
+	PSConstantBuffer(Graphics& gfx, T** buf);
 	virtual void Bind(Graphics& gfx) override;
 	virtual EBindableType GetType() const override;
 private:
 
-	DISALLOW_COPY_AND_ASSIGN(LightBuffer)
+	DISALLOW_COPY_AND_ASSIGN(PSConstantBuffer)
 	PConstantBuffer<T> p_const_buf_;
-	Light& object_;
+	T** buf_;
 };
 
 template<class T>
-LightBuffer<T>::LightBuffer(Graphics& gfx, Light& object) :p_const_buf_(gfx), object_(object)
+PSConstantBuffer<T>::PSConstantBuffer(Graphics& gfx, T** buf) :p_const_buf_(gfx),buf_(buf)
 {
 }
 template<class T>
-void LightBuffer<T>::Bind(Graphics& gfx)
+void PSConstantBuffer<T>::Bind(Graphics& gfx)
 {
-	p_const_buf_.Update(gfx, object_.GetLightAttribute());
+	p_const_buf_.Update(gfx, **buf_);
 	p_const_buf_.Bind(gfx);
 }
 template<class T>
-EBindableType LightBuffer<T>::GetType() const
+EBindableType PSConstantBuffer<T>::GetType() const
 {
 	return EBindableType::kConstantBuffer;
 }

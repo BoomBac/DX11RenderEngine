@@ -60,7 +60,7 @@ Plane::Plane(int row, int col, const int& size, Graphics& gfx)
 		BindItem il = std::make_unique<InputLayout>(gfx, *dynamic_cast<VertexShader*>(vs.get()), vl, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		AddStaticBind(std::move(vs));
 		AddStaticBind(std::move(il));
-		BindItem pcb = std::make_unique<LightBuffer<LightSet>>(gfx,*dynamic_cast<Light*>(gfx.p_light_));
+		BindItem pcb = std::make_unique<PSConstantBuffer<LightSet>>(gfx,&gfx.p_scene_light_);
 		AddStaticBind(std::move(pcb));
 		//test
 		view = gfx.camera_.view_matrix();

@@ -72,6 +72,9 @@
     <Filter Include="Source Files\Render\Light">
       <UniqueIdentifier>{aebc07e0-3ba8-4642-9408-b0e21fa4ada7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External Widgets">
+      <UniqueIdentifier>{9b28e06e-2255-4664-b8d9-b1f7c0e936d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="DX11RenderEngine.qrc">
@@ -303,6 +306,9 @@
       <Filter>Header Files\Render\Light</Filter>
     </ClInclude>
     <ClInclude Include="Public\Render\Light\PointLight.h">
+      <Filter>Header Files\Render\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Light\LightSet.h">
       <Filter>Header Files\Render\Light</Filter>
     </ClInclude>
   </ItemGroup>

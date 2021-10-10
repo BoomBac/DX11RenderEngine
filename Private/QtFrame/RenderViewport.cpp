@@ -193,6 +193,11 @@ int RenderViewport::InitOutline(std::string* item_name)
 	return graphicsIns->InitOutline(item_name);
 }
 
+void RenderViewport::AddLight(const char& light_type)
+{
+	graphicsIns->AddLight(light_type);
+}
+
 void RenderViewport::OnOutlineChanged(bool is_add)
 {
 	if (is_add)

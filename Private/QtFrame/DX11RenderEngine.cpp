@@ -18,6 +18,7 @@
 #include <Public/Render/GeometryFactory.h>
 
 
+
 DX11RenderEngine::DX11RenderEngine(QWidget* parent)
     : QMainWindow(parent)
 {
@@ -64,7 +65,7 @@ DX11RenderEngine::DX11RenderEngine(QWidget* parent)
 
     //currentRowChanged
 	connect(ui.L_OutLine, &QListWidget::currentRowChanged,this,&DX11RenderEngine::OnOutlineItemChanged);
-    //添加模型
+    //添加场景物体按钮
     //AddSceneObject
     connect(ui.bt_addBox, &QPushButton::clicked, [=]() {
         ui.renderView->AddSceneObject('0');
@@ -72,7 +73,15 @@ DX11RenderEngine::DX11RenderEngine(QWidget* parent)
 	connect(ui.bt_addPlane, &QPushButton::clicked, [=]() {
 		ui.renderView->AddSceneObject('1');
 		});
-
+	connect(ui.bt_addDirL, &QPushButton::clicked, [=]() {
+		ui.renderView->AddLight('1');
+		});
+	connect(ui.bt_addPointL, &QPushButton::clicked, [=]() {
+		ui.renderView->AddLight('0');
+		});
+	connect(ui.bt_addSpotL, &QPushButton::clicked, [=]() {
+		ui.renderView->AddLight('2');
+		});
     //导入模型
     connect(ui.bt_chooseModel, &QPushButton::clicked, [=]() {
 		QString curPath = QCoreApplication::applicationDirPath();   //QDir::currentPath();初始目录
@@ -183,7 +192,6 @@ void DX11RenderEngine::keyPressEvent(QKeyEvent* event)
 		auto p = ui.L_OutLine->takeItem(row);
         ui.renderView->DeleteSceneObject(row+1);
 		delete p;
-        //qDebug() << ui.L_OutLine->currentRow();
         }
         break;
     }

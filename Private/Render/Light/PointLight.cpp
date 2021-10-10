@@ -6,12 +6,11 @@ PointLight::PointLight(Graphics& gfx) : Light::Light(gfx,"point_light.obj")
 	attritute_.affect_radius_ = 20.f;
 }
 
-LightSet PointLight::GetLightAttribute()
+void PointLight::UpdateAttribute()
 {
 	attritute_.light_pos_.x = world_location_.x;
 	attritute_.light_pos_.y = world_location_.y;
 	attritute_.light_pos_.z = world_location_.z;
-	return attritute_;
 }
 
 void PointLight::SetRadius(float radius)

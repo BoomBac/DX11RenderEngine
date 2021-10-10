@@ -31,7 +31,7 @@ float4 main(PSInput input) : SV_TARGET
 	float3 lit;
 	if (light_type==0.f)
 	{
-		lit = clamp(1 - pow(distance(input.posW, light_pos) / affect_radius, 4.f), 0.f, 2.f);
+		lit = light_color * clamp(1 - pow(distance(input.posW, light_pos) / affect_radius, 4.f), 0.f, 2.f);
 	}
 	else if (light_type==1.f)
 	{

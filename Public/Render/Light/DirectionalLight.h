@@ -14,7 +14,7 @@ class DirectionalLight : public Light
 public:
 	DirectionalLight() = delete;
 	DirectionalLight(Graphics& gfx);
-	virtual LightSet GetLightAttribute() override;
+	virtual void UpdateAttribute() override;
 private:
 	DISALLOW_COPY_AND_ASSIGN(DirectionalLight)
 	DirectX::XMFLOAT3 direction_;

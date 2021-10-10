@@ -53,18 +53,24 @@ Graphics::Graphics(HWND hWnd)
 	GeometryFactory geo_factory(this);
 	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/height.jpg");
 
+	//初始化场景默认灯光
+	default_light_.light_color_ = { 1.f,1.f,1.f,1.f };
+	default_light_.light_dir_ = { 0.f,-1.f,0.f };
+	default_light_.light_intensity_ = 0.8f;
+	default_light_.light_type = 1.f;
+	p_scene_light_ = &default_light_;
+
+	default_light_shader_.light_color_ = { 0.f,1.f,1.f };
+	default_light_shader_.light_intensity_ = 0.8f;
+	p_light_shader_ = &default_light_shader_;
+
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/point_light.obj");
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/directional_light.obj");
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/spot_light.obj");
 	//创建坐标轴
 	p_coordinate_ = new Coordinate(*this, 10.f);
 	scene_objects_.push_back(dynamic_cast<Drawable*>(p_coordinate_));
-	//p_light_ = new DirectionalLight(*this);
-	//AddSceneObject(p_light_, "DirectionalLight");
-	//p_light_ = new PointLight(*this);
-	//AddSceneObject(p_light_, "PointLight");
-	p_light_ = new SpotLight(*this);
-	AddSceneObject(p_light_, "SpotLight");
+
 
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/cat.obj");
 
@@ -175,6 +181,33 @@ int Graphics::InitOutline(std::string* item_name)
 	}
 
 	return i;
+}
+
+void Graphics::AddLight(const char& light_type)
+{
+	switch (light_type)
+	{
+	case '0':
+	{
+		p_light_ = new PointLight(*this);
+		AddSceneObject(p_light_, "PointLight");
+	}
+	break;
+	case '1':
+	{
+		p_light_ = new DirectionalLight(*this);
+		AddSceneObject(p_light_, "DirectionalLight");
+	}
+	break;
+	case '2':
+	{
+		p_light_ = new SpotLight(*this);
+		AddSceneObject(p_light_, "SpotLight");
+	}
+	break;
+	default:
+		break;
+	}
 }
 
 void Graphics::SetSelectObject(const int& index)

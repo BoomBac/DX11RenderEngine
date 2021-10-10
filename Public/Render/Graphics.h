@@ -9,6 +9,7 @@
 #include "Public/Render/camera.h"
 #include "Public/Tool/Subject.h"
 #include <d3d11.h>
+#include "Light/LightSet.h"
 
 
 
@@ -42,7 +43,11 @@ public:
 	//当前渲染视口选中的物体
 	static Drawable* p_selected_object_;
 	static Drawable* p_coordinate_;
+
 	Drawable* p_light_;
+
+	LightSet* p_scene_light_;
+	LightShader* p_light_shader_;
 
 	void SetCoordinateType(bool is_world);
 	//if world coord,return true
@@ -59,7 +64,8 @@ public:
 	void InitSceneObject();
 	//将构造时创建的物品添加到outline。
 	int InitOutline(std::string* item_name);
-
+	//主界面添加灯光接口
+	void AddLight(const char& light_type);
 	Subject* outline_notify_;
 	std::map<int, std::string> scene_outline_;
 	std::string last_add_object_name_;
@@ -74,6 +80,9 @@ private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>pSwapChain = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>p_render_targetview_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>p_sampler_state_ = nullptr;
+
+	LightSet default_light_;
+	LightShader default_light_shader_;
 
 	DepthStencil* dsbuffer;
 	HRESULT InitDx11(HWND hWnd);

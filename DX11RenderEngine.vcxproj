@@ -165,6 +165,7 @@
     <ClInclude Include="Public\Render\GraphicsResource.h" />
     <ClInclude Include="Public\Render\Light\DirectionalLight.h" />
     <ClInclude Include="Public\Render\Light\Light.h" />
+    <ClInclude Include="Public\Render\Light\LightSet.h" />
     <ClInclude Include="Public\Render\Light\PointLight.h" />
     <ClInclude Include="Public\Render\Light\SpotLight.h" />
     <ClInclude Include="Public\Render\Mesh.h" />

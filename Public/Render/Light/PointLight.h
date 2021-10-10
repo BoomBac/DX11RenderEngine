@@ -14,7 +14,7 @@ class PointLight : public Light
 public:
 	PointLight() = delete;
 	PointLight(Graphics& gfx);
-	virtual LightSet GetLightAttribute() override;
+	virtual void UpdateAttribute() override;
 	void SetRadius(float radius);
 private:
 	DISALLOW_COPY_AND_ASSIGN(PointLight)

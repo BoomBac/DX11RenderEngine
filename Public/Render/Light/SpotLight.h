@@ -14,7 +14,7 @@ class SpotLight : public Light
 public:
 	SpotLight() = delete;
 	SpotLight(Graphics& gfx);
-	virtual LightSet GetLightAttribute() override;
+	virtual void UpdateAttribute() override;
 	void SetInnerAngle(float angle);
 	void SetOuterAngle(float angle);
 private:
