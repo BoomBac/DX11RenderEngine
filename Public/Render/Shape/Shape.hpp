@@ -55,18 +55,21 @@ void Shape<T>::AdjustRotation(const CusMath::vector3d& transf, const CusMath::ve
 		*target_martix = DirectX::XMMatrixRotationX(DegToRad(coordinate.x)) *
 			DirectX::XMMatrixRotationY(DegToRad(coordinate.y)) *
 			DirectX::XMMatrixRotationZ(DegToRad(coordinate.z));
+		qDebug() << "Rotate z";
 	}
 	if (transf.x == coordinate.x && transf.z == coordinate.z)
 	{
 		*target_martix = DirectX::XMMatrixRotationZ(DegToRad(coordinate.z)) *
 			DirectX::XMMatrixRotationX(DegToRad(coordinate.x)) *
 			DirectX::XMMatrixRotationY(DegToRad(coordinate.y));
+		qDebug() << "Rotate y";
 	}
 	if (transf.y == coordinate.y && transf.z == coordinate.z)
 	{
 		*target_martix = DirectX::XMMatrixRotationZ(DegToRad(coordinate.z)) *
 			DirectX::XMMatrixRotationY(DegToRad(coordinate.y)) *
 			DirectX::XMMatrixRotationX(DegToRad(coordinate.x));
+		qDebug() << "Rotate z";
 	}
 	UpdateOrient();
 }

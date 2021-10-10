@@ -5,6 +5,7 @@
 #include <QColorDialog>
 #include <QFileDialog>
 #include <QListWidget>
+#include <QTableWidget> 
 
 #include "Public/Global.h"
 #include "Public/QtFrame/DX11RenderEngine.h"
@@ -16,6 +17,7 @@
 #include "Public/Render/ModelResFactory.h"
 #include <Public/Render/ResManage/MeshFactory.h>
 #include <Public/Render/GeometryFactory.h>
+
 
 
 
@@ -141,6 +143,76 @@ DX11RenderEngine::DX11RenderEngine(QWidget* parent)
         ui.renderView->SetSelectedObjectTransform(
             { (float)ui.dSB_MSX->value(),(float)ui.dSB_MSY->value(),(float)val, }, char(2));
         });
+    //transform
+	p_location_x_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(255, 0, 0), 10000.f, -10000.f, 0.f);
+	p_location_y_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(0, 255, 0), 10000.f, -10000.f, 0.f);
+	p_location_z_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(0, 0, 255), 10000.f, -10000.f, 0.f);
+	p_rotation_x_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(255, 0, 0), 360.f, 0.f, 0.f);
+	p_rotation_y_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(0, 255, 0), 360.f, 0.f, 0.f);
+	p_rotation_z_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(0, 0, 255), 360.f, 0.f, 0.f);
+	p_scale_x_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(255, 0, 0), 100.f, 0.f, 1.f);
+	p_scale_y_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(0, 255, 0), 100.f, 0.f, 1.f);
+	p_scale_z_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(0, 0, 255), 100.f, 0.f, 1.f);
+    ui.tb_transform->setCellWidget(0, 0, p_location_x_);
+	ui.tb_transform->setCellWidget(0, 1, p_location_y_);
+	ui.tb_transform->setCellWidget(0, 2, p_location_z_);
+	ui.tb_transform->setCellWidget(1, 0, p_rotation_x_);
+	ui.tb_transform->setCellWidget(1, 1, p_rotation_y_);
+	ui.tb_transform->setCellWidget(1, 2, p_rotation_z_);
+	ui.tb_transform->setCellWidget(2, 0, p_scale_x_);
+	ui.tb_transform->setCellWidget(2, 1, p_scale_y_);
+	ui.tb_transform->setCellWidget(2, 2, p_scale_z_);
+    ui.tb_transform->verticalHeader()->setVisible(true);
+
+	connect(p_location_x_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ (float)val,p_location_y_->GetValue(),
+            p_location_z_->GetValue() }, char(0));
+		});
+	connect(p_location_y_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ p_location_x_->GetValue(),
+            (float)val,
+			p_location_z_->GetValue() }, char(0));
+		});
+	connect(p_location_z_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ p_location_x_->GetValue(),
+			p_location_y_->GetValue(),(float)val }, char(0));
+		});
+	connect(p_rotation_x_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ (float)val,p_rotation_y_->GetValue(),
+			p_rotation_z_->GetValue() }, char(1));
+		});
+	connect(p_rotation_y_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ p_rotation_x_->GetValue(),
+			(float)val,
+			p_rotation_z_->GetValue() }, char(1));
+		});
+	connect(p_rotation_z_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ p_rotation_x_->GetValue(),
+			p_rotation_y_->GetValue(),(float)val }, char(1));
+		});
+	connect(p_scale_x_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ (float)val,p_scale_y_->GetValue(),
+			p_scale_z_->GetValue() }, char(2));
+		});
+	connect(p_scale_y_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ p_scale_x_->GetValue(),
+			(float)val,
+			p_scale_z_->GetValue() }, char(2));
+		});
+	connect(p_scale_z_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ p_scale_x_->GetValue(),
+			p_scale_y_->GetValue(),(float)val }, char(2));
+		});
+    
     //选择背景颜色对话框
     connect(ui.bt_ChooseBC, &QPushButton::clicked, [=]() {
         static float bgc[4] = { 0.f,0.f,0.f,1.f };
@@ -203,58 +275,36 @@ void DX11RenderEngine::ChangeCoordinateType(int index)
     static double last_local_rotation[3] = { 0.f,0.f,0.f };
     if (index == 0)
     {
-		last_local_rotation[0] = ui.dSB_MRX->value();
-        last_local_rotation[1] = ui.dSB_MRY->value();
-        last_local_rotation[2] = ui.dSB_MRZ->value();
-		ui.dSB_MTX->blockSignals(true);
-		ui.dSB_MTY->blockSignals(true);
-		ui.dSB_MTZ->blockSignals(true);
-		ui.dSB_MTX->setValue(static_cast<double>(transform_info_[0]));
-		ui.dSB_MTY->setValue(static_cast<double>(transform_info_[1]));
-		ui.dSB_MTZ->setValue(static_cast<double>(transform_info_[2]));
-		ui.dSB_MTX->blockSignals(false);
-		ui.dSB_MTY->blockSignals(false);
-		ui.dSB_MTZ->blockSignals(false);
-		ui.dSB_MRX->blockSignals(true);
-		ui.dSB_MRY->blockSignals(true);
-		ui.dSB_MRZ->blockSignals(true);
-		ui.dSB_MRX->setValue(static_cast<double>(transform_info_[3]));
-		ui.dSB_MRY->setValue(static_cast<double>(transform_info_[4]));
-		ui.dSB_MRZ->setValue(static_cast<double>(transform_info_[5]));
-		ui.dSB_MRX->blockSignals(false);
-		ui.dSB_MRY->blockSignals(false);
-		ui.dSB_MRZ->blockSignals(false);
-        ui.renderView->SetCoordinateType(true);
+		last_local_rotation[0] = p_location_x_->GetValue();
+		last_local_rotation[1] = p_location_x_->GetValue();
+		last_local_rotation[2] = p_location_x_->GetValue();
+		p_location_x_->SetProgressValue(static_cast<double>(transform_info_[0]));
+		p_location_y_->SetProgressValue(static_cast<double>(transform_info_[1]));
+		p_location_z_->SetProgressValue(static_cast<double>(transform_info_[2]));
+		p_rotation_x_->SetProgressValue(static_cast<double>(transform_info_[3]));
+		p_rotation_y_->SetProgressValue(static_cast<double>(transform_info_[4]));
+		p_rotation_z_->SetProgressValue(static_cast<double>(transform_info_[5]));
+
+		ui.renderView->SetCoordinateType(true);
     }	
     else
     {
-		ui.dSB_MTX->blockSignals(true);
-		ui.dSB_MTY->blockSignals(true);
-		ui.dSB_MTZ->blockSignals(true);
-		ui.dSB_MTX->setValue(0.f);
-		ui.dSB_MTY->setValue(0.f);
-		ui.dSB_MTZ->setValue(0.f);
-		ui.dSB_MTX->blockSignals(false);
-		ui.dSB_MTY->blockSignals(false);
-		ui.dSB_MTZ->blockSignals(false);
-		ui.dSB_MRX->blockSignals(true);
-		ui.dSB_MRY->blockSignals(true);
-		ui.dSB_MRZ->blockSignals(true);
+		p_location_x_->SetProgressValue(0.f);
+		p_location_y_->SetProgressValue(0.f);
+		p_location_z_->SetProgressValue(0.f);
+
 		if (ui.renderView->object_rotation_changed_)
 		{
-			ui.dSB_MRX->setValue(static_cast<double>(0.f));
-			ui.dSB_MRY->setValue(static_cast<double>(0.f));
-			ui.dSB_MRZ->setValue(static_cast<double>(0.f));
+			p_rotation_x_->SetProgressValue(static_cast<double>(0.f));
+			p_rotation_y_->SetProgressValue(static_cast<double>(0.f));
+			p_rotation_z_->SetProgressValue(static_cast<double>(0.f));
 		}
 		else
 		{
-			ui.dSB_MRX->setValue(last_local_rotation[0]);
-			ui.dSB_MRY->setValue(last_local_rotation[1]);
-			ui.dSB_MRZ->setValue(last_local_rotation[2]);
+			p_rotation_x_->SetProgressValue(last_local_rotation[0]);
+			p_rotation_y_->SetProgressValue(last_local_rotation[1]);
+			p_rotation_z_->SetProgressValue(last_local_rotation[2]);
 		}
-		ui.dSB_MRX->blockSignals(false);
-		ui.dSB_MRY->blockSignals(false);
-		ui.dSB_MRZ->blockSignals(false);
         ui.renderView->SetCoordinateType(false);
         ui.renderView->object_rotation_changed_ = false;
     }

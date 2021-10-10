@@ -190,6 +190,9 @@
     <ClCompile Include="Private\Render\Light\PointLight.cpp">
       <Filter>Source Files\Render\Light</Filter>
     </ClCompile>
+    <ClCompile Include="ExternalWidgets\progressline.cpp">
+      <Filter>External Widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Public\QtFrame\DX11RenderEngine.h">
@@ -197,6 +200,9 @@
     </QtMoc>
     <QtMoc Include="Public\QtFrame\RenderViewport.h">
       <Filter>Header Files\QtFrame</Filter>
+    </QtMoc>
+    <QtMoc Include="ExternalWidgets\progressline.h">
+      <Filter>External Widgets</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -315,6 +321,9 @@
   <ItemGroup>
     <QtUic Include="RenderViewport.ui">
       <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="ExternalWidgets\progressline.ui">
+      <Filter>External Widgets</Filter>
     </QtUic>
   </ItemGroup>
   <ItemGroup>

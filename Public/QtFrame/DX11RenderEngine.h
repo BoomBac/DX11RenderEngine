@@ -10,7 +10,10 @@
 
 #include <QtWidgets/QMainWindow>
 
+#include "ExternalWidgets/progressline.h"
+
 #include "ui_DX11RenderEngine.h"
+
 
 
 class DX11RenderEngine : public QMainWindow
@@ -27,8 +30,17 @@ private:
     //记录物体变换框数据
     float transform_info_[6]{ 0.f,0.f,0.,0.f,0.f,0.f};
     void ChangeCoordinateType(int index);
-
     void OnOutlineItemChanged(int row);
+    //transform progress
+    ProgressLine* p_location_x_;
+    ProgressLine* p_location_y_;
+    ProgressLine* p_location_z_;
+	ProgressLine* p_rotation_x_;
+	ProgressLine* p_rotation_y_;
+	ProgressLine* p_rotation_z_;
+	ProgressLine* p_scale_x_;
+	ProgressLine* p_scale_y_;
+	ProgressLine* p_scale_z_;
 };
 
 #endif

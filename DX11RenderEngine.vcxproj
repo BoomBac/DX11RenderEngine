@@ -105,6 +105,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ExternalWidgets\progressline.cpp" />
     <ClCompile Include="Private\Global.cpp" />
     <ClCompile Include="Private\main.cpp" />
     <ClCompile Include="Private\QtFrame\DX11RenderEngine.cpp" />
@@ -143,9 +144,11 @@
     <QtRcc Include="DX11RenderEngine.qrc" />
     <QtUic Include="DX11RenderEngine.ui" />
     <QtMoc Include="Public\QtFrame\DX11RenderEngine.h" />
+    <QtUic Include="ExternalWidgets\progressline.ui" />
     <QtUic Include="RenderViewport.ui" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="ExternalWidgets\progressline.h" />
     <ClInclude Include="Public\Global.h" />
     <ClInclude Include="Public\Render\Bindable\BindableInterface.h" />
     <ClInclude Include="Public\Render\Bindable\ConstantBuffer.h" />
