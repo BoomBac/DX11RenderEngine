@@ -19,7 +19,7 @@ VSOut main(float3 pos : Position, float3 color : Color) //: SV_POSITION
 {
 	VSOut respos;
 	respos.pos = mul(float4(pos, 1.f), MVPMartrix);
-	respos.uv =float2(1.f, 1.f);
+	respos.uv = pow(float2(color.r, color.b),2.f);
 	respos.posW = mul(float4(pos, 1.f), WorldMartrix);
 	respos.cameraPos = CameraPos;
 	respos.normal = float3(0.f, 1.f, 0.f);

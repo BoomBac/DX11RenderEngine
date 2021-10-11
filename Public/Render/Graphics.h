@@ -65,7 +65,7 @@ public:
 	//将构造时创建的物品添加到outline。
 	int InitOutline(std::string* item_name);
 	//主界面添加灯光接口
-	void AddLight(const char& light_type);
+	void AddLight(ELightType light_type);
 	Subject* outline_notify_;
 	std::map<int, std::string> scene_outline_;
 	std::string last_add_object_name_;

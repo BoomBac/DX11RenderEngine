@@ -4,10 +4,10 @@
 
 Light::Light(Graphics& gfx, const char* light_type) : Model::Model(gfx, light_type)
 {
-	attritute_.light_intensity_ = 0.8f;
-	attritute_.light_color_ = {0.f,0.f,1.f,1.f};
-	raw_shader_.light_intensity_ = 0.8f;
-	raw_shader_.light_color_ = {0.f,0.f,1.f};
+	attritute_.light_intensity_ = 0.2f;
+	attritute_.light_color_ = {1.f,1.f,1.f,1.f};
+	raw_shader_.light_intensity_ = 0.2f;
+	raw_shader_.light_color_ = {1.f,1.f,1.f};
 	gfx.p_scene_light_ = &attritute_;
 	gfx.p_light_shader_ = &raw_shader_;
 }
@@ -35,5 +35,15 @@ void Light::Draw(Graphics& gfx)
 {
 	UpdateAttribute();
 	Model::Draw(gfx);
+}
+
+ELightType Light::GetLightType() const
+{
+	return light_type_;
+}
+
+LightSet* Light::GetAttritute()
+{
+	return &attritute_;
 }
 

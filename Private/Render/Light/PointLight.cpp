@@ -4,6 +4,7 @@ PointLight::PointLight(Graphics& gfx) : Light::Light(gfx,"point_light.obj")
 {
 	attritute_.light_type = 0.f;
 	attritute_.affect_radius_ = 20.f;
+	light_type_ = ELightType::kPonintLight;
 }
 
 void PointLight::UpdateAttribute()

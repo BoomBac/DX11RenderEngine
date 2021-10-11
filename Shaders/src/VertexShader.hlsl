@@ -21,6 +21,6 @@ VSOut main(float3 pos : Position, float2 uv : Texcoord, float3 normal : Normal) 
 	respos.uv = uv;
 	respos.cameraPos = CameraPos;
 	respos.posW = mul(float4(pos, 1.f), WorldMartrix);
-	respos.normal = normalize(mul(float4(normal, 1.f), WorldMartrix));
+	respos.normal = normalize(mul(float4(normal, 0.f), WorldMartrix));
 	return respos;
 }

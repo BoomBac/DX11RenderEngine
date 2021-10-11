@@ -41,6 +41,17 @@ private:
 	ProgressLine* p_scale_x_;
 	ProgressLine* p_scale_y_;
 	ProgressLine* p_scale_z_;
-};
 
+    void InitLightDetail();
+    void InitTransformDetail();
+    //light property
+    QWidget* p_light_detail_;
+    QTableWidget* p_light_property_;
+    QPushButton* p_light_color_;
+    ProgressLine* p_light_intensity_;
+    ProgressLine* p_light_radius_;
+    ProgressLine* p_light_i_angle_;
+    ProgressLine* p_light_o_angle_;
+    void AdjustLightProperty(ELightType pre_type, ELightType next_type);
+};
 #endif

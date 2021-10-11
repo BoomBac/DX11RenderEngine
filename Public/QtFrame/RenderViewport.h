@@ -38,13 +38,21 @@ public:
 	void SetCoordinateType(bool is_world);
 	// 0 box; 1 plane
 	void AddSceneObject(char type);
-	void SetSelectObject(int index,double tranf_info[9]);
+	void SetSelectObject(int index,double tranf_info[10]);
 	void DeleteSceneObject(const int& index);
 	int InitOutline(std::string* item_name);
-	void AddLight(const char& light_type);
+	//向场景添加光源
+	//return:上一个光源类型
+	ELightType AddLight(ELightType light_type);
 
 	Graphics* graphicsIns = nullptr;
 	bool object_rotation_changed_ = true;
+
+	//设置灯光属性,float 和 color共用同一块区域
+	//flag 0：颜色；
+	//1：强度，2：点光范围，3：投影灯外角，4：投影灯内角
+	void SetLightProperty(const float& r, const float& g, const float& b, const char& flag);
+	ELightType GetLightType() const;
 
 signals:
 	void MouseMoved(QString& pos);

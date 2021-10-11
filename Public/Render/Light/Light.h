@@ -24,10 +24,13 @@ public:
     void SetIntensity(float intensity);
     virtual void Draw(Graphics& gfx) override;
     LightShader raw_shader_;
+    ELightType GetLightType() const;
+    LightSet* GetAttritute();
 private:
     DISALLOW_COPY_AND_ASSIGN(Light)
 protected:
     LightSet attritute_;
+    ELightType light_type_;
 };
 
 

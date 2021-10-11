@@ -1,5 +1,12 @@
 #include <DirectXMath.h>
 
+enum class ELightType : BYTE
+{
+	kPonintLight,
+	kDirectionLight,
+	kSpotLight
+};
+
 struct LightSet
 {
 	DirectX::XMFLOAT3 light_pos_;
@@ -10,6 +17,7 @@ struct LightSet
 	float affect_radius_;
 	float inner_angle_;
 	float outer_angle;
+	//0:point 1:direction 2:spot
 	float light_type;
 };
 

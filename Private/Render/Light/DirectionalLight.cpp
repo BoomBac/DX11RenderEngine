@@ -4,6 +4,7 @@ DirectionalLight::DirectionalLight(Graphics& gfx) : Light::Light(gfx, "direction
 {
 	attritute_.light_type = 1.f;
 	direction_ = { 0.f,-1.f,0.f };
+	light_type_ = ELightType::kDirectionLight;
 }
 
 void DirectionalLight::UpdateAttribute()

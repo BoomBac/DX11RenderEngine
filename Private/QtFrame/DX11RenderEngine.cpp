@@ -19,6 +19,10 @@
 #include <Public/Render/GeometryFactory.h>
 
 
+namespace
+{
+	ELightType g_light_type = ELightType::kDirectionLight;
+}
 
 
 DX11RenderEngine::DX11RenderEngine(QWidget* parent)
@@ -76,13 +80,19 @@ DX11RenderEngine::DX11RenderEngine(QWidget* parent)
 		ui.renderView->AddSceneObject('1');
 		});
 	connect(ui.bt_addDirL, &QPushButton::clicked, [=]() {
-		ui.renderView->AddLight('1');
+		ui.renderView->AddLight(ELightType::kDirectionLight);
+		AdjustLightProperty(g_light_type, ELightType::kDirectionLight);
+		g_light_type = ELightType::kDirectionLight;
 		});
 	connect(ui.bt_addPointL, &QPushButton::clicked, [=]() {
-		ui.renderView->AddLight('0');
+		ui.renderView->AddLight(ELightType::kPonintLight);
+		AdjustLightProperty(g_light_type, ELightType::kPonintLight);
+		g_light_type = ELightType::kPonintLight;
 		});
 	connect(ui.bt_addSpotL, &QPushButton::clicked, [=]() {
-		ui.renderView->AddLight('2');
+		ui.renderView->AddLight(ELightType::kSpotLight);
+		AdjustLightProperty(g_light_type, ELightType::kSpotLight);
+		g_light_type = ELightType::kSpotLight;
 		});
     //导入模型
     connect(ui.bt_chooseModel, &QPushButton::clicked, [=]() {
@@ -106,113 +116,10 @@ DX11RenderEngine::DX11RenderEngine(QWidget* parent)
     //更改坐标轴类型
     connect(ui.CB_Coord, &QComboBox::currentIndexChanged,this,&DX11RenderEngine::ChangeCoordinateType);
 
-    //模型变换绑定
-    connect(ui.dSB_MTX, &QDoubleSpinBox::valueChanged, [=](const double& val) {
-        ui.renderView->SetSelectedObjectTransform({ (float)val,(float)ui.dSB_MTY->value(),
-            (float)ui.dSB_MTZ->value() }, char(0));
-        });
-    connect(ui.dSB_MTY, &QDoubleSpinBox::valueChanged, [=](const double& val) {
-        ui.renderView->SetSelectedObjectTransform({ (float)ui.dSB_MTX->value(),(float)val,
-            (float)ui.dSB_MTZ->value() }, char(0));
-        });
-    connect(ui.dSB_MTZ, &QDoubleSpinBox::valueChanged, [=](const double& val) {
-        ui.renderView->SetSelectedObjectTransform({ 
-            (float)ui.dSB_MTX->value(),(float)ui.dSB_MTY->value(),(float)val }, char(0));
-        });
-    connect(ui.dSB_MRX, &QDoubleSpinBox::valueChanged, [=](const double& val) {
-        ui.renderView->SetSelectedObjectTransform({
-           (float)val,(float)ui.dSB_MRY->value(),(float)ui.dSB_MRZ->value() }, char(1));
-        });
-    connect(ui.dSB_MRY, &QDoubleSpinBox::valueChanged, [=](const double& val) {
-        ui.renderView->SetSelectedObjectTransform({
-           (float)ui.dSB_MRX->value(),(float)val,(float)ui.dSB_MRZ->value() }, char(1));
-        });
-    connect(ui.dSB_MRZ, &QDoubleSpinBox::valueChanged, [=](const double& val) {
-        ui.renderView->SetSelectedObjectTransform({
-           (float)ui.dSB_MRX->value(),(float)ui.dSB_MRY->value(),(float)val }, char(1));
-        });
-    connect(ui.dSB_MSX, &QDoubleSpinBox::valueChanged, [=](const double& val) {
-        ui.renderView->SetSelectedObjectTransform(
-            { (float)val, (float)ui.dSB_MSY->value(),(float)ui.dSB_MSZ->value() }, char(2));
-        });
-    connect(ui.dSB_MSY, &QDoubleSpinBox::valueChanged, [=](const double& val) {
-        ui.renderView->SetSelectedObjectTransform(
-            { (float)ui.dSB_MSX->value(),(float)val, (float)ui.dSB_MSZ->value() }, char(2));
-        });
-    connect(ui.dSB_MSZ, &QDoubleSpinBox::valueChanged, [=](const double& val) {
-        ui.renderView->SetSelectedObjectTransform(
-            { (float)ui.dSB_MSX->value(),(float)ui.dSB_MSY->value(),(float)val, }, char(2));
-        });
-    //transform
-	p_location_x_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
-		QColor(255, 0, 0), 10000.f, -10000.f, 0.f);
-	p_location_y_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
-		QColor(0, 255, 0), 10000.f, -10000.f, 0.f);
-	p_location_z_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
-		QColor(0, 0, 255), 10000.f, -10000.f, 0.f);
-	p_rotation_x_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
-		QColor(255, 0, 0), 360.f, 0.f, 0.f);
-	p_rotation_y_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
-		QColor(0, 255, 0), 360.f, 0.f, 0.f);
-	p_rotation_z_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
-		QColor(0, 0, 255), 360.f, 0.f, 0.f);
-	p_scale_x_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
-		QColor(255, 0, 0), 100.f, 0.f, 1.f);
-	p_scale_y_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
-		QColor(0, 255, 0), 100.f, 0.f, 1.f);
-	p_scale_z_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
-		QColor(0, 0, 255), 100.f, 0.f, 1.f);
-    ui.tb_transform->setCellWidget(0, 0, p_location_x_);
-	ui.tb_transform->setCellWidget(0, 1, p_location_y_);
-	ui.tb_transform->setCellWidget(0, 2, p_location_z_);
-	ui.tb_transform->setCellWidget(1, 0, p_rotation_x_);
-	ui.tb_transform->setCellWidget(1, 1, p_rotation_y_);
-	ui.tb_transform->setCellWidget(1, 2, p_rotation_z_);
-	ui.tb_transform->setCellWidget(2, 0, p_scale_x_);
-	ui.tb_transform->setCellWidget(2, 1, p_scale_y_);
-	ui.tb_transform->setCellWidget(2, 2, p_scale_z_);
-    ui.tb_transform->verticalHeader()->setVisible(true);
-
-	connect(p_location_x_, &ProgressLine::valueChanged, [=](const double& val) {
-		ui.renderView->SetSelectedObjectTransform({ (float)val,p_location_y_->GetValue(),
-            p_location_z_->GetValue() }, char(0));
-		});
-	connect(p_location_y_, &ProgressLine::valueChanged, [=](const double& val) {
-		ui.renderView->SetSelectedObjectTransform({ p_location_x_->GetValue(),
-            (float)val,
-			p_location_z_->GetValue() }, char(0));
-		});
-	connect(p_location_z_, &ProgressLine::valueChanged, [=](const double& val) {
-		ui.renderView->SetSelectedObjectTransform({ p_location_x_->GetValue(),
-			p_location_y_->GetValue(),(float)val }, char(0));
-		});
-	connect(p_rotation_x_, &ProgressLine::valueChanged, [=](const double& val) {
-		ui.renderView->SetSelectedObjectTransform({ (float)val,p_rotation_y_->GetValue(),
-			p_rotation_z_->GetValue() }, char(1));
-		});
-	connect(p_rotation_y_, &ProgressLine::valueChanged, [=](const double& val) {
-		ui.renderView->SetSelectedObjectTransform({ p_rotation_x_->GetValue(),
-			(float)val,
-			p_rotation_z_->GetValue() }, char(1));
-		});
-	connect(p_rotation_z_, &ProgressLine::valueChanged, [=](const double& val) {
-		ui.renderView->SetSelectedObjectTransform({ p_rotation_x_->GetValue(),
-			p_rotation_y_->GetValue(),(float)val }, char(1));
-		});
-	connect(p_scale_x_, &ProgressLine::valueChanged, [=](const double& val) {
-		ui.renderView->SetSelectedObjectTransform({ (float)val,p_scale_y_->GetValue(),
-			p_scale_z_->GetValue() }, char(2));
-		});
-	connect(p_scale_y_, &ProgressLine::valueChanged, [=](const double& val) {
-		ui.renderView->SetSelectedObjectTransform({ p_scale_x_->GetValue(),
-			(float)val,
-			p_scale_z_->GetValue() }, char(2));
-		});
-	connect(p_scale_z_, &ProgressLine::valueChanged, [=](const double& val) {
-		ui.renderView->SetSelectedObjectTransform({ p_scale_x_->GetValue(),
-			p_scale_y_->GetValue(),(float)val }, char(2));
-		});
-    
+    //初始化transform属性
+	InitTransformDetail();
+    //初始化灯光属性
+    InitLightDetail();
     //选择背景颜色对话框
     connect(ui.bt_ChooseBC, &QPushButton::clicked, [=]() {
         static float bgc[4] = { 0.f,0.f,0.f,1.f };
@@ -284,7 +191,6 @@ void DX11RenderEngine::ChangeCoordinateType(int index)
 		p_rotation_x_->SetProgressValue(static_cast<double>(transform_info_[3]));
 		p_rotation_y_->SetProgressValue(static_cast<double>(transform_info_[4]));
 		p_rotation_z_->SetProgressValue(static_cast<double>(transform_info_[5]));
-
 		ui.renderView->SetCoordinateType(true);
     }	
     else
@@ -312,50 +218,274 @@ void DX11RenderEngine::ChangeCoordinateType(int index)
 
 void DX11RenderEngine::OnOutlineItemChanged(int row)
 {
-	ui.dSB_MTX->blockSignals(true);
-	ui.dSB_MTY->blockSignals(true);
-	ui.dSB_MTZ->blockSignals(true);
-	ui.dSB_MRX->blockSignals(true);
-	ui.dSB_MRY->blockSignals(true);
-	ui.dSB_MRZ->blockSignals(true);
-	ui.dSB_MSX->blockSignals(true);
-	ui.dSB_MSY->blockSignals(true);
-	ui.dSB_MSZ->blockSignals(true);
     if (row > -1)
     {
-        double tranf[9];
+        // 0-8表示变换，9表示当前是否选中了灯光
+        double tranf[10];
         ui.renderView->SetSelectObject(row + 1, tranf);
-		ui.dSB_MTX->setValue(tranf[0]);
-		ui.dSB_MTY->setValue(tranf[1]);
-		ui.dSB_MTZ->setValue(tranf[2]);
-		ui.dSB_MRX->setValue(tranf[3]);
-		ui.dSB_MRY->setValue(tranf[4]);
-		ui.dSB_MRZ->setValue(tranf[5]);
-		ui.dSB_MSX->setValue(tranf[6]);
-		ui.dSB_MSY->setValue(tranf[7]);
-		ui.dSB_MSZ->setValue(tranf[8]);
+        p_location_x_->SetProgressValue(tranf[0]);
+        p_location_y_->SetProgressValue(tranf[1]);
+        p_location_z_->SetProgressValue(tranf[2]);
+		p_rotation_x_->SetProgressValue(tranf[3]);
+		p_rotation_y_->SetProgressValue(tranf[4]);
+		p_rotation_z_->SetProgressValue(tranf[5]);
+        p_scale_x_->SetProgressValue(tranf[6]);
+        p_scale_x_->SetProgressValue(tranf[7]);
+        p_scale_x_->SetProgressValue(tranf[8]);
+		ELightType next_light_type = ui.renderView->GetLightType();
+        if (tranf[9] == 1.f)
+        {
+			p_light_detail_->setVisible(true);
+			AdjustLightProperty(g_light_type, next_light_type);
+			g_light_type = next_light_type;
+        }
     }
     else
     {
         ui.renderView->SetSelectObject(-1, nullptr);
-		ui.dSB_MTX->setValue(0.f);
-		ui.dSB_MTY->setValue(0.f);
-		ui.dSB_MTZ->setValue(0.f);
-		ui.dSB_MRX->setValue(0.f);
-		ui.dSB_MRY->setValue(0.f);
-		ui.dSB_MRZ->setValue(0.f);
-		ui.dSB_MSX->setValue(1.f);
-		ui.dSB_MSY->setValue(1.f);
-		ui.dSB_MSZ->setValue(1.f);
+		p_location_x_->SetProgressValue(0.f);
+		p_location_y_->SetProgressValue(0.f);
+		p_location_z_->SetProgressValue(0.f);
+		p_rotation_x_->SetProgressValue(0.f);
+		p_rotation_y_->SetProgressValue(0.f);
+		p_rotation_z_->SetProgressValue(0.f);
+		p_scale_x_->SetProgressValue(0.f);
+		p_scale_x_->SetProgressValue(0.f);
+		p_scale_x_->SetProgressValue(0.f);
     }
-	ui.dSB_MTX->blockSignals(false);
-	ui.dSB_MTY->blockSignals(false);
-	ui.dSB_MTZ->blockSignals(false);
-	ui.dSB_MRX->blockSignals(false);
-	ui.dSB_MRY->blockSignals(false);
-	ui.dSB_MRZ->blockSignals(false);
-	ui.dSB_MSX->blockSignals(false);
-	ui.dSB_MSY->blockSignals(false);
-	ui.dSB_MSZ->blockSignals(false);
-
 }
+
+void DX11RenderEngine::InitLightDetail()
+{
+	p_light_detail_ = new QWidget(ui.tbx_detail);
+	ui.tbx_detail->addItem(p_light_detail_, "Light");
+	p_light_property_ = new QTableWidget(p_light_detail_);
+	p_light_property_->setGeometry(10, 10, 333, 175);
+	p_light_property_->setRowCount(5);
+	p_light_property_->setColumnCount(2);
+	QStringList s;
+	s << "Property" << "Value";
+	p_light_property_->setHorizontalHeaderLabels(s);
+	p_light_property_->horizontalHeader()->setVisible(true);
+	p_light_property_->verticalHeader()->setVisible(false);
+	p_light_property_->horizontalHeader()->setMinimumSectionSize(150);
+	p_light_property_->verticalScrollBar()->setVisible(false);
+	p_light_property_->verticalHeader()->setMinimumSectionSize(27);
+	//p_light_property_->verticalHeader()->setStretchLastSection(true);
+	p_light_property_->horizontalHeader()->setStretchLastSection(true);
+	p_light_property_->setSelectionBehavior(QAbstractItemView::SelectItems);
+	p_light_property_->setSelectionMode(QAbstractItemView::NoSelection);
+	p_light_property_->setCellWidget(0, 0, new QLabel("Color", ui.tbx_detail));
+	dynamic_cast<QLabel*>(p_light_property_->cellWidget(0, 0))->setAlignment(Qt::AlignCenter);
+	p_light_color_ = new QPushButton(ui.tbx_detail);
+	p_light_property_->setCellWidget(0, 1, p_light_color_);
+	p_light_color_->setStyleSheet("background-color: rgb(255, 255, 255);border-radius:10px;");
+	connect(p_light_color_, &QPushButton::clicked, [=]() {
+		QColor color = QColorDialog::getColor(Qt::red);
+		p_light_color_->setStyleSheet("background-color:" + QString("rgb(%1,%2,%3);").arg(color.red()).arg(color.green()).arg(color.blue()) +
+            "border-radius:10px;");
+		ui.renderView->SetLightProperty(color.redF(), color.greenF(), color.blueF(),'0');
+		});
+	p_light_color_->resize(p_light_property_->cellWidget(0, 0)->width(), p_light_property_->cellWidget(0, 0)->height());
+	//强度
+	p_light_property_->setCellWidget(1, 0, new QLabel("Intensity", ui.tbx_detail));
+	dynamic_cast<QLabel*>(p_light_property_->cellWidget(1, 0))->setAlignment(Qt::AlignCenter);
+	p_light_intensity_ = new ProgressLine(ui.tbx_detail, QColor(255, 255, 255), QColor(180, 180, 180),QColor(255, 0, 0), 100.f, 0.f, 20.f);
+	p_light_property_->setCellWidget(1, 1, p_light_intensity_);
+	connect(p_light_intensity_, &ProgressLine::valueChanged, [this](double val) {
+		ui.renderView->SetLightProperty(static_cast<float>(val / 100.f), 0.f, 0.f, '1');
+		});
+	//范围
+	p_light_property_->setCellWidget(2, 0, new QLabel("Radius", ui.tbx_detail));
+	dynamic_cast<QLabel*>(p_light_property_->cellWidget(2, 0))->setAlignment(Qt::AlignCenter);
+	p_light_radius_ = new ProgressLine(ui.tbx_detail, QColor(255, 255, 255), QColor(180, 180, 180),QColor(255, 0, 0), 1000.f, 0.f, 20.f);
+	p_light_property_->setCellWidget(2, 1, p_light_radius_);
+	connect(p_light_radius_, &ProgressLine::valueChanged, [this](double val) {
+		ui.renderView->SetLightProperty(static_cast<float>(val), 0.f, 0.f, '2');
+		});
+	p_light_property_->hideRow(2);
+	//外角
+	p_light_property_->setCellWidget(3, 0, new QLabel("OuterAngle", ui.tbx_detail));
+	dynamic_cast<QLabel*>(p_light_property_->cellWidget(3, 0))->setAlignment(Qt::AlignCenter);
+	p_light_o_angle_ = new ProgressLine(ui.tbx_detail, QColor(255, 255, 255), QColor(180, 180, 180), QColor(255, 0, 0), 90.f, 0.f, 60.f);
+	p_light_property_->setCellWidget(3, 1, p_light_o_angle_);
+	connect(p_light_o_angle_, &ProgressLine::valueChanged, [this](double val) {
+		ui.renderView->SetLightProperty(static_cast<float>(val), 0.f, 0.f, '4');
+		});
+	p_light_property_->hideRow(3);
+	//内角
+	p_light_property_->setCellWidget(4, 0, new QLabel("InnearAngle", ui.tbx_detail));
+	dynamic_cast<QLabel*>(p_light_property_->cellWidget(4, 0))->setAlignment(Qt::AlignCenter);
+	p_light_i_angle_ = new ProgressLine(ui.tbx_detail, QColor(255, 255, 255), QColor(180, 180, 180), QColor(255, 0, 0), 90.f, 0.f, 45.f);
+	p_light_property_->setCellWidget(4, 1, p_light_i_angle_);
+	connect(p_light_i_angle_, &ProgressLine::valueChanged, [this](double val) {
+		ui.renderView->SetLightProperty(static_cast<float>(val), 0.f, 0.f, '3');
+		});
+	p_light_property_->hideRow(4);
+	p_light_property_->resize(p_light_property_->width(), p_light_property_->height() - 30*3);
+	p_light_detail_->setVisible(true);
+}
+
+void DX11RenderEngine::InitTransformDetail()
+{
+	p_location_x_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(255, 0, 0), 10000.f, -10000.f, 0.f);
+	p_location_y_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(0, 255, 0), 10000.f, -10000.f, 0.f);
+	p_location_z_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(0, 0, 255), 10000.f, -10000.f, 0.f);
+	p_rotation_x_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(255, 0, 0), 360.f, 0.f, 0.f);
+	p_rotation_y_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(0, 255, 0), 360.f, 0.f, 0.f);
+	p_rotation_z_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(0, 0, 255), 360.f, 0.f, 0.f);
+	p_scale_x_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(255, 0, 0), 100.f, 0.f, 1.f);
+	p_scale_y_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(0, 255, 0), 100.f, 0.f, 1.f);
+	p_scale_z_ = new ProgressLine(this, QColor(255, 255, 255), QColor(180, 180, 180),
+		QColor(0, 0, 255), 100.f, 0.f, 1.f);
+	ui.tb_transform->setCellWidget(0, 0, p_location_x_);
+	ui.tb_transform->setCellWidget(0, 1, p_location_y_);
+	ui.tb_transform->setCellWidget(0, 2, p_location_z_);
+	ui.tb_transform->setCellWidget(1, 0, p_rotation_x_);
+	ui.tb_transform->setCellWidget(1, 1, p_rotation_y_);
+	ui.tb_transform->setCellWidget(1, 2, p_rotation_z_);
+	ui.tb_transform->setCellWidget(2, 0, p_scale_x_);
+	ui.tb_transform->setCellWidget(2, 1, p_scale_y_);
+	ui.tb_transform->setCellWidget(2, 2, p_scale_z_);
+	ui.tb_transform->verticalHeader()->setVisible(true);
+
+	connect(p_location_x_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ (float)val,p_location_y_->GetValue(),
+			p_location_z_->GetValue() }, char(0));
+		});
+	connect(p_location_y_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ p_location_x_->GetValue(),
+			(float)val,
+			p_location_z_->GetValue() }, char(0));
+		});
+	connect(p_location_z_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ p_location_x_->GetValue(),
+			p_location_y_->GetValue(),(float)val }, char(0));
+		});
+	connect(p_rotation_x_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ (float)val,p_rotation_y_->GetValue(),
+			p_rotation_z_->GetValue() }, char(1));
+		});
+	connect(p_rotation_y_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ p_rotation_x_->GetValue(),
+			(float)val,
+			p_rotation_z_->GetValue() }, char(1));
+		});
+	connect(p_rotation_z_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ p_rotation_x_->GetValue(),
+			p_rotation_y_->GetValue(),(float)val }, char(1));
+		});
+	connect(p_scale_x_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ (float)val,p_scale_y_->GetValue(),
+			p_scale_z_->GetValue() }, char(2));
+		});
+	connect(p_scale_y_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ p_scale_x_->GetValue(),
+			(float)val,
+			p_scale_z_->GetValue() }, char(2));
+		});
+	connect(p_scale_z_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetSelectedObjectTransform({ p_scale_x_->GetValue(),
+			p_scale_y_->GetValue(),(float)val }, char(2));
+		});
+}
+
+void DX11RenderEngine::AdjustLightProperty(ELightType pre_type, ELightType next_type)
+{
+	p_light_color_->setStyleSheet("background-color:" + QString("rgb(%1,%2,%3);").arg(static_cast<int>(ui.renderView->graphicsIns->p_scene_light_->light_color_.x * 255.f)).
+		arg(static_cast<int>(ui.renderView->graphicsIns->p_scene_light_->light_color_.y*255.f)).arg(static_cast<int>(ui.renderView->graphicsIns->p_scene_light_->light_color_.z*255.f)) +
+		"border-radius:10px;");
+	p_light_intensity_->SetProgressValue(100.f* static_cast<double>(ui.renderView->graphicsIns->p_scene_light_->light_intensity_ ));
+	switch (pre_type)
+	{
+	case ELightType::kPonintLight:
+	{
+		if (next_type == ELightType::kPonintLight)
+		{
+			p_light_radius_->SetProgressValue(static_cast<double>(ui.renderView->graphicsIns->p_scene_light_->affect_radius_));
+			return;
+		}
+		else if (next_type == ELightType::kDirectionLight)
+		{
+			p_light_property_->hideRow(2);
+			p_light_property_->resize(p_light_property_->width(), p_light_property_->height() - 30);
+			return;
+		}
+		else if (next_type == ELightType::kSpotLight)
+		{
+			p_light_property_->showRow(3);
+			p_light_property_->showRow(4);
+			p_light_radius_->SetProgressValue(static_cast<double>(ui.renderView->graphicsIns->p_scene_light_->affect_radius_));
+			p_light_i_angle_->SetProgressValue(static_cast<double>(ui.renderView->graphicsIns->p_scene_light_->inner_angle_));
+			p_light_o_angle_->SetProgressValue(static_cast<double>(ui.renderView->graphicsIns->p_scene_light_->outer_angle));
+			p_light_property_->resize(p_light_property_->width(), p_light_property_->height() + 30*2);
+			return;
+		}
+	}
+		break;
+	case ELightType::kDirectionLight:
+	{
+		if (next_type == ELightType::kPonintLight)
+		{
+			p_light_property_->showRow(2);
+			p_light_radius_->SetProgressValue(static_cast<double>(ui.renderView->graphicsIns->p_scene_light_->affect_radius_));
+			p_light_property_->resize(p_light_property_->width(), p_light_property_->height() + 30);
+			return;
+		}
+		else if (next_type == ELightType::kDirectionLight)
+		{
+			return;
+		}
+		else if (next_type == ELightType::kSpotLight)
+		{
+			p_light_property_->showRow(2);
+			p_light_property_->showRow(3);
+			p_light_property_->showRow(4);
+			p_light_radius_->SetProgressValue(static_cast<double>(ui.renderView->graphicsIns->p_scene_light_->affect_radius_));
+			p_light_i_angle_->SetProgressValue(static_cast<double>(ui.renderView->graphicsIns->p_scene_light_->inner_angle_));
+			p_light_o_angle_->SetProgressValue(static_cast<double>(ui.renderView->graphicsIns->p_scene_light_->outer_angle));
+			p_light_property_->resize(p_light_property_->width(), p_light_property_->height() + 30 * 3);
+			return;
+		}
+	}
+		break;
+	case ELightType::kSpotLight:
+	{
+		if (next_type == ELightType::kPonintLight)
+		{
+			p_light_property_->hideRow(3);
+			p_light_property_->hideRow(4);
+			p_light_radius_->SetProgressValue(static_cast<double>(ui.renderView->graphicsIns->p_scene_light_->affect_radius_));
+			p_light_property_->resize(p_light_property_->width(), p_light_property_->height() - 30*2);
+			return;
+		}
+		else if (next_type == ELightType::kDirectionLight)
+		{
+			p_light_property_->hideRow(2);
+			p_light_property_->hideRow(3);
+			p_light_property_->hideRow(4);
+			p_light_property_->resize(p_light_property_->width(), p_light_property_->height() - 30 * 3);
+			return;
+		}
+		else if (next_type == ELightType::kSpotLight)
+		{
+			p_light_radius_->SetProgressValue(static_cast<double>(ui.renderView->graphicsIns->p_scene_light_->affect_radius_));
+			p_light_i_angle_->SetProgressValue(static_cast<double>(ui.renderView->graphicsIns->p_scene_light_->inner_angle_));
+			p_light_o_angle_->SetProgressValue(static_cast<double>(ui.renderView->graphicsIns->p_scene_light_->outer_angle));
+			return;
+		}
+	}
+		break;
+	default:
+		break;
+	}
+}
+

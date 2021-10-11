@@ -3,6 +3,13 @@
 #include "Public\QtFrame\RenderViewport.h"
 #include "Public\Render\Drawable\Drawable.h"
 #include "Public\Render\GeometryFactory.h"
+#include "Public\Render\Light\Light.h"
+
+
+namespace
+{
+	bool g_mouse_pressed = false;
+}
 
 RenderViewport::RenderViewport(QWidget *parent)
 	: QWidget(parent)
@@ -108,17 +115,20 @@ void RenderViewport::mouseMoveEvent(QMouseEvent* e)
 	float detlaY = (float)(e->pos().y() - posY);
 	graphicsIns->camera_.AddRotation(detlaY * 0.01f, 0.f, 0.f);
 	graphicsIns->camera_.AddRotation(0.f,detlaX * 0.01f, 0.f);
+	if (g_mouse_pressed)
+	this->setCursor(Qt::BlankCursor);
 	//状态栏文字
 	mouPos = QString(" x = %1, y = %2").arg(QString::number(e->pos().x())).arg(QString::number(e->pos().y()));
-
 	posX = e->pos().x();
 	posY = e->pos().y();
+
 	emit(MouseMoved(mouPos));
 }
 
 void RenderViewport::mousePressEvent(QMouseEvent* e)
 {
 	moubtState = "Pressed";
+	g_mouse_pressed = true;
 	posX = e->pos().x();
 	posY = e->pos().y();
 	emit(MousePressed(moubtState));
@@ -127,8 +137,10 @@ void RenderViewport::mousePressEvent(QMouseEvent* e)
 void RenderViewport::mouseReleaseEvent(QMouseEvent* e)
 {
 	moubtState = "Released";
+	g_mouse_pressed = false;
 	//posX = e->pos().x();
 	//posY = e->pos().y();
+	this->setCursor(Qt::ArrowCursor);
 	emit(MouseReleased(moubtState));
 }
 void RenderViewport::InitialViewport()
@@ -163,7 +175,7 @@ void RenderViewport::AddSceneObject(char type)
 
 }
 
-void RenderViewport::SetSelectObject(int index, double tranf_info[9])
+void RenderViewport::SetSelectObject(int index, double tranf_info[10])
 {
 	graphicsIns->SetSelectObject(index);
 	if (index != -1)
@@ -180,6 +192,11 @@ void RenderViewport::SetSelectObject(int index, double tranf_info[9])
 		tranf_info[6] = tranf.x;
 		tranf_info[7] = tranf.y;
 		tranf_info[8] = tranf.z;
+		if (dynamic_cast<Light*>(graphicsIns->p_selected_object_)!=nullptr)
+		{
+			tranf_info[9] = 1.f;
+		}
+		else tranf_info[9] = 0.f;
 	}
 }
 
@@ -193,9 +210,62 @@ int RenderViewport::InitOutline(std::string* item_name)
 	return graphicsIns->InitOutline(item_name);
 }
 
-void RenderViewport::AddLight(const char& light_type)
+ELightType RenderViewport::AddLight(ELightType light_type)
 {
+	auto type = GetLightType();
 	graphicsIns->AddLight(light_type);
+	return type;
+}
+
+
+void RenderViewport::SetLightProperty(const float& r, const float& g, const float& b, const char& flag)
+{
+	switch (flag)
+	{
+	case '0':
+	{
+		graphicsIns->p_scene_light_->light_color_ = DirectX::XMFLOAT4{ r,g,b,1.f };
+	}
+	break;
+	case '1':
+	{
+		graphicsIns->p_scene_light_->light_intensity_ = r;
+	}
+	break;
+	case '2':
+	{
+		graphicsIns->p_scene_light_->affect_radius_ = r;
+	}
+	break;
+	case '3':
+	{
+		graphicsIns->p_scene_light_->inner_angle_ = r;
+	}
+	break;
+	case '4':
+	{
+		graphicsIns->p_scene_light_->outer_angle = r;
+	}
+	break;
+	default:
+		break;
+	}
+}
+
+ELightType RenderViewport::GetLightType() const
+{
+	if (graphicsIns->p_scene_light_->light_type==0.f)
+	{
+		return ELightType::kPonintLight;
+	}
+	if (graphicsIns->p_scene_light_->light_type == 1.f)
+	{
+		return ELightType::kDirectionLight;
+	}
+	if (graphicsIns->p_scene_light_->light_type == 2.f)
+	{
+		return ELightType::kSpotLight;
+	}
 }
 
 void RenderViewport::OnOutlineChanged(bool is_add)

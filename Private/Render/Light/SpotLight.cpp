@@ -11,6 +11,7 @@ SpotLight::SpotLight(Graphics &gfx):Light::Light(gfx, "spot_light.obj")
 	attritute_.light_type = 2.f;
 	attritute_.light_dir_ = direction_;
 	attritute_.affect_radius_ = 20.f;
+	light_type_ = ELightType::kSpotLight;
 }
 
 void SpotLight::UpdateAttribute()

@@ -28,7 +28,7 @@ Plane::Plane(int row, int col, const int& size, Graphics& gfx)
 			for (int j = 0; j <= col; j++)
 			{
 				vertex.pos = { (float)(-size / 2 + j * (size / col)) ,0.f,float(size / 2 - i * (size / row)) };
-				vertex.color = { 0.f,0.f,0.f };
+				vertex.color = { (vertex.pos.x + (float)(size / 2)) / (float)size,(vertex.pos.z + (float)(size / 2)) / (float)size,0.f };
 				vertices.push_back(vertex);
 			}
 		}

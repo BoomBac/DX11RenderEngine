@@ -56,12 +56,12 @@ Graphics::Graphics(HWND hWnd)
 	//初始化场景默认灯光
 	default_light_.light_color_ = { 1.f,1.f,1.f,1.f };
 	default_light_.light_dir_ = { 0.f,-1.f,0.f };
-	default_light_.light_intensity_ = 0.8f;
+	default_light_.light_intensity_ = 0.2f;
 	default_light_.light_type = 1.f;
 	p_scene_light_ = &default_light_;
 
-	default_light_shader_.light_color_ = { 0.f,1.f,1.f };
-	default_light_shader_.light_intensity_ = 0.8f;
+	default_light_shader_.light_color_ = { 1.f,1.f,1.f };
+	default_light_shader_.light_intensity_ = 0.2f;
 	p_light_shader_ = &default_light_shader_;
 
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/point_light.obj");
@@ -166,8 +166,9 @@ void Graphics::DeleteSceneObject(int index)
 
 void Graphics::InitSceneObject()
 {
-
 	GeometryFactory::GenerateGeometry("cat.obj");
+	SetSelectObject(1);
+	GeometryFactory::GenerateGeometry(EGeometryType::kPlane);
 	//GeometryFactory::GenerateGeometry(EGeometryType::kCustom);
 	//GeometryFactory::GenerateGeometry(EGeometryType::kBox);
 }
@@ -183,23 +184,23 @@ int Graphics::InitOutline(std::string* item_name)
 	return i;
 }
 
-void Graphics::AddLight(const char& light_type)
+void Graphics::AddLight(ELightType light_type)
 {
 	switch (light_type)
 	{
-	case '0':
+	case ELightType::kPonintLight:
 	{
 		p_light_ = new PointLight(*this);
 		AddSceneObject(p_light_, "PointLight");
 	}
 	break;
-	case '1':
+	case ELightType::kDirectionLight:
 	{
 		p_light_ = new DirectionalLight(*this);
 		AddSceneObject(p_light_, "DirectionalLight");
 	}
 	break;
-	case '2':
+	case ELightType::kSpotLight:
 	{
 		p_light_ = new SpotLight(*this);
 		AddSceneObject(p_light_, "SpotLight");
@@ -212,8 +213,16 @@ void Graphics::AddLight(const char& light_type)
 
 void Graphics::SetSelectObject(const int& index)
 {
-	if (index!=-1)
-	SetSelectObject(scene_objects_[index]);
+	if (index != -1)
+	{
+		SetSelectObject(scene_objects_[index]);
+		if (dynamic_cast<Light*>(p_selected_object_))
+		{
+			p_light_ = p_selected_object_;
+			p_scene_light_ = dynamic_cast<Light*>(p_selected_object_)->GetAttritute();
+		}
+	}
+
 	else
 	SetSelectObject(nullptr);
 }
