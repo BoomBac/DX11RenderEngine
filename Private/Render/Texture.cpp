@@ -1,6 +1,5 @@
 #include "WICTextureLoader.h"
 
-
 #include "Public/Render/Texture.h"
 #include "Public/Tool/Utili.h"
 

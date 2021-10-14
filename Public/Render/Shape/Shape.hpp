@@ -55,21 +55,21 @@ void Shape<T>::AdjustRotation(const CusMath::vector3d& transf, const CusMath::ve
 		*target_martix = DirectX::XMMatrixRotationX(DegToRad(coordinate.x)) *
 			DirectX::XMMatrixRotationY(DegToRad(coordinate.y)) *
 			DirectX::XMMatrixRotationZ(DegToRad(coordinate.z));
-		qDebug() << "Rotate z";
+		//qDebug() << "Rotate z";
 	}
 	if (transf.x == coordinate.x && transf.z == coordinate.z)
 	{
 		*target_martix = DirectX::XMMatrixRotationZ(DegToRad(coordinate.z)) *
 			DirectX::XMMatrixRotationX(DegToRad(coordinate.x)) *
 			DirectX::XMMatrixRotationY(DegToRad(coordinate.y));
-		qDebug() << "Rotate y";
+		//qDebug() << "Rotate y";
 	}
 	if (transf.y == coordinate.y && transf.z == coordinate.z)
 	{
 		*target_martix = DirectX::XMMatrixRotationZ(DegToRad(coordinate.z)) *
 			DirectX::XMMatrixRotationY(DegToRad(coordinate.y)) *
 			DirectX::XMMatrixRotationX(DegToRad(coordinate.x));
-		qDebug() << "Rotate x";
+		//qDebug() << "Rotate x";
 	}
 	UpdateOrient();
 }
@@ -184,7 +184,7 @@ void Shape<T>::Update(const DirectX::XMMATRIX& transf/*=DirectX::XMMatrixIdentit
 	//先平移。如果先缩放，那么平移的轴距就会被缩放改变。如果先旋转，那么绕三个轴旋转就会变成绕世界原点的旋转
 	// 自身旋转 * 世界旋转 * 缩放 * 平移
 	v_cons_buf_.mvp_matrix_ = DonedTransforms[1] * DonedTransforms[3] * DonedTransforms[2] * DonedTransforms[0] * view * projection;
-	v_cons_buf_.world_matrix_ = DonedTransforms[1] * DonedTransforms[3] * DonedTransforms[0];
+	v_cons_buf_.world_matrix_ = DonedTransforms[1] * DonedTransforms[3] * /*DonedTransforms[2] **/ DonedTransforms[0];
 }
 
 template<class T>

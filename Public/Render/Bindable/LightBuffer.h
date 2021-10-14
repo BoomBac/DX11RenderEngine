@@ -37,12 +37,13 @@ template<class T>
 void PSConstantBuffer<T>::Bind(Graphics& gfx)
 {
 	p_const_buf_.Update(gfx, **buf_);
+	dynamic_cast<BindableInterface*>(&p_const_buf_)->pc_buf_index = dynamic_cast<BindableInterface*>(this)->pc_buf_index;
 	p_const_buf_.Bind(gfx);
 }
 template<class T>
 EBindableType PSConstantBuffer<T>::GetType() const
 {
-	return EBindableType::kConstantBuffer;
+	return EBindableType::kPixelConstantBuffer;
 }
 
 #endif //DX11ENGINE_RENDER_BINDABLE_LIGHTBUFFER_H

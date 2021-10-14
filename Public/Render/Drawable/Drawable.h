@@ -73,6 +73,7 @@ public:
 	bool IsOnWorldCoordinate() const;
 	bool visiblity_ = true;
 protected:
+
 	std::vector<std::unique_ptr<BindableInterface>> binds;
 	IndexBuffer* indexbuffer;
 	//mvp变换矩阵，所有Drawable共享一份view和projection

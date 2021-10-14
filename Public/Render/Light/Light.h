@@ -26,11 +26,13 @@ public:
     LightShader raw_shader_;
     ELightType GetLightType() const;
     LightSet* GetAttritute();
+    Camera light_camera_;
 private:
     DISALLOW_COPY_AND_ASSIGN(Light)
 protected:
     LightSet attritute_;
     ELightType light_type_;
+
 };
 
 

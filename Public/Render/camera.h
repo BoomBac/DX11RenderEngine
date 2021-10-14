@@ -13,15 +13,22 @@ enum class ECameraMovementState : char
 	kDown,
 	kStop
 };
+enum class ECameraType : char
+{
+	kNormal,
+	kLight
+};
 
 class Camera
 {
 public:
 	Camera();
+	Camera(ECameraType type);
 	void SetProjection(float fov_degrees, float aspect_ratio, float near_z, float far_z);
 
 	const DirectX::XMMATRIX view_matrix() const;
 	const DirectX::XMMATRIX projection_matrix() const;
+	DirectX::XMMATRIX* view_projection_matrix();
 	const DirectX::XMVECTOR location_v() const;
 	const DirectX::XMVECTOR roation_v() const;
 	const DirectX::XMFLOAT3 location_f() const;
@@ -39,11 +46,14 @@ public:
 	void AddRotation(const DirectX::XMVECTOR& rot);
 	void AddRotation(float x, float y, float z);
 
+	ECameraType GetType() const;
+	void SetType(ECameraType type);
 	
 private:
 	void UpdateViewMatrix();
 	DirectX::XMMATRIX view_matrix_;
 	DirectX::XMMATRIX projection_matrix_;
+	DirectX::XMMATRIX view_projection_matrix_;
 	DirectX::XMVECTOR location_v_;
 	DirectX::XMVECTOR rotation_v_;
 	DirectX::XMFLOAT3 location_f_;
@@ -52,6 +62,8 @@ private:
 	const DirectX::XMVECTOR kDefaultForwardVector_ = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	const DirectX::XMVECTOR kDefaultRightVector_ = DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	const DirectX::XMVECTOR kDefaultUpVector_ = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	ECameraType camera_type_;
 
 	//当前摄像机各方向
 	XMVECTOR forward_;

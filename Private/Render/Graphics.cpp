@@ -19,6 +19,8 @@
 #include "Public/Render/Light/DirectionalLight.h"
 #include "Public/Render/Light/PointLight.h"
 #include "Public/Render/Light/SpotLight.h"
+#include "Public/Render/RenderToTexture.h"
+#include "ScreenGrab.h"
 
 
 
@@ -35,9 +37,11 @@ Drawable* Graphics::p_selected_object_ = nullptr;
 Drawable* Graphics::p_coordinate_ = nullptr;
 
 
-namespace
+namespace 
 {
-
+	RenderToTexture g_rtr;
+	Camera g_light_camera(ECameraType::kLight);
+	DirectX::XMMATRIX test_mar{DirectX::XMMatrixIdentity()};
 }
 
 Graphics::Graphics(HWND hWnd)
@@ -45,40 +49,62 @@ Graphics::Graphics(HWND hWnd)
 	InitDx11(hWnd);
 	static float color[] = { 0,0,0,1 };
 	bg_color = color;
-	camera_.SetProjection(75.f,4.f/3.f,0.1,1000.f);
+
+	//camera_set_.push_back(new Camera(ECameraType::kNormal));
+	//p_camera_ = camera_set_[0];
+	p_camera_ = new Camera();
+	p_camera_->SetProjection(75.f, 4.f / 3.f, 0.01f, 1000.f);
+	camera_set_.push_back(p_camera_);
+
 	cam_move_state_ = ECameraMovementState::kStop;
 	outline_notify_ = new Subject();
 	//初始化工厂类
 	ResManage::InitResManage(this);
 	GeometryFactory geo_factory(this);
 	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/height.jpg");
+	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Debug/Depth.png");
 
-	//初始化场景默认灯光
-	default_light_.light_color_ = { 1.f,1.f,1.f,1.f };
-	default_light_.light_dir_ = { 0.f,-1.f,0.f };
-	default_light_.light_intensity_ = 0.2f;
-	default_light_.light_type = 1.f;
-	p_scene_light_ = &default_light_;
+
+	////初始化场景默认灯光
+	//default_light_.light_color_ = { 1.f,1.f,1.f,1.f };
+	//default_light_.light_dir_ = { 0.f,-1.f,0.f };
+	//default_light_.light_intensity_ = 0.2f;
+	//default_light_.light_type = 1.f;
+	//p_scene_light_ = &default_light_;
 
 	default_light_shader_.light_color_ = { 1.f,1.f,1.f };
 	default_light_shader_.light_intensity_ = 0.2f;
 	p_light_shader_ = &default_light_shader_;
 
+
+	//g_light_camera.SetProjection(75.f, 4.f / 3.f, 0.0001f, 10000.f);
+	//g_light_camera.SetLocation({ 0.f, 10.f, 50.f,0.f });
+	//g_light_camera.SetRotation(0.f, DegToRad(180.f), 0.f);
+	//p_light_camera = &g_light_camera;
+
+
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/point_light.obj");
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/directional_light.obj");
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/spot_light.obj");
+
 	//创建坐标轴
 	p_coordinate_ = new Coordinate(*this, 10.f);
 	scene_objects_.push_back(dynamic_cast<Drawable*>(p_coordinate_));
+	AddLight(ELightType::kDirectionLight);
+	//创建默认灯光
+
+	p_light_camera = &dynamic_cast<Light*>(p_light_)->light_camera_;
+	p_light_view_projection_ = dynamic_cast<Light*>(p_light_)->light_camera_.view_projection_matrix();
+
 
 
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/cat.obj");
 
 	//初始化坐标轴和场景物体
 	InitSceneObject();
+
+	g_rtr.Initialize(this, ERTTUsage::kDepthBuffer);
 }
-
-
 
 Graphics::~Graphics()
 {
@@ -86,9 +112,17 @@ Graphics::~Graphics()
 		delete dsbuffer;
 	if (outline_notify_ != nullptr)
 		delete outline_notify_;
+
+	if (!camera_set_.empty())
+	{
+		for (auto &i : camera_set_)
+		{
+			delete i;
+		}
+	}
 	if (!scene_objects_.empty())
 	{
-		for (auto i : scene_objects_)
+		for (auto &i : scene_objects_)
 		{
 			delete i;
 		}
@@ -97,14 +131,33 @@ Graphics::~Graphics()
 
 void Graphics::EndFrame()
 {
+	//CusMath::vector3d pos(g_light_camera.rotation_f().x, g_light_camera.rotation_f().y, g_light_camera.rotation_f().z);
+	//if (p_light_!=nullptr)
+	//{
+	//	//p_light_->SetWorldLocation(pos);
+	//	//p_light_->SetWorldRotation(pos);
+	//	//qDebug() << "Rotation x:" << pos.x << ",y:" << pos.y;
+	//}
 	pDeviceContext->ClearRenderTargetView(p_render_targetview_.Get(), bg_color);
-	dsbuffer->Clear(*this);
-	UpdateCameraMovement();
-
+	g_rtr.ClearRenderTarget(this, 0.f, 1.f, 1.f, 1.f);
+	isRenderShaodw = true;
+	// Pender To Texture
+	g_rtr.SetRenderTarget(this);
 	for (const auto& i : scene_objects_)
 	{
 		i->Draw(*this);
 	}
+	//GetContext()->OMSetRenderTargets(1, p_render_targetview_.GetAddressOf(), nullptr);
+	//Render Scene
+
+	dsbuffer->Clear(*this);
+	GetContext()->OMSetRenderTargets(1, p_render_targetview_.GetAddressOf(), p_depth_stencil_view_.Get());
+	isRenderShaodw = false;
+	for (const auto& i : scene_objects_)
+	{
+		i->Draw(*this);
+	}
+	UpdateCameraMovement();
 	pSwapChain->Present(0u, 0u);
 }
 
@@ -167,10 +220,11 @@ void Graphics::DeleteSceneObject(int index)
 void Graphics::InitSceneObject()
 {
 	GeometryFactory::GenerateGeometry("cat.obj");
-	SetSelectObject(1);
+	
 	GeometryFactory::GenerateGeometry(EGeometryType::kPlane);
 	//GeometryFactory::GenerateGeometry(EGeometryType::kCustom);
 	//GeometryFactory::GenerateGeometry(EGeometryType::kBox);
+	SetSelectObject(1);
 }
 
 int Graphics::InitOutline(std::string* item_name)
@@ -219,10 +273,16 @@ void Graphics::SetSelectObject(const int& index)
 		if (dynamic_cast<Light*>(p_selected_object_))
 		{
 			p_light_ = p_selected_object_;
+			p_camera_ = &dynamic_cast<Light*>(p_light_)->light_camera_;
 			p_scene_light_ = dynamic_cast<Light*>(p_selected_object_)->GetAttritute();
+			p_light_camera = &dynamic_cast<Light*>(p_light_)->light_camera_;
+			p_light_view_projection_ = dynamic_cast<Light*>(p_light_)->light_camera_.view_projection_matrix();
+		}
+		else
+		{
+			p_camera_ = camera_set_[0];
 		}
 	}
-
 	else
 	SetSelectObject(nullptr);
 }
@@ -242,9 +302,44 @@ ID3D11DeviceContext* Graphics::GetContext()
 	return pDeviceContext.Get();
 }
 
+ID3D11DepthStencilView* Graphics::GetDepthStencilView()
+{
+	return p_depth_stencil_view_.Get();
+}
+
+int Graphics::GetWidth() const
+{
+	return width_;
+}
+
+int Graphics::GetHeight() const
+{
+	return height_;
+}
+
+void Graphics::SetRenderTargetView(ID3D11RenderTargetView* target_view)
+{
+	p_render_targetview_ = target_view;
+}
+
+void Graphics::SetDepthStencilView(ID3D11DepthStencilView* depth_view)
+{
+	p_depth_stencil_view_ = depth_view;
+}
+
+ID3D11ShaderResourceView** Graphics::GetShadowMap()
+{
+	return g_rtr.GetShaderResourceView();
+}
+
 void Graphics::SetCoordinateType(bool is_world)
 {
 	dynamic_cast<Coordinate*>(p_coordinate_)->SetCoordinateType(is_world);
+	g_rtr.SaveToImage(this);
+	//if (is_world)
+	//	p_camera_ = &g_light_camera;
+	//else
+	//	p_camera_ = camera_set_[0];
 }
 
 bool Graphics::GetCoordinateType() const
@@ -268,9 +363,11 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 		qDebug() << QString("Direct3D FeatureLevel 11 unsupported."); return hr;
 	}
 	//创建交换链
+	width_ = 800;
+	height_ = 600;
 	DXGI_SWAP_CHAIN_DESC sd = {};
-	sd.BufferDesc.Width = 800;
-	sd.BufferDesc.Height = 600;
+	sd.BufferDesc.Width = width_;
+	sd.BufferDesc.Height = height_;
 	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	sd.BufferDesc.RefreshRate.Numerator = 60;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
@@ -278,8 +375,8 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 
 	//多重采样数量和质量级别
-	sd.SampleDesc.Count = 4;
-	sd.SampleDesc.Quality = 0.2;
+	sd.SampleDesc.Count = 1;
+	sd.SampleDesc.Quality = 0;
 
 	//将场景渲染到后台缓冲区
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -294,7 +391,6 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&dxgiFactory));
 	dxgiFactory->CreateSwapChain(pDevice.Get(), &sd, pSwapChain.GetAddressOf());
 	if (FAILED(hr)) return hr;
-
 	ID3D11Texture2D* backBuffer;
 	pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
 	if(backBuffer!=nullptr)
@@ -306,13 +402,13 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	D3D11_VIEWPORT vp;
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
-	vp.Width = 800;
-	vp.Height = 600;
+	vp.Width = width_;
+	vp.Height = height_;
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	pDeviceContext->RSSetViewports(1, &vp);
 	//创建深度模板缓冲区
-	dsbuffer = new DepthStencil(800u, 600u, *this);
+	dsbuffer = new DepthStencil(static_cast<UINT>(width_), static_cast<UINT>(height_), *this);
 	dsbuffer->Bind(*this);
 	//创建贴图采样描述
 	D3D11_SAMPLER_DESC sample_desc;
@@ -333,25 +429,26 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 
 void Graphics::UpdateCameraMovement()
 {
+
 	switch (cam_move_state_)
 	{
 	case ECameraMovementState::kForward:
-		camera_.AddPosition(camera_.forward() * 0.6f);
+		p_camera_->AddPosition(p_camera_->forward() * 0.6f);
 		break;
 	case ECameraMovementState::kBack:
-		camera_.AddPosition(-camera_.forward() * 0.6f);
+		p_camera_->AddPosition(-p_camera_->forward() * 0.6f);
 		break;
 	case ECameraMovementState::kRight:
-		camera_.AddPosition(camera_.right() * 0.6f);
+		p_camera_->AddPosition(p_camera_->right() * 0.6f);
 		break;
 	case ECameraMovementState::kLeft:
-		camera_.AddPosition(-camera_.right() * 0.6f);
+		p_camera_->AddPosition(-p_camera_->right() * 0.6f);
 		break;
 	case ECameraMovementState::kUp:
-		camera_.AddPosition(camera_.up() * 0.6f);
+		p_camera_->AddPosition(p_camera_->up() * 0.6f);
 		break;
 	case ECameraMovementState::kDown:
-		camera_.AddPosition(-camera_.up() * 0.6f);
+		p_camera_->AddPosition(-p_camera_->up() * 0.6f);
 		break;
 	case ECameraMovementState::kStop:
 		break;

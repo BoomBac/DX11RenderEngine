@@ -193,6 +193,9 @@
     <ClCompile Include="ExternalWidgets\progressline.cpp">
       <Filter>External Widgets</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Render\RenderToTexture.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Public\QtFrame\DX11RenderEngine.h">
@@ -316,6 +319,9 @@
     </ClInclude>
     <ClInclude Include="Public\Render\Light\LightSet.h">
       <Filter>Header Files\Render\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\RenderToTexture.h">
+      <Filter>Header Files\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

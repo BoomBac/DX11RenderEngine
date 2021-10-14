@@ -20,14 +20,24 @@ enum class EBindableType
 	kVertexShader,
 	kPixelShader,
 	kConstantBuffer,
+	kPixelConstantBuffer,
+	kVetexConstantBuffer,
 	kDepthStencilBuffer
 };
+
+namespace
+{
+	int vc_i = 0;
+	int pc_i = 0;
+}
 class BindableInterface : public GraphicsResource
 {
 public:
 	~BindableInterface() = default;
 	virtual void Bind(Graphics& gfx) = 0;
 	virtual EBindableType GetType() const=0;
+	int* vc_buf_index_ = &vc_i;
+	int *pc_buf_index = &pc_i;
 };
 
 #endif //DX11ENGINE_RENDER_BINDABLE_BINDABLE_H

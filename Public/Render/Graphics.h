@@ -38,16 +38,20 @@ public:
 
 	//从按键输入接收摄像机运动状态
 	void UpdateCameraState(ECameraMovementState new_state);
-	Camera camera_;
+	Camera* p_camera_;
+	Camera* p_light_camera;
+	bool isRenderShaodw = true;
 	ID3D11RenderTargetView* pp_render_targetview();
 	//当前渲染视口选中的物体
 	static Drawable* p_selected_object_;
 	static Drawable* p_coordinate_;
 
-	Drawable* p_light_;
+	Drawable* p_light_ = nullptr;
 
 	LightSet* p_scene_light_;
 	LightShader* p_light_shader_;
+
+	DirectX::XMMATRIX* p_light_view_projection_;
 
 	void SetCoordinateType(bool is_world);
 	//if world coord,return true
@@ -74,13 +78,21 @@ public:
 
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetContext();
+	ID3D11DepthStencilView* GetDepthStencilView();
+	int GetWidth() const;
+	int GetHeight() const;
+	void SetRenderTargetView(ID3D11RenderTargetView* target_view);
+	void SetDepthStencilView(ID3D11DepthStencilView* depth_view);
+	ID3D11ShaderResourceView** GetShadowMap();
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>pDeviceContext = nullptr;
 	Microsoft::WRL::ComPtr<IDXGISwapChain>pSwapChain = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>p_render_targetview_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>p_sampler_state_ = nullptr;
-
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>p_depth_stencil_view_ = nullptr;
+	int width_;
+	int height_;
 	LightSet default_light_;
 	LightShader default_light_shader_;
 
@@ -93,7 +105,9 @@ private:
 	//int 为其在scene_objects_中的索引，string则为其显示在ui上的名字
 	ECameraMovementState cam_move_state_;
 
+
 	void UpdateCameraMovement();
+	std::vector<Camera*> camera_set_;
 
 	void SetSelectObject(Drawable* object);
 };

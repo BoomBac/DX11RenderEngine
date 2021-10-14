@@ -12,6 +12,7 @@
 
 #include "Public\Render\Drawable\Drawable.h"
 #include "Public\Render\Shape\Shape.hpp"
+#include "..\Texture.h"
 
 
 class Plane :
@@ -20,9 +21,11 @@ class Plane :
 public:
 	Plane() {};
 	Plane(int row, int col, const int& size, Graphics& gfx);
+	virtual void Draw(Graphics& gfx);
 	//TODO(): add copy()
 private:
 	DISALLOW_COPY_AND_ASSIGN(Plane)
+	std::vector<std::shared_ptr<Texture>> textures_;
 };
 
 

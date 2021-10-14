@@ -12,6 +12,7 @@
 #include "Public/Render/GraphicsResource.h"
 #include "Public/Render/Bindable/ConstantBuffer.h"
 #include "Public/Render/Bindable/LightBuffer.h"
+#include "Public/Render/ResManage/TextureFactory.h"
 
 template<typename T>
 using Vec = std::vector<T, std::allocator<T>>;
@@ -28,7 +29,7 @@ Plane::Plane(int row, int col, const int& size, Graphics& gfx)
 			for (int j = 0; j <= col; j++)
 			{
 				vertex.pos = { (float)(-size / 2 + j * (size / col)) ,0.f,float(size / 2 - i * (size / row)) };
-				vertex.color = { (vertex.pos.x + (float)(size / 2)) / (float)size,(vertex.pos.z + (float)(size / 2)) / (float)size,0.f };
+				vertex.color = { (vertex.pos.x + (float)(size / 2)) / (float)size,abs((vertex.pos.z - (float)(size / 2)) / (float)size),0.f };
 				vertices.push_back(vertex);
 			}
 		}
@@ -63,8 +64,13 @@ Plane::Plane(int row, int col, const int& size, Graphics& gfx)
 		BindItem pcb = std::make_unique<PSConstantBuffer<LightSet>>(gfx,&gfx.p_scene_light_);
 		AddStaticBind(std::move(pcb));
 		//test
-		view = gfx.camera_.view_matrix();
-		projection = gfx.camera_.projection_matrix();
+		view = gfx.p_camera_->view_matrix();
+		projection = gfx.p_camera_->projection_matrix();
+
+		//textures_.push_back(TextureFactory::GetInstance().GetTexture("height.jpg"));
+		//gfx.GetContext()->PSSetShaderResources(0, 1, textures_[0]->GetTextureResourceViewAddress());
+		
+
 	}
 	else
 	{
@@ -84,4 +90,10 @@ Plane::Plane(int row, int col, const int& size, Graphics& gfx)
 	};
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
 	AddBind(std::move(vcb));
+}
+void Plane::Draw(Graphics& gfx)
+{
+	//gfx.GetContext()->PSSetShaderResources(0, 1, gfx.GetShadowMap());
+	//gfx.GetContext()->PSSetShaderResources(0, 1, textures_[0]->GetTextureResourceViewAddress());
+	Drawable::Draw(gfx);
 }

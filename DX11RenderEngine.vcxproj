@@ -131,6 +131,7 @@
     <ClCompile Include="Private\Render\Light\SpotLight.cpp" />
     <ClCompile Include="Private\Render\Mesh.cpp" />
     <ClCompile Include="Private\Render\ModelResFactory.cpp" />
+    <ClCompile Include="Private\Render\RenderToTexture.cpp" />
     <ClCompile Include="Private\Render\ResManage\MeshFactory.cpp" />
     <ClCompile Include="Private\Render\ResManage\ResManage.cpp" />
     <ClCompile Include="Private\Render\ResManage\TextureFactory.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="Public\Render\Light\SpotLight.h" />
     <ClInclude Include="Public\Render\Mesh.h" />
     <ClInclude Include="Public\Render\ModelResFactory.h" />
+    <ClInclude Include="Public\Render\RenderToTexture.h" />
     <ClInclude Include="Public\Render\ResManage\MeshFactory.h" />
     <ClInclude Include="Public\Render\ResManage\ResManage.h" />
     <ClInclude Include="Public\Render\ResManage\TextureFactory.h" />

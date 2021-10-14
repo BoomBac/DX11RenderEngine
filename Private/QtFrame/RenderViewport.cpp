@@ -113,8 +113,8 @@ void RenderViewport::mouseMoveEvent(QMouseEvent* e)
 	//传入增量
 	float detlaX = (float)(e->pos().x() - posX);
 	float detlaY = (float)(e->pos().y() - posY);
-	graphicsIns->camera_.AddRotation(detlaY * 0.01f, 0.f, 0.f);
-	graphicsIns->camera_.AddRotation(0.f,detlaX * 0.01f, 0.f);
+	graphicsIns->p_camera_->AddRotation(detlaY * 0.01f, 0.f, 0.f);
+	graphicsIns->p_camera_->AddRotation(0.f,detlaX * 0.01f, 0.f);
 	if (g_mouse_pressed)
 	this->setCursor(Qt::BlankCursor);
 	//状态栏文字

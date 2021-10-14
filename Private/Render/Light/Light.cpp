@@ -4,10 +4,13 @@
 
 Light::Light(Graphics& gfx, const char* light_type) : Model::Model(gfx, light_type)
 {
-	attritute_.light_intensity_ = 0.2f;
+	attritute_.light_intensity_ = 0.4f;
 	attritute_.light_color_ = {1.f,1.f,1.f,1.f};
-	raw_shader_.light_intensity_ = 0.2f;
+	raw_shader_.light_intensity_ = 1.f;
 	raw_shader_.light_color_ = {1.f,1.f,1.f};
+	light_camera_.SetProjection(75.f, 4.f / 3.f, 0.01f, 1000.f);
+	light_camera_.SetLocation({ 0.f, 50.f, 50.f,0.f });
+	light_camera_.SetRotation(DegToRad(45.f), DegToRad(180.f), 0.f);
 	gfx.p_scene_light_ = &attritute_;
 	gfx.p_light_shader_ = &raw_shader_;
 }

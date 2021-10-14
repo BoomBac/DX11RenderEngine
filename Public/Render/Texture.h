@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include <wrl/module.h>
 
+#include "Public/Render/Bindable/BindableInterface.h"
 
 #ifndef DISALLOW_COPY_AND_ASSIGN
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
@@ -10,7 +11,7 @@
     TypeName &operator=(const TypeName &) = delete;
 #endif
 
-class Texture
+class Texture 
 {
 public:
     Texture(ID3D11Device* device);

@@ -65,8 +65,8 @@ Box::Box(const int& size,Graphics& gfx)
 		AddStaticBind(std::move(vs));
 		AddStaticBind(std::move(il));
 		//test
-		view = gfx.camera_.view_matrix();
-		projection = gfx.camera_.projection_matrix();
+		view = gfx.p_camera_->view_matrix();
+		projection = gfx.p_camera_->projection_matrix();
 	}
 	else
 	{

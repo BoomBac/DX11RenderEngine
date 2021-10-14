@@ -21,3 +21,7 @@ inline float DegToRad(const float& angle)
 {
 	return angle * PI / 180.f;
 }
+inline float RadToDeg(const float& radius)
+{
+	return radius * 180.f * PI;
+}

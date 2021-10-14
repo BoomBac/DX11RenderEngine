@@ -73,13 +73,17 @@ class VConstantBuffer : public ConstantBuffer<T>
 public:
 	using ConstantBuffer<T>::ConstantBuffer;
 	virtual void Bind(Graphics& gfx) override;
+	EBindableType GetType() const override
+	{
+		return EBindableType::kVetexConstantBuffer;
+	}
 private:
 	DISALLOW_COPY_AND_ASSIGN(VConstantBuffer)
 };
 template<class T>
 void VConstantBuffer<T>::Bind(Graphics& gfx)
 {
-	GetContext(gfx)->VSSetConstantBuffers(0, 1, p_constant_buffer_.GetAddressOf());
+	GetContext(gfx)->VSSetConstantBuffers(*BindableInterface::vc_buf_index_, 1, p_constant_buffer_.GetAddressOf());
 }
 
 template<class T>
@@ -88,13 +92,17 @@ class PConstantBuffer : public ConstantBuffer<T>
 public:
 	using ConstantBuffer<T>::ConstantBuffer;
 	virtual void Bind(Graphics& gfx) override;
+	EBindableType GetType() const override
+	{
+		return EBindableType::kPixelConstantBuffer;
+	}
 private:
 	DISALLOW_COPY_AND_ASSIGN(PConstantBuffer)
 };
 template<class T>
 void PConstantBuffer<T>::Bind(Graphics& gfx)
 {
-	GetContext(gfx)->PSSetConstantBuffers(0, 1, p_constant_buffer_.GetAddressOf());
+	GetContext(gfx)->PSSetConstantBuffers(*BindableInterface::pc_buf_index, 1, p_constant_buffer_.GetAddressOf());
 }
 
 #endif //DX11ENGINE_RENDER_BINDABLE_CONSTANTBUFFER_H

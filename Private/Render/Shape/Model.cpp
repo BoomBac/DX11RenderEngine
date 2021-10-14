@@ -28,8 +28,8 @@ Model::Model(Graphics& gfx)
 			break;
 		}
 	}
-	view = gfx.camera_.view_matrix();
-	projection = gfx.camera_.projection_matrix();
+	view = gfx.p_camera_->view_matrix();
+	projection = gfx.p_camera_->projection_matrix();
 	world_location_ = {0.f,0.f,0.f};
 	world_rotation_ = { 0.f,0.f,0.f };
 	scale_ = { 1.f,1.f,1.f };
@@ -41,8 +41,8 @@ Model::Model(Graphics& gfx)
 	};
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
 	AddBind(std::move(vcb));
-	textures_.push_back(TextureFactory::GetInstance().GetTexture("height.jpg"));
-	gfx.GetContext()->PSSetShaderResources(0, 1, textures_[0]->GetTextureResourceViewAddress());
+	textures_.push_back(TextureFactory::GetInstance().GetTexture("Depth.png"));
+	//gfx.GetContext()->PSSetShaderResources(0, 1, textures_[0]->GetTextureResourceViewAddress());
 }
 
 Model::Model(Graphics& gfx, const char* res_key)
@@ -61,8 +61,8 @@ Model::Model(Graphics& gfx, const char* res_key)
 			break;
 		}
 	}
-	view = gfx.camera_.view_matrix();
-	projection = gfx.camera_.projection_matrix();
+	view = gfx.p_camera_->view_matrix();
+	projection = gfx.p_camera_->projection_matrix();
 	world_location_ = { 0.f,0.f,0.f };
 	world_rotation_ = { 0.f,0.f,0.f };
 	scale_ = { 1.f,1.f,1.f };
@@ -72,11 +72,11 @@ Model::Model(Graphics& gfx, const char* res_key)
 		view *
 		projection
 	};
-	v_cons_buf_.camera_pos = gfx.camera_.location_f();
+	v_cons_buf_.camera_pos = gfx.p_camera_->location_f();
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
 	AddBind(std::move(vcb));
-	textures_.push_back(TextureFactory::GetInstance().GetTexture("height.jpg"));
-	gfx.GetContext()->PSSetShaderResources(0, 1, textures_[0]->GetTextureResourceViewAddress());
+	textures_.push_back(TextureFactory::GetInstance().GetTexture("Depth.png"));
+	//gfx.GetContext()->PSSetShaderResources(0, 1, textures_[0]->GetTextureResourceViewAddress());
 }
 
 Model::~Model()
@@ -89,7 +89,9 @@ Model::~Model()
 
 void Model::Draw(Graphics& gfx)
 {
-	gfx.GetContext()->PSSetShaderResources(0, 1, textures_[0]->GetTextureResourceViewAddress());
+
+
+	//gfx.GetContext()->PSSetShaderResources(0, 1, textures_[0]->GetTextureResourceViewAddress());
 	Drawable::Draw(gfx);
 }
 

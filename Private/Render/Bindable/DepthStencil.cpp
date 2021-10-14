@@ -9,8 +9,8 @@ DepthStencil::DepthStencil(UINT x, UINT y, Graphics& gfx):w_(x),h_(y)
 	dsd.MipLevels = 1;
 	dsd.ArraySize = 1;
 	dsd.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	dsd.SampleDesc.Count = 4;	//与交换链一致
-	dsd.SampleDesc.Quality = 0.2;
+	dsd.SampleDesc.Count = 1;	//与交换链一致
+	dsd.SampleDesc.Quality = 0;
 	dsd.Usage = D3D11_USAGE_DEFAULT;
 	dsd.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	dsd.CPUAccessFlags = 0;
@@ -23,6 +23,7 @@ DepthStencil::DepthStencil(UINT x, UINT y, Graphics& gfx):w_(x),h_(y)
 
 void DepthStencil::Bind(Graphics& gfx)
 {
+	gfx.SetDepthStencilView(pDepthStencilView.Get());
 	auto adress = gfx.pp_render_targetview();
 	GetContext(gfx)->OMSetRenderTargets(1, &adress, pDepthStencilView.Get());
 }

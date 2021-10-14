@@ -3,6 +3,8 @@
 #include "Public/Render/Graphics.h"
 #include "Public/Render/Bindable/BindableInterface.h"
 #include "Public/Render/Bindable/IndexBuffer.h"
+#include "Public/Render/ResManage/TextureFactory.h"
+#include "Public/Render/Bindable/ConstantBuffer.h"
 
 
 namespace dx = DirectX;
@@ -13,18 +15,60 @@ DirectX::XMMATRIX Drawable::projection;
 void Drawable::Draw(Graphics& gfx)
 {
 	if (!visiblity_) return;
-	view = gfx.camera_.view_matrix();
-	v_cons_buf_.camera_pos = gfx.camera_.location_f();
+	if (!gfx.isRenderShaodw)
+	{
+		view = gfx.p_light_camera->view_matrix();
+		v_cons_buf_.camera_pos = gfx.p_light_camera->location_f();
+	}
+	else
+	{
+		view = gfx.p_camera_->view_matrix();// *gfx.p_camera_->projection_matrix();
+		v_cons_buf_.camera_pos = gfx.p_camera_->location_f();
+	}
+	int pc_id = -1;
+	int vc_id = -1;
 	for (auto& i : binds)
 	{
+		if (i->GetType() == EBindableType::kPixelConstantBuffer)
+		{
+			++pc_id;
+			i->pc_buf_index = &pc_id;
+		}
+		if (i->GetType() == EBindableType::kVetexConstantBuffer)
+		{
+			++vc_id;
+			i->vc_buf_index_ = &vc_id;
+		}
 		i->Bind(gfx);
 	}
 	for (auto& i : GetStaticBinds())
 	{
+		if (i->GetType() == EBindableType::kPixelConstantBuffer)
+		{
+			++pc_id;
+			i->pc_buf_index = &pc_id;
+		}
+		if (i->GetType() == EBindableType::kVetexConstantBuffer)
+		{
+			++vc_id;
+			i->vc_buf_index_ = &vc_id;
+		}
 		i->Bind(gfx);
 	}
+
+	if (gfx.isRenderShaodw)
+	{
+		gfx.GetContext()->PSSetShader(nullptr, nullptr, 0u);
+	}
+	else
+	{
+		gfx.GetContext()->PSSetShaderResources(0, 1, gfx.GetShadowMap());
+	}
+
 	Update();
 	gfx.DrawIndexed(indexbuffer->size_);
+	//gfx.GetContext()->PSSetShader(nullptr, nullptr, 0u);
+	gfx.GetContext()->PSSetShaderResources(0, 1, TextureFactory::GetInstance().GetTexture("Depth.png")->GetTextureResourceViewAddress());
 }
 
 void Drawable::AddBind(std::unique_ptr<BindableInterface> bind)

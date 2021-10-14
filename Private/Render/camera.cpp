@@ -10,12 +10,19 @@ Camera::Camera()
 	this->rotation_f_ = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	this->rotation_v_ = DirectX::XMLoadFloat3(&this->rotation_f_);
 	this->UpdateViewMatrix();
+	camera_type_ = ECameraType::kNormal;
+}
+
+Camera::Camera(ECameraType type) : Camera()
+{
+	camera_type_ = type;
 }
 
 void Camera::SetProjection(float fov_degrees, float aspect_ratio, float near_z, float far_z)
 {
 	float fov_radians = (fov_degrees / 360.0f) * DirectX::XM_2PI;
 	this->projection_matrix_ = DirectX::XMMatrixPerspectiveFovLH(fov_radians, aspect_ratio, near_z, far_z);
+	view_projection_matrix_ = view_matrix_ * projection_matrix_;
 }
 
 const DirectX::XMMATRIX Camera::view_matrix() const
@@ -26,6 +33,11 @@ const DirectX::XMMATRIX Camera::view_matrix() const
 const DirectX::XMMATRIX Camera::projection_matrix() const
 {
 	return this->projection_matrix_;
+}
+
+DirectX::XMMATRIX* Camera::view_projection_matrix() 
+{
+	return &this->view_projection_matrix_;
 }
 
 const DirectX::XMVECTOR Camera::location_v() const
@@ -123,6 +135,16 @@ void Camera::AddRotation(float x, float y, float z)
 	this->UpdateViewMatrix();
 }
 
+ECameraType Camera::GetType() const
+{
+	return camera_type_;
+}
+
+void Camera::SetType(ECameraType type)
+{
+	camera_type_ = type;
+}
+
 void Camera::UpdateViewMatrix()
 {
 	//Calculate camera rotation matrix
@@ -141,4 +163,6 @@ void Camera::UpdateViewMatrix()
 	this->forward_ = XMVector3Transform(kDefaultForwardVector_, matrix);
 	this->right_ = XMVector3Transform(kDefaultRightVector_, matrix);
 	this->up_ = XMVector3Transform(kDefaultUpVector_, matrix);
+
+	view_projection_matrix_ = view_matrix_ * projection_matrix_;
 }
