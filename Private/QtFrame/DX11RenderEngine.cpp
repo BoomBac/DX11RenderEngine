@@ -7,6 +7,8 @@
 #include <QListWidget>
 #include <QTableWidget> 
 
+
+
 #include "Public/Global.h"
 #include "Public/QtFrame/DX11RenderEngine.h"
 #include "vector3D.h"
@@ -30,7 +32,8 @@ DX11RenderEngine::DX11RenderEngine(QWidget* parent)
 {
     ui.setupUi(this);
     this->setFixedSize(1280, 720);
-
+	//初始化dx渲染视口
+	ui.renderView->InitialViewport();
     //创建状态栏相关
     QLabel* lb_pos = new QLabel(QString("MousePos:"), this);
     ui.statusBar->addWidget(lb_pos);
@@ -120,6 +123,8 @@ DX11RenderEngine::DX11RenderEngine(QWidget* parent)
 	InitTransformDetail();
     //初始化灯光属性
     InitLightDetail();
+
+	InitRenderDetail();
     //选择背景颜色对话框
     connect(ui.bt_ChooseBC, &QPushButton::clicked, [=]() {
         static float bgc[4] = { 0.f,0.f,0.f,1.f };
@@ -130,8 +135,7 @@ DX11RenderEngine::DX11RenderEngine(QWidget* parent)
         ui.renderView->SetbgColor(bgc);
         });
 
-    //初始化dx渲染视口
-    ui.renderView->InitialViewport();
+
     //arr接收场景构造时创建的物体名称，暂时最多16个
     std::string arr[16];
     auto size = ui.renderView->InitOutline(arr);
@@ -239,6 +243,8 @@ void DX11RenderEngine::OnOutlineItemChanged(int row)
 			AdjustLightProperty(g_light_type, next_light_type);
 			g_light_type = next_light_type;
         }
+		AdjustRenderProperty();
+		AdjustRenderProperty();
     }
     else
     {
@@ -398,6 +404,27 @@ void DX11RenderEngine::InitTransformDetail()
 		});
 }
 
+void DX11RenderEngine::InitRenderDetail()
+{
+	p_cb_visiblity_ = new QCheckBox(this);
+	p_cb_shadow_ = new QCheckBox(this);
+	ui.tb_render->setCellWidget(0, 1, p_cb_visiblity_);
+	ui.tb_render->setCellWidget(1, 1, p_cb_shadow_);
+	AdjustRenderProperty();
+	connect(p_cb_visiblity_, &QCheckBox::stateChanged, [this](int vis) {
+		if (vis == 0)
+			ui.renderView->SetRenderProperty(false, p_cb_shadow_->checkState());
+		else
+			ui.renderView->SetRenderProperty(true, p_cb_shadow_->checkState());
+		});
+	connect(p_cb_shadow_, &QCheckBox::stateChanged, [this](int vis) {
+		if (vis == 0)
+			ui.renderView->SetRenderProperty(p_cb_visiblity_->checkState(),false);
+		else
+			ui.renderView->SetRenderProperty(p_cb_visiblity_->checkState(),true);
+		});
+}
+
 void DX11RenderEngine::AdjustLightProperty(ELightType pre_type, ELightType next_type)
 {
 	p_light_color_->setStyleSheet("background-color:" + QString("rgb(%1,%2,%3);").arg(static_cast<int>(ui.renderView->graphicsIns->p_scene_light_->light_color_.x * 255.f)).
@@ -487,5 +514,24 @@ void DX11RenderEngine::AdjustLightProperty(ELightType pre_type, ELightType next_
 	default:
 		break;
 	}
+}
+
+void DX11RenderEngine::AdjustRenderProperty()
+{
+	bool vis;
+	bool shadow;
+	p_cb_visiblity_->blockSignals(true);
+	p_cb_shadow_->blockSignals(true);
+	ui.renderView->GetRenderProperty(vis, shadow);
+	if (vis)
+		p_cb_visiblity_->setCheckState(Qt::CheckState::Checked);
+	else
+		p_cb_visiblity_->setCheckState(Qt::CheckState::Unchecked);
+	if (shadow)
+		p_cb_shadow_->setCheckState(Qt::CheckState::Checked);
+	else
+		p_cb_shadow_->setCheckState(Qt::CheckState::Unchecked);
+	p_cb_visiblity_->blockSignals(false);
+	p_cb_shadow_->blockSignals(false);
 }
 

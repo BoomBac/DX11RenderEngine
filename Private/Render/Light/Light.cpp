@@ -13,6 +13,7 @@ Light::Light(Graphics& gfx, const char* light_type) : Model::Model(gfx, light_ty
 	light_camera_.SetRotation(DegToRad(45.f), DegToRad(180.f), 0.f);
 	gfx.p_scene_light_ = &attritute_;
 	gfx.p_light_shader_ = &raw_shader_;
+	cast_shadow_ = false;
 }
 
 void Light::UpdateAttribute()

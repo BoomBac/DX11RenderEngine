@@ -53,7 +53,9 @@ public:
 	//1：强度，2：点光范围，3：投影灯外角，4：投影灯内角
 	void SetLightProperty(const float& r, const float& g, const float& b, const char& flag);
 	ELightType GetLightType() const;
-
+	//设置渲染属性
+	void SetRenderProperty(const bool& vis, const bool& shadow);
+	void GetRenderProperty(bool& vis, bool& shadow);
 signals:
 	void MouseMoved(QString& pos);
 	void MousePressed(QString& state);

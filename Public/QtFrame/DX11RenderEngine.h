@@ -9,6 +9,7 @@
 
 
 #include <QtWidgets/QMainWindow>
+#include <QCheckBox>
 
 #include "ExternalWidgets/progressline.h"
 
@@ -44,6 +45,7 @@ private:
 
     void InitLightDetail();
     void InitTransformDetail();
+    void InitRenderDetail();
     //light property
     QWidget* p_light_detail_;
     QTableWidget* p_light_property_;
@@ -53,5 +55,10 @@ private:
     ProgressLine* p_light_i_angle_;
     ProgressLine* p_light_o_angle_;
     void AdjustLightProperty(ELightType pre_type, ELightType next_type);
+
+    //render property
+    QCheckBox* p_cb_visiblity_;
+    QCheckBox* p_cb_shadow_;
+    void AdjustRenderProperty();
 };
 #endif

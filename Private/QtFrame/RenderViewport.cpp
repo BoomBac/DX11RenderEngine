@@ -268,6 +268,18 @@ ELightType RenderViewport::GetLightType() const
 	}
 }
 
+void RenderViewport::SetRenderProperty(const bool& vis, const bool& shadow)
+{
+	graphicsIns->p_selected_object_->cast_shadow_ = shadow;
+	graphicsIns->p_selected_object_->visiblity_ = vis;
+}
+
+void RenderViewport::GetRenderProperty(bool& vis, bool& shadow)
+{
+	vis = graphicsIns->p_selected_object_->visiblity_;
+	shadow = graphicsIns->p_selected_object_->cast_shadow_;
+}
+
 void RenderViewport::OnOutlineChanged(bool is_add)
 {
 	if (is_add)

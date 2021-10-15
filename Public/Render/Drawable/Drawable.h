@@ -71,7 +71,9 @@ public:
 	DirectX::XMFLOAT3 up_direction() const;
 
 	bool IsOnWorldCoordinate() const;
+	//渲染属性
 	bool visiblity_ = true;
+	bool cast_shadow_ = true;
 protected:
 
 	std::vector<std::unique_ptr<BindableInterface>> binds;

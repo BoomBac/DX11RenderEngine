@@ -15,6 +15,7 @@ DirectX::XMMATRIX Drawable::projection;
 void Drawable::Draw(Graphics& gfx)
 {
 	if (!visiblity_) return;
+	//根据pass类型选择camera
 	if (!gfx.isRenderShaodw)
 	{
 		view = gfx.p_light_camera->view_matrix();
@@ -27,6 +28,7 @@ void Drawable::Draw(Graphics& gfx)
 	}
 	int pc_id = -1;
 	int vc_id = -1;
+	//记录可绑定多个bind的数量，并将他们绑定到不同的slot
 	for (auto& i : binds)
 	{
 		if (i->GetType() == EBindableType::kPixelConstantBuffer)
@@ -55,7 +57,7 @@ void Drawable::Draw(Graphics& gfx)
 		}
 		i->Bind(gfx);
 	}
-
+	//生成shadowMap时PixelShader置空，正常渲染时将shadowMap绑定到着色器资源
 	if (gfx.isRenderShaodw)
 	{
 		gfx.GetContext()->PSSetShader(nullptr, nullptr, 0u);
@@ -66,8 +68,17 @@ void Drawable::Draw(Graphics& gfx)
 	}
 
 	Update();
-	gfx.DrawIndexed(indexbuffer->size_);
-	//gfx.GetContext()->PSSetShader(nullptr, nullptr, 0u);
+	if (gfx.isRenderShaodw)
+	{
+		if (cast_shadow_)
+		{
+			gfx.DrawIndexed(indexbuffer->size_);
+		}
+	}
+	else
+		gfx.DrawIndexed(indexbuffer->size_);
+
+	//渲染结束将shadowMap槽位的shaderResource解绑，以便其在下一个shadowPass可以用作depthbuffer
 	gfx.GetContext()->PSSetShaderResources(0, 1, TextureFactory::GetInstance().GetTexture("Depth.png")->GetTextureResourceViewAddress());
 }
 

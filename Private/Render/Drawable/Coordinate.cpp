@@ -12,6 +12,7 @@ using BindItem = std::unique_ptr<BindableInterface>;
 
 Coordinate::Coordinate(Graphics& gfx, const float& size)
 {
+	cast_shadow_ = false;
 	if (!isInitialzed())
 	{
 		CusMath::vector3d pos = gfx.p_selected_object_ == nullptr ? CusMath::vector3d{0.f, 0.f, 0.f} : gfx.p_selected_object_->GetWorldLocation();
