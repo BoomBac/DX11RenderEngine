@@ -15,7 +15,7 @@ GeometryFactory::GeometryFactory(Graphics* g)
 	gfx = g;
 }
 
-void GeometryFactory::GenerateGeometry(EGeometryType g_type)
+Drawable* GeometryFactory::GenerateGeometry(EGeometryType g_type)
 {
 	assert(gfx != nullptr);
 	Drawable* new_object = nullptr;
@@ -48,9 +48,10 @@ void GeometryFactory::GenerateGeometry(EGeometryType g_type)
 	}
 	if(new_object != nullptr)
 	gfx->AddSceneObject(new_object, object_name);
+	return new_object;
 }
 
-void GeometryFactory::GenerateGeometry(const char* file_name)
+Drawable* GeometryFactory::GenerateGeometry(const char* file_name)
 {
 	assert(gfx != nullptr);
 	Drawable* new_object = nullptr;
@@ -61,5 +62,6 @@ void GeometryFactory::GenerateGeometry(const char* file_name)
 	std::string s_id(id);
 	if (new_object != nullptr)
 		gfx->AddSceneObject(new_object, (name+s_id).c_str());
+	return new_object;
 }
 

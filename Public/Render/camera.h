@@ -28,7 +28,7 @@ public:
 
 	const DirectX::XMMATRIX view_matrix() const;
 	const DirectX::XMMATRIX projection_matrix() const;
-	DirectX::XMMATRIX* view_projection_matrix();
+	const DirectX::XMMATRIX view_projection_matrix() const;
 	const DirectX::XMVECTOR location_v() const;
 	const DirectX::XMVECTOR roation_v() const;
 	const DirectX::XMFLOAT3 location_f() const;

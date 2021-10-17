@@ -56,6 +56,7 @@ public:
 	//设置渲染属性
 	void SetRenderProperty(const bool& vis, const bool& shadow);
 	void GetRenderProperty(bool& vis, bool& shadow);
+	void SetShadowProperty(float far_, float near_, float size, float bias);
 signals:
 	void MouseMoved(QString& pos);
 	void MousePressed(QString& state);

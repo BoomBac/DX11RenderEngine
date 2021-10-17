@@ -15,9 +15,9 @@ class GeometryFactory
 public:
     GeometryFactory(Graphics* g);
     //根据类型生成内置几何体或者默认模型
-    static void GenerateGeometry(EGeometryType g_type);
+    static Drawable* GenerateGeometry(EGeometryType g_type);
     //根据模型名称生成
-    static void GenerateGeometry(const char* file_name);
+    static Drawable* GenerateGeometry(const char* file_name);
 private:
     DISALLOW_COPY_AND_ASSIGN(GeometryFactory)
     static Graphics* gfx;

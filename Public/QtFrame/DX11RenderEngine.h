@@ -59,6 +59,10 @@ private:
     //render property
     QCheckBox* p_cb_visiblity_;
     QCheckBox* p_cb_shadow_;
+    ProgressLine* p_shadow_light_size_;
+    ProgressLine* p_shadow_light_near_;
+    ProgressLine* p_shadow_light_far_;
+    ProgressLine* p_shadow_bias_;
     void AdjustRenderProperty();
 };
 #endif

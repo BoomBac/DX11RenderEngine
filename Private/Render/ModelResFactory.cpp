@@ -75,7 +75,8 @@ void ModelResFactory::AddResource(std::string model_key)
 	{
 		v.push_back(std::make_shared<PixelShader>(*gfx_, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/Lambert.cso"));
 		v.push_back(std::make_shared<PSConstantBuffer<LightSet>>(*gfx_, &gfx_->p_scene_light_));
-		v.push_back(std::make_shared<PSConstantBuffer<DirectX::XMMATRIX>>(*gfx_, &gfx_->p_light_view_projection_));
+		v.push_back(std::make_shared<PSConstantBuffer<LightMatrix>>(*gfx_, &gfx_->p_light_matrix_));
+		v.push_back(std::make_shared<PSConstantBuffer<ShadowEffect>>(*gfx_, &gfx_->p_shadow_effect_));
 	}
 	VertexLayout vl;
 	//TODO():顶点布局要根据导入的obj文件进行调整

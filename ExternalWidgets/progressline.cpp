@@ -8,7 +8,7 @@ namespace  {
     int pos_x = 0;
     int pos_y = 0;
     bool left_pressed = false;
-       int g_x = 0;
+    int g_x = 0;
 }
 ProgressLine::ProgressLine(QWidget *parent) :
     QWidget(parent),
@@ -76,6 +76,10 @@ ProgressLine::ProgressLine(QWidget *parent, QColor back_color, QColor chunk_colo
     ui->lineEdit->setText(QString("%1").arg(QString::number(value_,'f',2)));
     ui->progressBar->setMaximum(max_);
     ui->progressBar->setMinimum(min_);
+}
+
+ProgressLine::ProgressLine(QWidget* parent, double max, double min, double defalut) : ProgressLine(parent,QColor(255,255,255),QColor(180,180,180),QColor(255,0,0),max,min,defalut)
+{
 }
 
 ProgressLine::~ProgressLine()

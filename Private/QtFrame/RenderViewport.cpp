@@ -280,6 +280,34 @@ void RenderViewport::GetRenderProperty(bool& vis, bool& shadow)
 	shadow = graphicsIns->p_selected_object_->cast_shadow_;
 }
 
+void RenderViewport::SetShadowProperty(float far_, float near_, float size, float bias)
+{
+	if (far_ != -1)
+	{
+		graphicsIns->p_shadow_effect_->light_far = far_;
+		qDebug() << "far" << far_;
+	}
+
+	else if (near_ != -1)
+	{
+		graphicsIns->p_shadow_effect_->light_near = near_;
+		qDebug() << "near" << near_;
+	}
+
+	else if (size != -1)
+	{
+		graphicsIns->p_shadow_effect_->light_size = size;
+		qDebug() << "size" << near_;
+	}
+
+	else if (bias != -1)
+	{
+		graphicsIns->p_shadow_effect_->max_bias = bias;
+		qDebug() << "bias" << bias;
+	}
+
+}
+
 void RenderViewport::OnOutlineChanged(bool is_add)
 {
 	if (is_add)

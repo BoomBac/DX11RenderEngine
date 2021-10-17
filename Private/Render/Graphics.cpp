@@ -37,11 +37,14 @@ Drawable* Graphics::p_selected_object_ = nullptr;
 Drawable* Graphics::p_coordinate_ = nullptr;
 
 
+
+
 namespace 
 {
 	RenderToTexture g_rtr;
 	Camera g_light_camera(ECameraType::kLight);
 	DirectX::XMMATRIX test_mar{DirectX::XMMatrixIdentity()};
+
 }
 
 Graphics::Graphics(HWND hWnd)
@@ -49,11 +52,15 @@ Graphics::Graphics(HWND hWnd)
 	InitDx11(hWnd);
 	static float color[] = { 0,0,0,1 };
 	bg_color = color;
-
+	shadowParma.light_far = 1000.f;
+	shadowParma.light_near = 1.f;
+	shadowParma.light_size = 0.4f;
+	shadowParma.max_bias = 0.001f;
+	p_shadow_effect_ = &shadowParma;
 	//camera_set_.push_back(new Camera(ECameraType::kNormal));
 	//p_camera_ = camera_set_[0];
 	p_camera_ = new Camera();
-	p_camera_->SetProjection(75.f, 4.f / 3.f, 0.01f, 1000.f);
+	p_camera_->SetProjection(75.f, 4.f / 3.f, 1.f, 1000.f);
 	camera_set_.push_back(p_camera_);
 
 	cam_move_state_ = ECameraMovementState::kStop;
@@ -94,8 +101,7 @@ Graphics::Graphics(HWND hWnd)
 	//创建默认灯光
 
 	p_light_camera = &dynamic_cast<Light*>(p_light_)->light_camera_;
-	p_light_view_projection_ = dynamic_cast<Light*>(p_light_)->light_camera_.view_projection_matrix();
-
+	p_light_matrix_ = dynamic_cast<Light*>(p_light_)->GetLightMatrix();
 
 
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/cat.obj");
@@ -138,6 +144,7 @@ void Graphics::EndFrame()
 	//	//p_light_->SetWorldRotation(pos);
 	//	//qDebug() << "Rotation x:" << pos.x << ",y:" << pos.y;
 	//}
+	dynamic_cast<Light*>(p_light_)->UpdateLightMatrix();
 	pDeviceContext->ClearRenderTargetView(p_render_targetview_.Get(), bg_color);
 	g_rtr.ClearRenderTarget(this, 0.f, 1.f, 1.f, 1.f);
 	isRenderShaodw = true;
@@ -221,7 +228,8 @@ void Graphics::InitSceneObject()
 {
 	GeometryFactory::GenerateGeometry("cat.obj");
 	
-	GeometryFactory::GenerateGeometry(EGeometryType::kPlane);
+	auto plane = GeometryFactory::GenerateGeometry(EGeometryType::kPlane);
+	plane->SetActorScale(CusMath::vector3d{ 5.f, 1.f, 5.f });
 	//GeometryFactory::GenerateGeometry(EGeometryType::kCustom);
 	//GeometryFactory::GenerateGeometry(EGeometryType::kBox);
 	SetSelectObject(1);
@@ -276,7 +284,9 @@ void Graphics::SetSelectObject(const int& index)
 			p_camera_ = &dynamic_cast<Light*>(p_light_)->light_camera_;
 			p_scene_light_ = dynamic_cast<Light*>(p_selected_object_)->GetAttritute();
 			p_light_camera = &dynamic_cast<Light*>(p_light_)->light_camera_;
-			p_light_view_projection_ = dynamic_cast<Light*>(p_light_)->light_camera_.view_projection_matrix();
+			p_light_matrix_ = dynamic_cast<Light*>(p_light_)->GetLightMatrix();
+			//p_light_view_projection_ = &dynamic_cast<Light*>(p_light_)->GetLightMatrix()->view_porjection;
+			//p_light_view_projection_ = dynamic_cast<Light*>(p_light_)->light_camera_.view_projection_matrix();
 		}
 		else
 		{

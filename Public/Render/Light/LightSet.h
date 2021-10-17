@@ -21,6 +21,13 @@ struct LightSet
 	float light_type;
 };
 
+struct LightMatrix
+{
+	DirectX::XMMATRIX view_porjection;
+	DirectX::XMMATRIX view;
+	DirectX::XMMATRIX porjection;
+};
+
 struct LightShader
 {
 	DirectX::XMFLOAT3 light_color_;

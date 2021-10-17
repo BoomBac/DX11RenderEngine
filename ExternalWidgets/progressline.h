@@ -19,6 +19,7 @@ class ProgressLine : public QWidget
 public:
     explicit ProgressLine(QWidget *parent = nullptr);
     explicit ProgressLine(QWidget *parent,QColor back_color,QColor chunk_color,QColor border_color,double max,double min,double defalut);
+    explicit ProgressLine(QWidget *parent,double max,double min,double defalut);
     ~ProgressLine();
     QColor GetBackgroundColor();
     void SetBackgroundColor(QColor color);

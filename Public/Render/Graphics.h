@@ -21,6 +21,15 @@ class DepthStencil;
 class Drawable;
 class Light;
 
+struct ShadowEffect
+{
+	float light_size;
+	float max_bias;
+	float light_near;
+	float light_far;
+};
+
+
 class Graphics
 {
 	friend class GraphicsResource;
@@ -52,6 +61,8 @@ public:
 	LightShader* p_light_shader_;
 
 	DirectX::XMMATRIX* p_light_view_projection_;
+	LightMatrix* p_light_matrix_;
+	ShadowEffect* p_shadow_effect_;
 
 	void SetCoordinateType(bool is_world);
 	//if world coord,return true
@@ -104,11 +115,10 @@ private:
 	// 将场景元素和他们的名字对应
 	//int 为其在scene_objects_中的索引，string则为其显示在ui上的名字
 	ECameraMovementState cam_move_state_;
-
-
 	void UpdateCameraMovement();
 	std::vector<Camera*> camera_set_;
-
 	void SetSelectObject(Drawable* object);
+
+	ShadowEffect shadowParma;
 };
 

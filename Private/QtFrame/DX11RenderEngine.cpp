@@ -423,6 +423,26 @@ void DX11RenderEngine::InitRenderDetail()
 		else
 			ui.renderView->SetRenderProperty(p_cb_visiblity_->checkState(),true);
 		});
+	p_shadow_bias_ = new ProgressLine(this,1.f, 0.f, 0.002f);
+	p_shadow_light_far_ = new ProgressLine(this,10000.f, 0.f, 1000.f);
+	p_shadow_light_near_ = new ProgressLine(this,500.f, 0.f, 1.f);
+	p_shadow_light_size_ = new ProgressLine(this,100.f, 0.f, 0.4f);
+	ui.tb_render->setCellWidget(3, 1, p_shadow_bias_);
+	ui.tb_render->setCellWidget(5, 1, p_shadow_light_far_);
+	ui.tb_render->setCellWidget(4, 1, p_shadow_light_near_);
+	ui.tb_render->setCellWidget(2, 1, p_shadow_light_size_);
+	connect(p_shadow_bias_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetShadowProperty(-1,-1,-1,val);
+		});
+	connect(p_shadow_light_far_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetShadowProperty(val, -1,-1, -1);
+		});	
+	connect(p_shadow_light_near_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetShadowProperty(-1, val,-1,- 1);
+		});
+	connect(p_shadow_light_size_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetShadowProperty(-1, -1, val,-1);
+		});
 }
 
 void DX11RenderEngine::AdjustLightProperty(ELightType pre_type, ELightType next_type)

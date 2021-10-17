@@ -35,9 +35,9 @@ const DirectX::XMMATRIX Camera::projection_matrix() const
 	return this->projection_matrix_;
 }
 
-DirectX::XMMATRIX* Camera::view_projection_matrix() 
+const DirectX::XMMATRIX Camera::view_projection_matrix() const
 {
-	return &this->view_projection_matrix_;
+	return this->view_projection_matrix_;
 }
 
 const DirectX::XMVECTOR Camera::location_v() const
