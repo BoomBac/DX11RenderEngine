@@ -80,9 +80,9 @@ Coordinate::Coordinate(Graphics& gfx, const float& size)
 void Coordinate::Draw(Graphics& gfx)
 {
 	if (p_object_attached_ == nullptr) return;
-	v_cons_buf_.mvp_matrix_ = p_object_attached_->GetTranslateMartix() * v_cons_buf_.mvp_matrix_;
+	DonedTransforms[0] = p_object_attached_->GetTranslateMartix();
 	if (!is_world_)
-		v_cons_buf_.mvp_matrix_ = p_object_attached_->GetRotationMartix() * v_cons_buf_.mvp_matrix_;
+		DonedTransforms[1] = p_object_attached_->GetRotationMartix();
 	Drawable::Draw(gfx);
 }
 

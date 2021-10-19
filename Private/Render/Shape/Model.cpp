@@ -72,7 +72,7 @@ Model::Model(Graphics& gfx, const char* res_key)
 		view *
 		projection
 	};
-	v_cons_buf_.camera_pos = gfx.p_camera_->location_f();
+	//v_cons_buf_.camera_pos = gfx.p_camera_->location_f();
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
 	AddBind(std::move(vcb));
 	textures_.push_back(TextureFactory::GetInstance().GetTexture("Depth.png"));

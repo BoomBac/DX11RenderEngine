@@ -46,6 +46,7 @@ private:
     void InitLightDetail();
     void InitTransformDetail();
     void InitRenderDetail();
+    void InitMaterialDetail();
     //light property
     QWidget* p_light_detail_;
     QTableWidget* p_light_property_;
@@ -64,5 +65,11 @@ private:
     ProgressLine* p_shadow_light_far_;
     ProgressLine* p_shadow_bias_;
     void AdjustRenderProperty();
+
+    //material property
+    QPushButton* p_bt_albedo_;
+    ProgressLine* p_pl_metallic_;
+    ProgressLine* p_pl_roughness_;
+    void AdjustMaterialProperty();
 };
 #endif

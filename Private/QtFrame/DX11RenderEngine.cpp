@@ -125,6 +125,7 @@ DX11RenderEngine::DX11RenderEngine(QWidget* parent)
     InitLightDetail();
 
 	InitRenderDetail();
+	InitMaterialDetail();
     //选择背景颜色对话框
     connect(ui.bt_ChooseBC, &QPushButton::clicked, [=]() {
         static float bgc[4] = { 0.f,0.f,0.f,1.f };
@@ -389,6 +390,19 @@ void DX11RenderEngine::InitTransformDetail()
 		ui.renderView->SetSelectedObjectTransform({ p_rotation_x_->GetValue(),
 			p_rotation_y_->GetValue(),(float)val }, char(1));
 		});
+	//connect(p_rotation_x_, &ProgressLine::valueChanged, [=](const double& val) {
+	//	ui.renderView->SetSelectedObjectTransform({ (float)val,0.f,
+	//		0.f }, char(1),EAxisType::kXAxis);
+	//	});
+	//connect(p_rotation_y_, &ProgressLine::valueChanged, [=](const double& val) {
+	//	ui.renderView->SetSelectedObjectTransform({ (float)val,0.f,
+	//		0.f}, char(1),EAxisType::kYAxis);
+	//	});
+	//connect(p_rotation_z_, &ProgressLine::valueChanged, [=](const double& val) {
+	//	ui.renderView->SetSelectedObjectTransform({ (float)val,0.f,
+	//		0.f }, char(1),EAxisType::kZAxis);
+	//	});
+
 	connect(p_scale_x_, &ProgressLine::valueChanged, [=](const double& val) {
 		ui.renderView->SetSelectedObjectTransform({ (float)val,p_scale_y_->GetValue(),
 			p_scale_z_->GetValue() }, char(2));
@@ -442,6 +456,30 @@ void DX11RenderEngine::InitRenderDetail()
 		});
 	connect(p_shadow_light_size_, &ProgressLine::valueChanged, [=](const double& val) {
 		ui.renderView->SetShadowProperty(-1, -1, val,-1);
+		});
+}
+
+void DX11RenderEngine::InitMaterialDetail()
+{
+	p_bt_albedo_ = new QPushButton(ui.tb_material);
+	ui.tb_material->setCellWidget(0, 1, p_bt_albedo_);
+	p_bt_albedo_->setStyleSheet("background-color: rgb(255, 219, 145);border-radius:10px;");
+	connect(p_bt_albedo_, &QPushButton::clicked, [=]() {
+		qDebug() << "clicked";
+		QColor color = QColorDialog::getColor(Qt::red);
+		p_bt_albedo_->setStyleSheet("background-color:" + QString("rgb(%1,%2,%3);").arg(color.red()).arg(color.green()).arg(color.blue()) +
+			"border-radius:10px;");
+		ui.renderView->SetMaterialProperty(CusMath::vector3d{ color.redF(), color.greenF(), color.blueF()}, -1.f, -1.f);
+		});
+	p_pl_metallic_ = new ProgressLine(ui.tb_material, 1.f, 0.f, 0.f);
+	ui.tb_material->setCellWidget(1, 1, p_pl_metallic_);
+	connect(p_pl_metallic_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetMaterialProperty(CusMath::vector3d{-1.f,0.f,0.f},static_cast<float>(val),-1);
+		});
+	p_pl_roughness_ = new ProgressLine(ui.tb_material, 1.f, 0.f, 0.1f);
+	ui.tb_material->setCellWidget(2, 1, p_pl_roughness_);
+	connect(p_pl_roughness_, &ProgressLine::valueChanged, [=](const double& val) {
+		ui.renderView->SetMaterialProperty(CusMath::vector3d{ -1.f,0.f,0.f },-1, static_cast<float>(val));
 		});
 }
 

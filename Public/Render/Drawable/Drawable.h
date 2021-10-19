@@ -94,6 +94,9 @@ protected:
 	CusMath::vector3d object_location_ = {0.f,0.f,0.f};
 	CusMath::vector3d object_rotation_ = {0.f,0.f,0.f};
 	CusMath::vector3d scale_;
+	DirectX::XMVECTOR quat_rotatioin_x = DirectX::XMQuaternionIdentity();
+	DirectX::XMVECTOR quat_rotatioin_y = DirectX::XMQuaternionIdentity();
+	DirectX::XMVECTOR quat_rotatioin_z = DirectX::XMQuaternionIdentity();
 	//保存自创建以来，所有变换数据
 	//0:word_translate 1:world_rotation 2:scale 3:local_rotation
 	DirectX::XMMATRIX DonedTransforms[4] = { DirectX::XMMatrixIdentity(),DirectX::XMMatrixIdentity(),
@@ -104,6 +107,9 @@ protected:
 	static constexpr DirectX::XMFLOAT3 kDefaultForwardDirection{ 0.f, 0.f, 1.f };
 	static constexpr DirectX::XMFLOAT3 kDefaultRightDirection{ 1.f, 0.f, 0.f };
 	static constexpr DirectX::XMFLOAT3 kDefaultUpDirection{ 0.f, 1.f, 0.f };
+	static constexpr DirectX::XMVECTOR kAxisX{ 1.f,0.f,0.f,0.f };
+	static constexpr DirectX::XMVECTOR kAxisY{ 0.f,1.f,0.f,0.f };
+	static constexpr DirectX::XMVECTOR kAxisZ{ 0.f,0.f,1.f,0.f };
 private:
 	DISALLOW_COPY_AND_ASSIGN(Drawable)
 	virtual const std::vector<std::unique_ptr<BindableInterface>>& GetStaticBinds() const=0;

@@ -285,27 +285,44 @@ void RenderViewport::SetShadowProperty(float far_, float near_, float size, floa
 	if (far_ != -1)
 	{
 		graphicsIns->p_shadow_effect_->light_far = far_;
-		qDebug() << "far" << far_;
+		//qDebug() << "far" << far_;
 	}
 
 	else if (near_ != -1)
 	{
 		graphicsIns->p_shadow_effect_->light_near = near_;
-		qDebug() << "near" << near_;
+		//qDebug() << "near" << near_;
 	}
 
 	else if (size != -1)
 	{
 		graphicsIns->p_shadow_effect_->light_size = size;
-		qDebug() << "size" << near_;
+		//qDebug() << "size" << near_;
 	}
 
 	else if (bias != -1)
 	{
 		graphicsIns->p_shadow_effect_->max_bias = bias;
-		qDebug() << "bias" << bias;
+		//qDebug() << "bias" << bias;
 	}
+}
 
+void RenderViewport::SetMaterialProperty(CusMath::vector3d albedo, float metallic, float roughness)
+{
+	if (albedo.x >= 0.f)
+	{
+		graphicsIns->p_material_property_->albedo.x = albedo.x;
+		graphicsIns->p_material_property_->albedo.y = albedo.y;
+		graphicsIns->p_material_property_->albedo.z = albedo.z;
+	}
+	else if(metallic >= 0.f )
+	{
+		graphicsIns->p_material_property_->metallic = metallic;
+	}
+	else if (roughness >= 0.f)
+	{
+		graphicsIns->p_material_property_->roughness = roughness;
+	}
 }
 
 void RenderViewport::OnOutlineChanged(bool is_add)
@@ -316,7 +333,7 @@ void RenderViewport::OnOutlineChanged(bool is_add)
 	}
 }
 
-void RenderViewport::SetSelectedObjectTransform(const CusMath::vector3d& pos, const char& flag)
+void RenderViewport::SetSelectedObjectTransform(const CusMath::vector3d& pos, const char& flag, EAxisType axis)
 {
 	switch (flag)
 	{
@@ -328,6 +345,7 @@ void RenderViewport::SetSelectedObjectTransform(const CusMath::vector3d& pos, co
 		break;
 	case 1:
 	{
+		//graphicsIns->SetSelectedObjectRotation(pos.x,axis);
 		graphicsIns->SetSelectedObjectRotation(pos);
 		if (graphicsIns->GetCoordinateType())
 		{
@@ -350,3 +368,4 @@ void RenderViewport::SetSelectedObjectTransform(const CusMath::vector3d& pos, co
 		break;
 	};
 }
+

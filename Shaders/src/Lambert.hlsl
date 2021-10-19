@@ -27,7 +27,7 @@ cbuffer LightMatrix : register(b1)
 	row_major matrix light_view;
 	row_major matrix light_projection;
 }
-cbuffer ShadowProperty
+cbuffer ShadowProperty : register(b2)
 {
 	float     u_LightSize;
 	float     u_LightBias;
@@ -38,7 +38,7 @@ static const int       u_Ortho = 0;
 static const int       u_BlockerSearchSamples = 128;
 static const int       u_PCFSamples = 128;
 static const int       u_Visualization;
-static const float     u_BlockerSearchScale = 2.f;
+static const float     u_BlockerSearchScale = 1.f;
 
 static const int width = 800;
 static const int height = 600;
@@ -179,6 +179,8 @@ float pcss_filter(float2 uv, float z, float bias, float z_vs, out float p_r, out
     // ------------------------
     // STEP 3: filtering
     // ------------------------
+   // return ;
+    //return num_blockers / 128.f;
 	return pcf_poisson_filter(uv, z, bias, filter_radius);
 }
 
@@ -303,9 +305,5 @@ float4 main(PSInput input):SV_TARGET
     float p_r;
     float3  num_blockers_color;
 
-	return shadow_occlussion(input.posW, p_r, bias, num_blockers_color)*float4(light_intensity * lit, 1.f)+ float4(0.1, 0.1, 0.1, 1.f);
-	//return p_r * float4(1.f, 1.f, 1.f, 1.f);
-	//return PCF(pos_light.z, shadow_uv, 19, bias) * float4(1.f, 1.f, 1.f, 1.f);
-	//float4(light_intensity * lit, 1.f); //+ float4(0.3, 0.3, 0.3, 1.f);
-	//return PCSS(pos_light.z, pos_light_w.z,shadow_uv, bias) * float4(1.f,1.f,1.f,1.f); // * float4(light_intensity * lit, 1.f); //+ float4(0.3, 0.3, 0.3, 1.f);
+    return shadow_occlussion(input.posW, p_r, bias, num_blockers_color) *float4(light_intensity * lit, 1.f)+ float4(0.1, 0.1, 0.1, 1.f);
 }

@@ -24,6 +24,8 @@ public:
 	virtual void AddActorRotation(const CusMath::vector3d& r) override;
 	virtual void SetActorRotation(const CusMath::vector3d& r) override;
 	virtual void SetActorScale(const CusMath::vector3d& s) override;
+	virtual void AdjustActorRotation(float angle, EAxisType axis);
+	virtual void AdjustWorldRotation(float angle, EAxisType axis);
 private:
 	static std::vector<std::unique_ptr<BindableInterface>> StaticBinds;
 private:
@@ -34,7 +36,8 @@ private:
 	virtual void Update(const DirectX::XMMATRIX& transf=DirectX::XMMatrixIdentity()) override;
 	void UpdateOrient();
 	//transf为将要变化的旋转值，传入角度
-	void AdjustRotation(const CusMath::vector3d& transf, const CusMath::vector3d& coordinate, DirectX::XMMATRIX* target_martix);
+
+	//void AdjustRotation(const CusMath::vector3d& transf, const CusMath::vector3d& coordinate, DirectX::XMMATRIX* target_martix);
 protected:
 	void SetIndexbufferFromSBinds();
 };
@@ -45,41 +48,55 @@ Shape<T>::~Shape()
 
 }
 
-template<class T>
-void Shape<T>::AdjustRotation(const CusMath::vector3d& transf, const CusMath::vector3d& coordinate, DirectX::XMMATRIX* target_martix)
-{
-	//先进行新的变化，然后再将老变化加入
-	//就是将上次变换在本次变换后的坐标系进行变换 本次要影响上次变换
-	if (transf.x == coordinate.x && transf.y == coordinate.y)
-	{
-		*target_martix = DirectX::XMMatrixRotationX(DegToRad(coordinate.x)) *
-			DirectX::XMMatrixRotationY(DegToRad(coordinate.y)) *
-			DirectX::XMMatrixRotationZ(DegToRad(coordinate.z));
-		//qDebug() << "Rotate z";
-	}
-	if (transf.x == coordinate.x && transf.z == coordinate.z)
-	{
-		*target_martix = DirectX::XMMatrixRotationZ(DegToRad(coordinate.z)) *
-			DirectX::XMMatrixRotationX(DegToRad(coordinate.x)) *
-			DirectX::XMMatrixRotationY(DegToRad(coordinate.y));
-		//qDebug() << "Rotate y";
-	}
-	if (transf.y == coordinate.y && transf.z == coordinate.z)
-	{
-		*target_martix = DirectX::XMMatrixRotationZ(DegToRad(coordinate.z)) *
-			DirectX::XMMatrixRotationY(DegToRad(coordinate.y)) *
-			DirectX::XMMatrixRotationX(DegToRad(coordinate.x));
-		//qDebug() << "Rotate x";
-	}
-	UpdateOrient();
-}
+//template<class T>
+//void Shape<T>::AdjustRotation(const CusMath::vector3d& transf, const CusMath::vector3d& coordinate, DirectX::XMMATRIX* target_martix)
+//{
+//	//先进行新的变化，然后再将老变化加入
+//	//就是将上次变换在本次变换后的坐标系进行变换 本次要影响上次变换
+//	//DirectX::XMVECTOR Axis = DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f);
+//	//DirectX::XMVECTOR Qz = DirectX::XMQuaternionRotationAxis(Axis, DegToRad(coordinate.z));
+//	//Axis = DirectX::XMVectorSet(0.f, 1.f, 0.f, 0.f);
+//	//DirectX::XMVECTOR Qy = DirectX::XMQuaternionRotationAxis(Axis, DegToRad(coordinate.y));
+//	//Axis = DirectX::XMVectorSet(1.f, 0.f, 0.f, 0.f);
+//	////DirectX::XMVECTOR Qx = DirectX::XMQuaternionRotationAxis(Axis, DegToRad(coordinate.x));
+//	//DirectX::XMVECTOR Q = DirectX::XMQuaternionMultiply(Qy, Qz);
+//	//Q = DirectX::XMQuaternionMultiply(Qx, Q);
+//	//*target_martix *= DirectX::XMMatrixRotationQuaternion(Q);
+//	if (transf.x == coordinate.x && transf.y == coordinate.y)
+//	{
+//		DirectX::XMVECTOR zAxis = DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f);
+//		DirectX::XMVECTOR Q = DirectX::XMQuaternionRotationAxis(zAxis, DegToRad(coordinate.z));
+//
+//		*target_martix *= DirectX::XMMatrixRotationQuaternion(Q);
+//			//DirectX::XMMatrixRotationX(DegToRad(coordinate.x)) *
+//			//DirectX::XMMatrixRotationY(DegToRad(coordinate.y)) *
+//			//DirectX::XMMatrixRotationZ(DegToRad(coordinate.z));
+//		qDebug() << "Rotate z";
+//	}
+//	if (transf.x == coordinate.x && transf.z == coordinate.z)
+//	{
+//		DirectX::XMVECTOR yAxis = DirectX::XMVectorSet(0.f, 1.f, 0.f, 0.f);
+//		DirectX::XMVECTOR Q = DirectX::XMQuaternionRotationAxis(yAxis, DegToRad(coordinate.y));
+//		*target_martix *= DirectX::XMMatrixRotationQuaternion(Q);
+//		//*target_martix = DirectX::XMMatrixRotationZ(DegToRad(coordinate.z)) *
+//		//	DirectX::XMMatrixRotationX(DegToRad(coordinate.x)) *
+//		//	DirectX::XMMatrixRotationY(DegToRad(coordinate.y));
+//		qDebug() << "Rotate y";
+//	}
+//	if (transf.y == coordinate.y && transf.z == coordinate.z)
+//	{
+//		DirectX::XMVECTOR xAxis = DirectX::XMVectorSet(1.f, 0.f, 0.f, 0.f);
+//		DirectX::XMVECTOR Q = DirectX::XMQuaternionRotationAxis(xAxis, DegToRad(coordinate.x));
+//		*target_martix *= DirectX::XMMatrixRotationQuaternion(Q);
+//		//*target_martix = DirectX::XMMatrixRotationZ(DegToRad(coordinate.z)) *
+//		//	DirectX::XMMatrixRotationY(DegToRad(coordinate.y)) *
+//		//	DirectX::XMMatrixRotationX(DegToRad(coordinate.x));
+//		qDebug() << "Rotate x";
+//	}
+//	UpdateOrient();
+//}
 
-template<class T>
-void Shape<T>::AddWorldRotation(const CusMath::vector3d& r)
-{
-	Drawable::AddWorldRotation(r);
-	AdjustRotation(r, world_rotation_, &DonedTransforms[3]);
-}
+
 
 template<class T>
 void Shape<T>::UpdateOrient()
@@ -89,13 +106,13 @@ void Shape<T>::UpdateOrient()
 	up_direction_ = kDefaultUpDirection;
 	DirectX::XMStoreFloat3(&forward_direction_,
 		DirectX::XMVector3TransformNormal(DirectX::XMLoadFloat3(&forward_direction_),
-			DonedTransforms[1] * DonedTransforms[3]));
+			DonedTransforms[1]));
 	DirectX::XMStoreFloat3(&right_direction_,
 		DirectX::XMVector3TransformNormal(DirectX::XMLoadFloat3(&right_direction_),
-			DonedTransforms[1] * DonedTransforms[3]));
+			DonedTransforms[1]));
 	DirectX::XMStoreFloat3(&up_direction_,
 		DirectX::XMVector3TransformNormal(DirectX::XMLoadFloat3(&up_direction_),
-			DonedTransforms[1] * DonedTransforms[3]));
+			DonedTransforms[1]));
 }
 
 template<class T>
@@ -153,12 +170,71 @@ void Shape<T>::SetActorScale(const CusMath::vector3d& s)
 	Update();
 }
 
+template<class T>
+void Shape<T>::AdjustActorRotation(float angle, EAxisType axis)
+{
+	DirectX::XMVECTOR Q;
+	if (axis == EAxisType::kXAxis)
+	{
+		Q = DirectX::XMQuaternionRotationAxis(kAxisX, DegToRad(angle));
+	}
+	else if (axis == EAxisType::kYAxis)
+	{
+		Q = DirectX::XMQuaternionRotationAxis(kAxisY, DegToRad(angle));
+	}
+	else if (axis == EAxisType::kZAxis)
+	{
+		Q = DirectX::XMQuaternionRotationAxis(kAxisZ, DegToRad(angle));
+	}
+	DonedTransforms[1] = DirectX::XMMatrixRotationQuaternion(Q) * DonedTransforms[1];
+}
 
+template<class T>
+void Shape<T>::AdjustWorldRotation(float angle, EAxisType axis)
+{
+
+	DirectX::XMVECTOR Q;
+	if (axis == EAxisType::kXAxis)
+	{
+		Q = DirectX::XMQuaternionRotationAxis(kAxisX, DegToRad(angle));
+		quat_rotatioin_x = DirectX::XMQuaternionMultiply(quat_rotatioin_x, Q);
+	}
+	else if (axis == EAxisType::kYAxis)
+	{
+		Q = DirectX::XMQuaternionRotationAxis(kAxisY, DegToRad(angle));
+		quat_rotatioin_y = DirectX::XMQuaternionMultiply(quat_rotatioin_y, Q);
+	}
+	else if (axis == EAxisType::kZAxis)
+	{
+		Q = DirectX::XMQuaternionRotationAxis(kAxisZ, DegToRad(angle));
+		quat_rotatioin_z = DirectX::XMQuaternionMultiply(quat_rotatioin_z, Q);
+	}
+	//qDebug() << "x rotation:" << RadToDeg(DirectX::XMScalarACos(quat_rotatioin_x.m128_f32[3]) * 2.f);
+	//qDebug() << "y rotation:" << RadToDeg(DirectX::XMScalarACos(quat_rotatioin_y.m128_f32[3]) * 2.f);
+	//qDebug() << "z rotation:" << RadToDeg(DirectX::XMScalarACos(quat_rotatioin_z.m128_f32[3]) * 2.f);
+	DonedTransforms[1] *= DirectX::XMMatrixRotationQuaternion(Q);
+}
+
+template<class T>
+void Shape<T>::AddWorldRotation(const CusMath::vector3d& r)
+{
+	Drawable::AddWorldRotation(r);
+	AdjustWorldRotation(r.x, EAxisType::kXAxis);
+	AdjustActorRotation(r.y, EAxisType::kYAxis);
+	AdjustWorldRotation(r.z, EAxisType::kZAxis);
+	UpdateOrient();
+}
+
+//qDebug() <<"x:" << world_rotation_.x <<"y:" << world_rotation_.y << "z:"<<world_rotation_.z;
 template<class T>
 void Shape<T>::SetWorldRotation(const CusMath::vector3d& r)
 {
+	auto tr = world_rotation_ - r;
 	Drawable::SetWorldRotation(r);
-	AdjustRotation(r,world_rotation_, &DonedTransforms[3]);
+	AdjustWorldRotation(tr.x, EAxisType::kXAxis);
+	AdjustWorldRotation(tr.y, EAxisType::kYAxis);
+	AdjustWorldRotation(tr.z, EAxisType::kZAxis);
+	UpdateOrient();
 }
 
 
@@ -167,14 +243,21 @@ void Shape<T>::AddActorRotation(const CusMath::vector3d& r)
 {
 	//TODO() : 自身旋转也会对世界旋转造成影响。暂时未加入
 	Drawable::AddActorRotation(r);
-	AdjustRotation(r, object_rotation_, &DonedTransforms[1]);
+	AdjustActorRotation(r.x, EAxisType::kXAxis);
+	AdjustActorRotation(r.y, EAxisType::kYAxis);
+	AdjustActorRotation(r.z, EAxisType::kZAxis);
+	UpdateOrient();
 }
 
 template<class T>
 void Shape<T>::SetActorRotation(const CusMath::vector3d& r)
 {
+	auto tr = object_rotation_ - r;
 	Drawable::SetActorRotation(r);
-	AdjustRotation(r, object_rotation_, &DonedTransforms[1]);
+	AdjustActorRotation(tr.x, EAxisType::kXAxis);
+	AdjustActorRotation(tr.y, EAxisType::kYAxis);
+	AdjustActorRotation(tr.z, EAxisType::kZAxis);
+	UpdateOrient();
 }
 
 
@@ -183,8 +266,8 @@ void Shape<T>::Update(const DirectX::XMMATRIX& transf/*=DirectX::XMMatrixIdentit
 {
 	//先平移。如果先缩放，那么平移的轴距就会被缩放改变。如果先旋转，那么绕三个轴旋转就会变成绕世界原点的旋转
 	// 自身旋转 * 世界旋转 * 缩放 * 平移
-	v_cons_buf_.mvp_matrix_ = DonedTransforms[1] * DonedTransforms[3] * DonedTransforms[2] * DonedTransforms[0] * view * projection;
-	v_cons_buf_.world_matrix_ = DonedTransforms[1] * DonedTransforms[3] * DonedTransforms[2] * DonedTransforms[0];
+	v_cons_buf_.mvp_matrix_ = DonedTransforms[1] * DonedTransforms[2] * DonedTransforms[0] * view * projection;
+	v_cons_buf_.world_matrix_ = DonedTransforms[1] * DonedTransforms[2] * DonedTransforms[0];
 }
 
 template<class T>

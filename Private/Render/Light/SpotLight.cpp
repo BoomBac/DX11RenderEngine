@@ -16,15 +16,15 @@ SpotLight::SpotLight(Graphics &gfx):Light::Light(gfx, "spot_light.obj")
 
 void SpotLight::UpdateAttribute()
 {
-	//direction_ = { 0.f,-1.f,0.f };
-	DirectX::XMStoreFloat3(&direction_, light_camera_.forward());
-	//DirectX::XMStoreFloat3(&direction_, DirectX::XMVector3TransformNormal(XMLoadFloat3(&direction_), GetRotationMartix()));
+	direction_ = { 0.f,-1.f,0.f };
+	//DirectX::XMStoreFloat3(&direction_, light_camera_.forward());
+	DirectX::XMStoreFloat3(&direction_, DirectX::XMVector3TransformNormal(XMLoadFloat3(&direction_), GetRotationMartix()));
 
 	attritute_.light_dir_ = direction_;
-	attritute_.light_pos_ = light_camera_.location_f();
-	//attritute_.light_pos_.x = world_location_.x;
-	//attritute_.light_pos_.y = world_location_.y;
-	//attritute_.light_pos_.z = world_location_.z;
+	//attritute_.light_pos_ = light_camera_.location_f();
+	attritute_.light_pos_.x = world_location_.x;
+	attritute_.light_pos_.y = world_location_.y;
+	attritute_.light_pos_.z = world_location_.z;
 }
 
 void SpotLight::SetInnerAngle(float angle)

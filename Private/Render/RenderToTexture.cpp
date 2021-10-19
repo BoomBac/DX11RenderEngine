@@ -114,7 +114,7 @@ void RenderToTexture::SetRenderTarget(Graphics* gfx)
 		ID3D11RenderTargetView* renderTarget[1] = { 0 };
 		//auto i = gfx->pp_render_targetview();
 		gfx->GetContext()->OMSetRenderTargets(1u, renderTarget, p_depth_view.Get());
-		gfx->GetContext()->RSSetViewports(1u, &p_view_port);
+		//gfx->GetContext()->RSSetViewports(1u, &p_view_port);
 	}
 }
 

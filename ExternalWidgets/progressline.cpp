@@ -198,7 +198,7 @@ float ProgressLine::GetValue()
 
 void ProgressLine::mouseMoveEvent(QMouseEvent *e)
 {
-   float speed =0.1f +  abs(value_)*0.01f;
+   float speed =0.1f + abs(value_)* (max_ - min_) * 0.0000001f;
    if (left_pressed)  //左键按下
    {
        this->setCursor(Qt::BlankCursor);

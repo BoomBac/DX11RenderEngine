@@ -28,7 +28,20 @@ struct ShadowEffect
 	float light_near;
 	float light_far;
 };
-
+struct MaterialProperty
+{
+	//Reflectance ratio
+	DirectX::XMFLOAT3 albedo;
+	float metallic;
+	float roughness;
+	DirectX::XMFLOAT3 padding;
+};
+enum class EAxisType
+{
+	kXAxis,
+	kYAxis,
+	kZAxis,
+};
 
 class Graphics
 {
@@ -63,6 +76,7 @@ public:
 	DirectX::XMMATRIX* p_light_view_projection_;
 	LightMatrix* p_light_matrix_;
 	ShadowEffect* p_shadow_effect_;
+	MaterialProperty* p_material_property_;
 
 	void SetCoordinateType(bool is_world);
 	//if world coord,return true
@@ -113,12 +127,13 @@ private:
 	// 容纳所有场景物体的容器,0 号元素是坐标轴
 	std::vector<Drawable*> scene_objects_;
 	// 将场景元素和他们的名字对应
-	//int 为其在scene_objects_中的索引，string则为其显示在ui上的名字
+	//int为其在scene_objects_中的索引，string则为其显示在ui上的名字
 	ECameraMovementState cam_move_state_;
 	void UpdateCameraMovement();
 	std::vector<Camera*> camera_set_;
 	void SetSelectObject(Drawable* object);
 
 	ShadowEffect shadowParma;
+	MaterialProperty materal_property_;
 };
 

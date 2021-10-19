@@ -16,18 +16,25 @@ void Drawable::Draw(Graphics& gfx)
 {
 	if (!visiblity_) return;
 	//根据pass类型选择camera
-	if (!gfx.isRenderShaodw)
+	if (gfx.isRenderShaodw)
 	{
-		view = gfx.p_light_camera->view_matrix();
-		v_cons_buf_.camera_pos = gfx.p_light_camera->location_f();
+		if (cast_shadow_)
+		{
+			view = gfx.p_light_camera->view_matrix();
+			projection = gfx.p_light_camera->projection_matrix();
+			v_cons_buf_.camera_pos = gfx.p_light_camera->location_f();
+		}
 	}
 	else
 	{
 		view = gfx.p_camera_->view_matrix();// *gfx.p_camera_->projection_matrix();
+		projection = gfx.p_camera_->projection_matrix();
 		v_cons_buf_.camera_pos = gfx.p_camera_->location_f();
 	}
+
 	int pc_id = -1;
 	int vc_id = -1;
+	Update();
 	//记录可绑定多个bind的数量，并将他们绑定到不同的slot
 	for (auto& i : binds)
 	{
@@ -67,7 +74,6 @@ void Drawable::Draw(Graphics& gfx)
 		gfx.GetContext()->PSSetShaderResources(0, 1, gfx.GetShadowMap());
 	}
 
-	Update();
 	if (gfx.isRenderShaodw)
 	{
 		if (cast_shadow_)
@@ -77,7 +83,6 @@ void Drawable::Draw(Graphics& gfx)
 	}
 	else
 		gfx.DrawIndexed(indexbuffer->size_);
-
 	//渲染结束将shadowMap槽位的shaderResource解绑，以便其在下一个shadowPass可以用作depthbuffer
 	gfx.GetContext()->PSSetShaderResources(0, 1, TextureFactory::GetInstance().GetTexture("Depth.png")->GetTextureResourceViewAddress());
 }
@@ -102,6 +107,7 @@ WorldTransform& Drawable::GetTransform()
 {
 	return v_cons_buf_;
 }
+
 
 void Drawable::SetWorldLocation(const CusMath::vector3d& t)
 {

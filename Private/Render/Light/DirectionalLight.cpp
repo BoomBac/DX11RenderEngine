@@ -10,10 +10,11 @@ DirectionalLight::DirectionalLight(Graphics& gfx) : Light::Light(gfx, "direction
 void DirectionalLight::UpdateAttribute()
 {
 	DirectX::XMStoreFloat3(&direction_, light_camera_.forward());
-	SetWorldLocation({ 0.f,100.f,0.f });
+	//SetWorldLocation({ light_camera_.location_f().x,light_camera_.location_f().y,light_camera_.location_f().z});
 	//qDebug() << (static_cast<int>(RadToDeg(light_camera_.rotation_f().x))/10);
 	//SetActorRotation({ -RadToDeg(light_camera_.rotation_f().x) /10.f + 90.f ,-RadToDeg(light_camera_.rotation_f().z) / 10.f +90.f ,0.f});
-	//SetWorldRotation({ light_camera_.rotation_f().x ,light_camera_.rotation_f().y,light_camera_.rotation_f().z });
+	//SetActorRotation({ RadToDeg( - light_camera_.rotation_f().x - 100.f) ,0.f,0.f});
+	//SetWorldRotation({ 0.f,RadToDeg(light_camera_.rotation_f().y),0.f});
 	attritute_.light_dir_ = direction_;
 }
 

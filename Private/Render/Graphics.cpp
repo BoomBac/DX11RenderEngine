@@ -42,9 +42,7 @@ Drawable* Graphics::p_coordinate_ = nullptr;
 namespace 
 {
 	RenderToTexture g_rtr;
-	Camera g_light_camera(ECameraType::kLight);
 	DirectX::XMMATRIX test_mar{DirectX::XMMatrixIdentity()};
-
 }
 
 Graphics::Graphics(HWND hWnd)
@@ -57,8 +55,11 @@ Graphics::Graphics(HWND hWnd)
 	shadowParma.light_size = 0.4f;
 	shadowParma.max_bias = 0.001f;
 	p_shadow_effect_ = &shadowParma;
-	//camera_set_.push_back(new Camera(ECameraType::kNormal));
-	//p_camera_ = camera_set_[0];
+	materal_property_.albedo = { 1.f,0.86f,0.76f };
+	materal_property_.metallic = 0.f;
+	materal_property_.roughness = 0.1f;
+	p_material_property_ = &materal_property_;
+
 	p_camera_ = new Camera();
 	p_camera_->SetProjection(75.f, 4.f / 3.f, 1.f, 1000.f);
 	camera_set_.push_back(p_camera_);
@@ -97,6 +98,7 @@ Graphics::Graphics(HWND hWnd)
 	//创建坐标轴
 	p_coordinate_ = new Coordinate(*this, 10.f);
 	scene_objects_.push_back(dynamic_cast<Drawable*>(p_coordinate_));
+
 	AddLight(ELightType::kDirectionLight);
 	//创建默认灯光
 
@@ -104,7 +106,7 @@ Graphics::Graphics(HWND hWnd)
 	p_light_matrix_ = dynamic_cast<Light*>(p_light_)->GetLightMatrix();
 
 
-	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/cat.obj");
+	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/sphere.obj");
 
 	//初始化坐标轴和场景物体
 	InitSceneObject();
@@ -137,13 +139,13 @@ Graphics::~Graphics()
 
 void Graphics::EndFrame()
 {
-	//CusMath::vector3d pos(g_light_camera.rotation_f().x, g_light_camera.rotation_f().y, g_light_camera.rotation_f().z);
 	//if (p_light_!=nullptr)
 	//{
 	//	//p_light_->SetWorldLocation(pos);
 	//	//p_light_->SetWorldRotation(pos);
 	//	//qDebug() << "Rotation x:" << pos.x << ",y:" << pos.y;
 	//}
+
 	dynamic_cast<Light*>(p_light_)->UpdateLightMatrix();
 	pDeviceContext->ClearRenderTargetView(p_render_targetview_.Get(), bg_color);
 	g_rtr.ClearRenderTarget(this, 0.f, 1.f, 1.f, 1.f);
@@ -154,11 +156,12 @@ void Graphics::EndFrame()
 	{
 		i->Draw(*this);
 	}
+
 	//GetContext()->OMSetRenderTargets(1, p_render_targetview_.GetAddressOf(), nullptr);
 	//Render Scene
 
 	dsbuffer->Clear(*this);
-	GetContext()->OMSetRenderTargets(1, p_render_targetview_.GetAddressOf(), p_depth_stencil_view_.Get());
+	GetContext()->OMSetRenderTargets(1, p_render_targetview_.GetAddressOf(), dsbuffer->pDepthStencilView.Get());
 	isRenderShaodw = false;
 	for (const auto& i : scene_objects_)
 	{
@@ -190,6 +193,7 @@ void Graphics::SetSelectedObjectTranslate(const CusMath::vector3d& t)
 		p_selected_object_->SetActorLocation(t);
 	}
 }
+
 
 void Graphics::SetSelectedObjectRotation(const CusMath::vector3d& t)
 {
@@ -226,7 +230,7 @@ void Graphics::DeleteSceneObject(int index)
 
 void Graphics::InitSceneObject()
 {
-	GeometryFactory::GenerateGeometry("cat.obj");
+	GeometryFactory::GenerateGeometry("sphere.obj");
 	
 	auto plane = GeometryFactory::GenerateGeometry(EGeometryType::kPlane);
 	plane->SetActorScale(CusMath::vector3d{ 5.f, 1.f, 5.f });
@@ -281,17 +285,17 @@ void Graphics::SetSelectObject(const int& index)
 		if (dynamic_cast<Light*>(p_selected_object_))
 		{
 			p_light_ = p_selected_object_;
-			p_camera_ = &dynamic_cast<Light*>(p_light_)->light_camera_;
+			//p_camera_ = &dynamic_cast<Light*>(p_light_)->light_camera_;
 			p_scene_light_ = dynamic_cast<Light*>(p_selected_object_)->GetAttritute();
 			p_light_camera = &dynamic_cast<Light*>(p_light_)->light_camera_;
 			p_light_matrix_ = dynamic_cast<Light*>(p_light_)->GetLightMatrix();
 			//p_light_view_projection_ = &dynamic_cast<Light*>(p_light_)->GetLightMatrix()->view_porjection;
 			//p_light_view_projection_ = dynamic_cast<Light*>(p_light_)->light_camera_.view_projection_matrix();
 		}
-		else
-		{
-			p_camera_ = camera_set_[0];
-		}
+		//else
+		//{
+		//	p_camera_ = camera_set_[0];
+		//}
 	}
 	else
 	SetSelectObject(nullptr);
@@ -345,11 +349,7 @@ ID3D11ShaderResourceView** Graphics::GetShadowMap()
 void Graphics::SetCoordinateType(bool is_world)
 {
 	dynamic_cast<Coordinate*>(p_coordinate_)->SetCoordinateType(is_world);
-	g_rtr.SaveToImage(this);
-	//if (is_world)
-	//	p_camera_ = &g_light_camera;
-	//else
-	//	p_camera_ = camera_set_[0];
+	//g_rtr.SaveToImage(this);
 }
 
 bool Graphics::GetCoordinateType() const

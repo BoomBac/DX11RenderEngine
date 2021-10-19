@@ -33,7 +33,7 @@ public:
 	void UpdateViewport();
 	//Graphics和Window的中转函数
 	//设置当前选中物体的变换，flag 0:translate,1:rotate,2:scale
-	void SetSelectedObjectTransform(const CusMath::vector3d& pos, const char& flag);
+	void SetSelectedObjectTransform(const CusMath::vector3d& pos, const char& flag,EAxisType axis = EAxisType::kXAxis);
 	void SetbgColor(float color[4]);
 	void SetCoordinateType(bool is_world);
 	// 0 box; 1 plane
@@ -57,6 +57,8 @@ public:
 	void SetRenderProperty(const bool& vis, const bool& shadow);
 	void GetRenderProperty(bool& vis, bool& shadow);
 	void SetShadowProperty(float far_, float near_, float size, float bias);
+	//set material property
+	void SetMaterialProperty(CusMath::vector3d albedo,float metallic,float roughness);
 signals:
 	void MouseMoved(QString& pos);
 	void MousePressed(QString& state);
