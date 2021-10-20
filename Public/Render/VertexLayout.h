@@ -13,6 +13,7 @@ enum class EVertexType : UINT
 	kRGBAColor,
 	kNormal,
 	kTexture2D,
+	kTangant
 };
 struct Postion3DColored
 {
@@ -24,6 +25,13 @@ struct Postion3DTN
 	CusMath::vector3d pos;
 	CusMath::vector2d uv;
 	CusMath::vector3d normal;
+};
+struct Postion3DTN2
+{
+	CusMath::vector3d pos;
+	CusMath::vector2d uv;
+	CusMath::vector3d normal_w;
+	CusMath::vector3d tangent;
 };
 
 

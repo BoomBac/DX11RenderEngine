@@ -115,6 +115,7 @@
     <ClCompile Include="Private\Render\Bindable\InputLayout.cpp" />
     <ClCompile Include="Private\Render\Bindable\LightBuffer.cpp" />
     <ClCompile Include="Private\Render\Bindable\PixelShader.cpp" />
+    <ClCompile Include="Private\Render\Bindable\ShaderResource.cpp" />
     <ClCompile Include="Private\Render\Bindable\TransformBuffer.cpp" />
     <ClCompile Include="Private\Render\Bindable\VertexBuffer.cpp" />
     <ClCompile Include="Private\Render\Bindable\VertexShader.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="Public\Render\Bindable\InputLayout.h" />
     <ClInclude Include="Public\Render\Bindable\LightBuffer.h" />
     <ClInclude Include="Public\Render\Bindable\PixelShader.h" />
+    <ClInclude Include="Public\Render\Bindable\ShaderResource.h" />
     <ClInclude Include="Public\Render\Bindable\TransformBuffer.h" />
     <ClInclude Include="Public\Render\Bindable\VertexBuffer.hpp" />
     <ClInclude Include="Public\Render\Bindable\VertexShader.h" />
@@ -245,6 +247,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\src\common.hlsli" />
     <None Include="Shaders\src\PCSS.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

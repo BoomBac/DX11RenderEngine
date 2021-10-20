@@ -71,7 +71,7 @@ void Drawable::Draw(Graphics& gfx)
 	}
 	else
 	{
-		gfx.GetContext()->PSSetShaderResources(0, 1, gfx.GetShadowMap());
+		//gfx.GetContext()->PSSetShaderResources(0, 1, gfx.GetShadowMap());
 	}
 
 	if (gfx.isRenderShaodw)
@@ -84,7 +84,7 @@ void Drawable::Draw(Graphics& gfx)
 	else
 		gfx.DrawIndexed(indexbuffer->size_);
 	//渲染结束将shadowMap槽位的shaderResource解绑，以便其在下一个shadowPass可以用作depthbuffer
-	gfx.GetContext()->PSSetShaderResources(0, 1, TextureFactory::GetInstance().GetTexture("Depth.png")->GetTextureResourceViewAddress());
+	//gfx.GetContext()->PSSetShaderResources(0, 1, TextureFactory::GetInstance().GetTexture("Depth.png")->GetTextureResourceViewAddress());
 }
 
 void Drawable::AddBind(std::unique_ptr<BindableInterface> bind)

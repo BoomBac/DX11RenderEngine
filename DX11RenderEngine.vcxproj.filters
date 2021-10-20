@@ -196,6 +196,9 @@
     <ClCompile Include="Private\Render\RenderToTexture.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Render\Bindable\ShaderResource.cpp">
+      <Filter>Source Files\Render\Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Public\QtFrame\DX11RenderEngine.h">
@@ -323,6 +326,9 @@
     <ClInclude Include="Public\Render\RenderToTexture.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
+    <ClInclude Include="Public\Render\Bindable\ShaderResource.h">
+      <Filter>Header Files\Render\Bindable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="RenderViewport.ui">
@@ -360,6 +366,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\src\PCSS.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\src\common.hlsli">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -10,7 +10,7 @@ cbuffer CBuf
 };
 
 
-VSOut main(float3 pos : Position, float3 color : Color) //: SV_POSITION
+VSOut main(float3 pos : POSTION, float3 color : COLOR) //: SV_POSITION
 {
 	VSOut respos;
 	respos.pos = mul(float4(pos, 1.f), MVPMartrix);

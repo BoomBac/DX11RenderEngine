@@ -1,3 +1,5 @@
+#include "common.hlsli"
+
 struct PSInput
 {
 	float4 pos : SV_Position;
@@ -5,6 +7,7 @@ struct PSInput
 	float3 cameraPos : CAMERA_POSTION;
 	float2 uv : Texcoord;
 	float3 normal : NORMAL;
+	matrix<float,3,3> btn : BTN;
 };
 cbuffer LightBuffer : register(b0)
 {
@@ -29,10 +32,10 @@ cbuffer LightMatrix : register(b1)
 cbuffer MaterialProperty : register(b2)
 {
 	//Reflectance ratio
-	float3 albedo;
-	float metallic;
-	float roughness;
-	float3 padding_1;
+	//float3 albedo;
+	//float metallic;
+	//float roughness;
+	//float3 padding_1;
 }
 
 //static const float3 albedo = float3(1.f,1.f,1.f);
@@ -40,6 +43,15 @@ cbuffer MaterialProperty : register(b2)
 //static const float roughness = 1.f;
 static const float ao;
 static const float PI = 3.14159265359;
+Texture2D diffuse_map : TEXTURE: register(t0);
+Texture2D metallic_map : TEXTURE: register(t1);
+Texture2D roughness_map : TEXTURE: register(t2);
+Texture2D albedo_map : TEXTURE: register(t3);
+Texture2D normal_map : TEXTURE: register(t4);
+Texture2D ao_map : TEXTURE: register(t5);
+
+
+SamplerState objSamplerState : SAMPLER;
 
 float3 CalculateRadiance(float3 l_dir,float3 v_dir,float3 p_w)
 {
@@ -86,54 +98,41 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 
 float4 main(PSInput input) : SV_TARGET
 {
+	//	return float4(1.f,1.f,1.f,1.f);
+	float3 albedo = float3(1.f,0.86f,0.76f);//pow(albedo_map.Sample(objSamplerState,input.uv).rgb, 2.2);
+	float3 N = GetNormal(normal_map, input.uv, objSamplerState, input.btn);
+	float metallic = metallic_map.Sample(objSamplerState, input.uv).r;
+	float roughness = roughness_map.Sample(objSamplerState, input.uv).r;
+	float3 D = diffuse_map.Sample(objSamplerState, input.uv);
+	//float ao = texture(ao_map, input.uv).r;
+
 	float3 V = normalize(input.cameraPos - input.posW);
-	float3 L = normalize(float3(0.f,50.f,0.f) - input.posW);
+	float3 L = normalize(light_pos - input.posW);
 	float3 H = normalize(V + L);
 
-	float3 radians = float3(1.f,1.f,1.f);//CalculateRadiance(-light_dir,-V,input.posW,H);
-	 //basic reflection
+	float3 radians = light_color * light_intensity* max(0.f, dot(normalize(N), normalize(light_pos - input.posW))) *
+		clamp(1 - pow(distance(input.posW, light_pos) / affect_radius, 4.f), 0.f, 2.f);
+	//float3 radians = light_intensity * ;//CalculateRadiance(-light_dir,-V,input.posW,H);
+	//basic reflection
  	float3 F0 = float3(0.04f, 0.04f, 0.04f);
  	F0 = lerp(F0, albedo, metallic);
-	float NDF = DistributionGGX(input.normal, H, roughness);
+	float NDF = DistributionGGX(N, H, roughness);
 	float3 F = FresnelSchlick(max(dot(H,V),0.f), F0);
-	float G = GeometrySmith(input.normal,V,L,roughness);
+	float G = GeometrySmith(N,V,L,roughness);
 	float3 L0 =float3(0.f,0.f,0.f);
 	float3 kS = F;
  	float3 kD = float3(1.f, 1.f, 1.f) - kS;
  	kD *= 1.f - metallic;
 
  	float3 numerator    = NDF * G * F;
- 	float denominator = 4.0 * max(dot(input.normal, V), 0.0) * max(dot(input.normal, L), 0.0)  + 0.0001;
+ 	float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0)  + 0.0001;
  	float3 specular     = numerator / denominator;  
- 	float NDotL = max(dot(input.normal,L),0.f);
+ 	float NDotL = max(dot(N,L),0.f);
  	L0 += (kD * albedo/PI + specular) * radians * NDotL;
-	 	//ambient
-	float4 color = float4(L0, 1.f);// + float4(0.1f,0.1f,0.1f,1.f);
+	//ambient
+	float3 color = (L0 * D);
  	//gamma correct
- 	color = color / (color + float4(1.f,1.f,1.f,1.f));
- 	color = pow(color,float4(1.f/2.2f,1.f/2.2f,1.f/2.2f,1.f/2.2f));
-	return color;
-		//float4(FresnelSchlick(max(dot(V, H), 0.f), float3(0.98f,0.56f,0.32f)),1.f);
-		//GeometrySmith(input.normal, V, L, roughness);
-		//DistributionGGX(input.normal,H, roughness);
+ 	color = color / (color + float3(1.f,1.f,1.f));
+ 	color = pow(color,float3(1.f/2.2f,1.f/2.2f,1.f/2.2f));
+	return float4(color,1.f);
 }
-// float4 main(PSInput input) : SV_TARGET
-// {
-// 	//surface normal
-// 	float3 N = normalize(input.normal);
-// 	//view dir
-// 	float3 V = normalize(input.cameraPos - input.posW);
-
-
-// 	// //caculate light
-// 	float3 L = light_dir;
-// 	//reflection radiance
-
-// 	float3 H;
-
-// 	//calculate Cook-Toorrance BRDF
-
-
-
-
-// }

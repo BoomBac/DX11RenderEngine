@@ -41,8 +41,6 @@ Model::Model(Graphics& gfx)
 	};
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
 	AddBind(std::move(vcb));
-	textures_.push_back(TextureFactory::GetInstance().GetTexture("Depth.png"));
-	//gfx.GetContext()->PSSetShaderResources(0, 1, textures_[0]->GetTextureResourceViewAddress());
 }
 
 Model::Model(Graphics& gfx, const char* res_key)
@@ -75,8 +73,26 @@ Model::Model(Graphics& gfx, const char* res_key)
 	//v_cons_buf_.camera_pos = gfx.p_camera_->location_f();
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
 	AddBind(std::move(vcb));
-	textures_.push_back(TextureFactory::GetInstance().GetTexture("Depth.png"));
-	//gfx.GetContext()->PSSetShaderResources(0, 1, textures_[0]->GetTextureResourceViewAddress());
+	//"Y:\Project_VS2019\DX11RenderEngine\Res\rustediron1-alt2-Unreal-Engine\rustediron2_basecolor.png"
+	std::unique_ptr<ShaderResource> difrsv = std::make_unique<ShaderResource>(TextureFactory::GetInstance().GetTexture("rustediron2_basecolor.png")
+		->GetTextureResourceView(),ETextureType::kDiffuse);
+	AddBind(std::move(std::make_unique<ShaderResource>(difrsv->GetResourceView(), ETextureType::kDiffuse)));
+	texture_set_.insert(std::make_pair<ETextureType, std::unique_ptr<ShaderResource>>(ETextureType::kDiffuse, std::move(difrsv)));
+
+	std::unique_ptr<ShaderResource> metrsv = std::make_unique<ShaderResource>(TextureFactory::GetInstance().GetTexture("rustediron2_metallic.png")
+		->GetTextureResourceView(), ETextureType::kMetallic);
+	AddBind(std::move(std::make_unique<ShaderResource>(metrsv->GetResourceView(), ETextureType::kMetallic)));
+	texture_set_.insert(std::make_pair<ETextureType, std::unique_ptr<ShaderResource>>(ETextureType::kMetallic, std::move(metrsv)));
+
+	std::unique_ptr<ShaderResource> norrsv = std::make_unique<ShaderResource>(TextureFactory::GetInstance().GetTexture("rustediron2_normal.png")
+		->GetTextureResourceView(), ETextureType::kNormal);
+	AddBind(std::move(std::make_unique<ShaderResource>(norrsv->GetResourceView(), ETextureType::kNormal)));
+	texture_set_.insert(std::make_pair<ETextureType, std::unique_ptr<ShaderResource>>(ETextureType::kNormal, std::move(norrsv)));
+
+	std::unique_ptr<ShaderResource> roursv = std::make_unique<ShaderResource>(TextureFactory::GetInstance().GetTexture("rustediron2_roughness.png")
+		->GetTextureResourceView(), ETextureType::kRoughness);
+	AddBind(std::move(std::make_unique<ShaderResource>(roursv->GetResourceView(), ETextureType::kRoughness)));
+	texture_set_.insert(std::make_pair<ETextureType, std::unique_ptr<ShaderResource>>(ETextureType::kRoughness, std::move(roursv)));
 }
 
 Model::~Model()
@@ -89,9 +105,6 @@ Model::~Model()
 
 void Model::Draw(Graphics& gfx)
 {
-
-
-	//gfx.GetContext()->PSSetShaderResources(0, 1, textures_[0]->GetTextureResourceViewAddress());
 	Drawable::Draw(gfx);
 }
 

@@ -60,10 +60,10 @@ void ModelResFactory::AddResource(std::string model_key)
 {
 	if (Exist(model_key)) return;
 	std::vector<std::shared_ptr<BindableInterface>> v;
-	std::vector<Postion3DTN>** pv = new std::vector<Postion3DTN>*;
+	std::vector<Postion3DTN2>** pv = new std::vector<Postion3DTN2>*;
 	std::vector<UINT>** pi = new std::vector<UINT>*;
 	MeshFactory::getInstance().GetMesh(model_key, pv, pi);
-	v.push_back(std::make_shared<VertexBuffer<Postion3DTN, Vec>>(**pv, *gfx_));
+	v.push_back(std::make_shared<VertexBuffer<Postion3DTN2, Vec>>(**pv, *gfx_));
 	auto vs = std::make_shared<VertexShader>(*gfx_, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/VertexShader.cso");
 	v.push_back(std::make_shared<IndexBuffer>(**pi, *gfx_));
 	if (model_key == "point_light.obj" || model_key =="directional_light.obj" || model_key == "spot_light.obj")
@@ -82,7 +82,7 @@ void ModelResFactory::AddResource(std::string model_key)
 	}
 	VertexLayout vl;
 	//TODO():顶点布局要根据导入的obj文件进行调整
-	vl << EVertexType::kPosition3D << EVertexType::kTexture2D << EVertexType::kNormal;
+	vl << EVertexType::kPosition3D << EVertexType::kTexture2D << EVertexType::kNormal << EVertexType::kTangant;
 	v.push_back(std::make_shared<InputLayout>(*gfx_, *dynamic_cast<VertexShader*>(vs.get()), vl, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 	v.push_back(vs);
 	res_pool_.insert(std::pair<std::string, std::vector<std::shared_ptr<BindableInterface>>>(model_key, v));

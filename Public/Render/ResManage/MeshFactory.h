@@ -25,14 +25,15 @@ class MeshFactory
 public:
 	static MeshFactory& getInstance();
 	bool AddMesh(std::string file_path);
-	bool GetMesh(std::string file_path, std::vector<Postion3DTN>** pv, std::vector<UINT>** pi);
+	bool GetMesh(std::string file_path, std::vector<Postion3DTN2>** pv, std::vector<UINT>** pi);
 private:
 	MeshFactory() {};
 	DISALLOW_COPY_AND_ASSIGN(MeshFactory)
-	std::map<std::string, std::vector<Postion3DTN>> vertices_pool_;
+	void CalculateBTN(const std::vector<UINT>& indices, std::vector<Postion3DTN2>& vertics);
+	std::map<std::string, std::vector<Postion3DTN2>> vertices_pool_;
 	std::map <std::string, std::vector<UINT>> indices_pool_;
 	std::set<std::string> mesh_loaded_;
-	void LoadMesh(std::string file_path, std::vector<Postion3DTN>& vertics, std::vector<UINT>& indices);
+	void LoadMesh(std::string file_path, std::vector<Postion3DTN2>& vertics, std::vector<UINT>& indices);
 };
 
 

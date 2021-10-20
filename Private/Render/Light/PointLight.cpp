@@ -9,12 +9,9 @@ PointLight::PointLight(Graphics& gfx) : Light::Light(gfx,"point_light.obj")
 
 void PointLight::UpdateAttribute()
 {
-	
+	//SetWorldLocation({ attritute_.light_pos_.x,attritute_.light_pos_.y,attritute_.light_pos_.z });
+	light_camera_.SetLocation(world_location_.x, world_location_.y, world_location_.z);
 	attritute_.light_pos_ = light_camera_.location_f();
-	SetWorldLocation({ attritute_.light_pos_.x,attritute_.light_pos_.y,attritute_.light_pos_.z });
-	//attritute_.light_pos_.x = world_location_.x;
-	//attritute_.light_pos_.y = world_location_.y;
-	//attritute_.light_pos_.z = world_location_.z;
 }
 
 void PointLight::SetRadius(float radius)

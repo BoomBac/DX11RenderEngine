@@ -11,6 +11,7 @@
 #include "Public\Render\Drawable\Drawable.h"
 #include "Public\Render\Shape\Shape.hpp"
 #include <Public/Render/Texture.h>
+#include <Public/Render/Bindable/ShaderResource.h>
 
 
 class Model :
@@ -29,7 +30,7 @@ private:
 
 	std::vector<std::unique_ptr<BindableInterface>> binds_;
 	virtual const std::vector<std::unique_ptr<BindableInterface>>& GetStaticBinds() const override;
-	std::vector<std::shared_ptr<Texture>> textures_;
+	std::map<ETextureType,std::unique_ptr<ShaderResource>> texture_set_;
 	const char* res_key_ = "zzz.obj";
 };
 

@@ -71,6 +71,10 @@ Graphics::Graphics(HWND hWnd)
 	GeometryFactory geo_factory(this);
 	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/height.jpg");
 	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Debug/Depth.png");
+	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/rustediron2_basecolor.png");
+	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/rustediron2_metallic.png");
+	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/rustediron2_normal.png");
+	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/rustediron2_roughness.png");
 
 
 	////初始化场景默认灯光
@@ -99,14 +103,16 @@ Graphics::Graphics(HWND hWnd)
 	p_coordinate_ = new Coordinate(*this, 10.f);
 	scene_objects_.push_back(dynamic_cast<Drawable*>(p_coordinate_));
 
-	AddLight(ELightType::kDirectionLight);
+	AddLight(ELightType::kPonintLight);
 	//创建默认灯光
-
+	p_light_->SetWorldLocation({ 20.f,30.f,0.f });
+	dynamic_cast<PointLight*>(p_light_)->SetRadius(100.f);
 	p_light_camera = &dynamic_cast<Light*>(p_light_)->light_camera_;
 	p_light_matrix_ = dynamic_cast<Light*>(p_light_)->GetLightMatrix();
 
 
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/sphere.obj");
+	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/plane.obj");
 
 	//初始化坐标轴和场景物体
 	InitSceneObject();
@@ -231,9 +237,10 @@ void Graphics::DeleteSceneObject(int index)
 void Graphics::InitSceneObject()
 {
 	GeometryFactory::GenerateGeometry("sphere.obj");
-	
-	auto plane = GeometryFactory::GenerateGeometry(EGeometryType::kPlane);
-	plane->SetActorScale(CusMath::vector3d{ 5.f, 1.f, 5.f });
+	auto plane = GeometryFactory::GenerateGeometry("plane.obj");
+	plane->SetActorScale({ 5.f,1.f,5.f });
+	//auto plane = GeometryFactory::GenerateGeometry(EGeometryType::kPlane);
+	//plane->SetActorScale(CusMath::vector3d{ 5.f, 1.f, 5.f });
 	//GeometryFactory::GenerateGeometry(EGeometryType::kCustom);
 	//GeometryFactory::GenerateGeometry(EGeometryType::kBox);
 	SetSelectObject(1);

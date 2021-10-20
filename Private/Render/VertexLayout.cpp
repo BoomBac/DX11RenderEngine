@@ -5,46 +5,52 @@ template<>
 struct Map<EVertexType::kPosition2D>
 {
 	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
-	static constexpr const char* semantic = "Position";
+	static constexpr const char* semantic = "POSTION";
 	static constexpr const UINT offset = 8;
 };
 template<>
 struct Map<EVertexType::kPosition3D>
 {
 	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
-	static constexpr const char* semantic = "Position";
+	static constexpr const char* semantic = "POSTION";
     static constexpr const UINT offset = 12;
 };
 template<>
 struct Map<EVertexType::kFloat3Color>
 {
 	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
-	static constexpr const char* semantic = "Color";
+	static constexpr const char* semantic = "COLOR";
 	static constexpr const UINT offset = 12;
 }; template<>
 struct Map<EVertexType::kRGBAColor>
 {
 	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-	static constexpr const char* semantic = "Color";
+	static constexpr const char* semantic = "COLOR";
 	static constexpr const UINT offset = 4;
 }; template<>
 struct Map<EVertexType::kNormal>
 {
 	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
-	static constexpr const char* semantic = "Normal";
+	static constexpr const char* semantic = "NORMAL";
 	static constexpr const UINT offset = 12;
 }; template<>
 struct Map<EVertexType::kTexture2D>
 {
 	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
-	static constexpr const char* semantic = "Texcoord";
+	static constexpr const char* semantic = "TEXCOORD";
 	static constexpr const UINT offset = 8;
 };  template<>
 struct Map<EVertexType::kFloat4Color>
 {
 	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	static constexpr const char* semantic = "Color";
+	static constexpr const char* semantic = "COLOR";
 	static constexpr const UINT offset = 16;
+}; template<>
+struct Map<EVertexType::kTangant>
+{
+	static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+	static constexpr const char* semantic = "TANGENT";
+	static constexpr const UINT offset = 12;
 };
 
 
@@ -128,7 +134,8 @@ D3D11_INPUT_ELEMENT_DESC* VertexLayout::Build()
 			  D3D11_INPUT_PER_VERTEX_DATA, 0 }); offset += Map::offset;);
 		ITER_VERTEX_TYPE(kFloat4Color, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
 			  D3D11_INPUT_PER_VERTEX_DATA, 0 }); offset += Map::offset;);
-
+		ITER_VERTEX_TYPE(kTangant, des.push_back(D3D11_INPUT_ELEMENT_DESC{ Map::semantic, 0, Map::dxgiFormat, 0, offset,
+				D3D11_INPUT_PER_VERTEX_DATA, 0 }); offset += Map::offset;);
 	}
 	#undef 	ITER_VERTEX_TYPE;
 	return &des.at(0);

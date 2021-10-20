@@ -25,7 +25,7 @@ MeshFactory& MeshFactory::getInstance()
 bool MeshFactory::AddMesh(std::string file_path)
 {
 	if (mesh_loaded_.find(file_path) != mesh_loaded_.end()) return false;
-	vector<Postion3DTN> vertics;
+	vector<Postion3DTN2> vertics;
 	vector<UINT> indices;
 	LoadMesh(file_path, vertics, indices);
 	const char* file_name;
@@ -46,14 +46,14 @@ bool MeshFactory::AddMesh(std::string file_path)
 			}
 		}
 	}
-	vertices_pool_.insert(pair<string, vector<Postion3DTN>>(file_name, move(vertics)));
+	vertices_pool_.insert(pair<string, vector<Postion3DTN2>>(file_name, move(vertics)));
 	indices_pool_.insert(pair<string, vector<UINT>>(file_name, move(indices)));
 	ModelResFactory::GetInstance().AddResource(file_name);
 	mesh_loaded_.insert(file_path);
 	return true;
 }
 
-bool MeshFactory::GetMesh(std::string file_path, std::vector<Postion3DTN>** pv, std::vector<UINT>** pi)
+bool MeshFactory::GetMesh(std::string file_path, std::vector<Postion3DTN2>** pv, std::vector<UINT>** pi)
 {
 	auto v_it = vertices_pool_.find(file_path);
 	if (v_it != vertices_pool_.end())
@@ -65,7 +65,44 @@ bool MeshFactory::GetMesh(std::string file_path, std::vector<Postion3DTN>** pv, 
 	return true;
 }
 
-void MeshFactory::LoadMesh(std::string file_path, std::vector<Postion3DTN>& vertics, std::vector<UINT>& indices)
+void MeshFactory::CalculateBTN(const std::vector<UINT>& indices,std::vector<Postion3DTN2>& vertics)
+{
+	int id = indices.size() - 1;
+	//calculate BTN
+	CusMath::vector3d btn;
+	//get triangle vertex
+	CusMath::vector3d p1 = vertics[indices[id - 2]].pos;
+	CusMath::vector3d p2 = vertics[indices[id-1]].pos;
+	CusMath::vector3d p3 = vertics[indices[id]].pos;
+	//get uv
+	CusMath::vector2d uv1 = vertics[indices[id - 2]].uv;
+	CusMath::vector2d uv2 = vertics[indices[id - 1]].uv;
+	CusMath::vector2d uv3 = vertics[indices[id]].uv;
+	//calculate edge vector and delta uv
+	CusMath::vector3d edge1 = p2 - p1;
+	CusMath::vector3d edge2 = p3 - p1;
+	CusMath::vector2d delta_uv1 = uv2 - uv1;
+	CusMath::vector2d delta_uv2 = uv3 - uv1;
+	//calculate tb
+	CusMath::vector3d tangent;
+	CusMath::vector3d bit_tangent;
+	float f = 1.f / (delta_uv1.x * delta_uv2.y - delta_uv2.x * delta_uv1.y);
+	tangent.x = f * (delta_uv2.y * edge1.x - delta_uv1.y * edge2.x);
+	tangent.y = f * (delta_uv2.y * edge1.y - delta_uv1.y * edge2.y);
+	tangent.z = f * (delta_uv2.y * edge1.z - delta_uv1.y * edge2.z);
+	tangent = tangent.normalize();
+	bit_tangent = tangent.cross(edge1.cross(edge2));
+	bit_tangent = bit_tangent.normalize();
+	//bit_tangent.x = f * (-delta_uv2.x * edge1.x + delta_uv1.x * edge2.x);
+	//bit_tangent.y = f * (-delta_uv2.x * edge1.y + delta_uv1.x * edge2.y);
+	//bit_tangent.z = f * (-delta_uv2.x * edge1.z + delta_uv1.x * edge2.z);
+	//bit_tangent = bit_tangent.normalize();
+	vertics[indices[id - 2]].tangent = tangent;
+	vertics[indices[id - 1]].tangent = tangent;
+	vertics[indices[id]].tangent = tangent;
+}
+
+void MeshFactory::LoadMesh(std::string file_path, std::vector<Postion3DTN2>& vertics, std::vector<UINT>& indices)
 {
 	EMeshType g_mesh_type = EMeshType::kNone;
 	ifstream ifs(file_path, ios::in);
@@ -143,13 +180,15 @@ void MeshFactory::LoadMesh(std::string file_path, std::vector<Postion3DTN>& vert
 					if (sett.find(arr[i + 2]) == sett.end())
 					{
 						sett.insert(arr[i + 2]);
-						vertics.push_back(Postion3DTN{ postion[arr[i]], uv[arr[i + 1]], normal[arr[i + 2]] });
+						vertics.push_back(Postion3DTN2{ postion[arr[i]], uv[arr[i + 1]], normal[arr[i + 2]],CusMath::vector3d{0.f,0.f,0.f},
+							 });
 					}
 					if (i >= 6)
 					{
 						indices.push_back(arr[2]);
 						indices.push_back(arr[i - 1]);
 						indices.push_back(arr[i + 2]);
+						CalculateBTN(indices,vertics);
 					}
 				}
 				delete[] arr;
@@ -179,13 +218,15 @@ void MeshFactory::LoadMesh(std::string file_path, std::vector<Postion3DTN>& vert
 					if (sett.find(arr[i + 1]) == sett.end())
 					{
 						sett.insert(arr[i + 1]);
-						vertics.push_back(Postion3DTN{ postion[arr[i]], CusMath::vector2d{0.f,0.f}, normal[arr[i + 1]] });
+						vertics.push_back(Postion3DTN2{ postion[arr[i]], CusMath::vector2d{0.f,0.f}, normal[arr[i + 1]],CusMath::vector3d{0.f,0.f,0.f} 
+							});
 					}
 					if (i >= 4)
 					{
 						indices.push_back(arr[1]);
 						indices.push_back(arr[i - 1]);
 						indices.push_back(arr[i + 1]);
+						CalculateBTN(indices, vertics);
 					}
 				}
 				delete[] arr;
@@ -216,13 +257,15 @@ void MeshFactory::LoadMesh(std::string file_path, std::vector<Postion3DTN>& vert
 					if (sett.find(arr[i + 1]) == sett.end())
 					{
 						sett.insert(arr[i + 1]);
-						vertics.push_back(Postion3DTN{ postion[arr[i]], uv[arr[i + 1]], CusMath::vector3d{0.f,0.f,0.f} });
+						vertics.push_back(Postion3DTN2{ postion[arr[i]], uv[arr[i + 1]], CusMath::vector3d{0.f,0.f,0.f},CusMath::vector3d{0.f,0.f,0.f},
+							});
 					}
 					if (i >= 4)
 					{
 						indices.push_back(arr[1]);
 						indices.push_back(arr[i - 1]);
 						indices.push_back(arr[i + 1]);
+						CalculateBTN(indices, vertics);
 					}
 				}
 				delete[] arr;
