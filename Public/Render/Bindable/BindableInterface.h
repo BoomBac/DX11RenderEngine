@@ -23,7 +23,9 @@ enum class EBindableType
 	kPixelConstantBuffer,
 	kVetexConstantBuffer,
 	kDepthStencilBuffer,
-	kShaderResource
+	kShaderResource,
+	kRasterizerState,
+	kDepthStencilState
 };
 
 namespace

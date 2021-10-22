@@ -83,6 +83,8 @@ void Drawable::Draw(Graphics& gfx)
 	}
 	else
 		gfx.DrawIndexed(indexbuffer->size_);
+	gfx.GetContext()->RSSetState(nullptr);
+	gfx.GetContext()->OMSetDepthStencilState(nullptr, 1u);
 	//渲染结束将shadowMap槽位的shaderResource解绑，以便其在下一个shadowPass可以用作depthbuffer
 	//gfx.GetContext()->PSSetShaderResources(0, 1, TextureFactory::GetInstance().GetTexture("Depth.png")->GetTextureResourceViewAddress());
 }

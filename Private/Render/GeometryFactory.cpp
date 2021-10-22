@@ -2,6 +2,7 @@
 #include "Public\Render\Shape\Box.h"
 #include "Public\Render\Shape\Plane.h"
 #include "Public\Render\Shape\Model.h"
+#include "Public/Render/Shape/SkyBox.h"
 
 Graphics* GeometryFactory::gfx = nullptr;
 
@@ -42,7 +43,13 @@ Drawable* GeometryFactory::GenerateGeometry(EGeometryType g_type)
 		new_object = new Model(*gfx);
 		sprintf(object_name, "Model_%d", model_count++);
 	}
-		break;
+	break;
+	case EGeometryType::kSkyBox:
+	{
+		new_object = new SkyBox(*gfx);
+		sprintf(object_name, "SkyBox");
+	}
+	break;
 	default:
 		break;
 	}

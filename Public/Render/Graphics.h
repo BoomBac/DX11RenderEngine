@@ -85,6 +85,8 @@ public:
 	void SetSelectedObjectTranslate(const CusMath::vector3d& t);
 	void SetSelectedObjectRotation(const CusMath::vector3d& t);
 	void SetSelectedObjectScale(const CusMath::vector3d& t);
+
+	void LoadResource();
 	//工厂类添加元素
 	void AddSceneObject(Drawable* object, std::string object_name);
 	

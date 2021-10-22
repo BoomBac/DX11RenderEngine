@@ -20,7 +20,14 @@ enum class EGeometryType
 {
 	kBox,
 	kPlane,
-	kCustom
+	kCustom,
+	kSkyBox
+};
+
+enum class EDrawableType
+{
+	kDefault,
+	kSkyBox
 };
 
 

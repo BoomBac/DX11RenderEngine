@@ -15,12 +15,12 @@
 #include "vector2D.h"
 #include <Public/Render/ResManage/MeshFactory.h>
 #include <Public/Render/ResManage/TextureFactory.h>
-//#include "Public/Render/Light/Light.h"
 #include "Public/Render/Light/DirectionalLight.h"
 #include "Public/Render/Light/PointLight.h"
 #include "Public/Render/Light/SpotLight.h"
 #include "Public/Render/RenderToTexture.h"
 #include "ScreenGrab.h"
+#include <Public/Tool/ResLoader.h>
 
 
 
@@ -77,6 +77,7 @@ Graphics::Graphics(HWND hWnd)
 	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/rustediron2_roughness.png");
 
 
+	//LoadResource();
 	////初始化场景默认灯光
 	//default_light_.light_color_ = { 1.f,1.f,1.f,1.f };
 	//default_light_.light_dir_ = { 0.f,-1.f,0.f };
@@ -226,6 +227,15 @@ void Graphics::AddSceneObject(Drawable* object, std::string object_name)
 	outline_notify_->NotifyObserver(true);
 }
 
+void Graphics::LoadResource()
+{
+	HDRHeader header;
+	ResLoader::LoadHDRHeader("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/Road_to_MonumentValley_Ref.hdr", header);
+	float* pixel = static_cast<float*>(::operator new(header.height * header.width * 3 * sizeof(float)));
+	ResLoader::LoadHDRFile("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/Road_to_MonumentValley_Ref.hdr", header.width, header.height, pixel);
+	operator delete(pixel);
+}
+
 void Graphics::DeleteSceneObject(int index)
 {
 	auto it = scene_objects_.begin();
@@ -239,6 +249,7 @@ void Graphics::InitSceneObject()
 	GeometryFactory::GenerateGeometry("sphere.obj");
 	auto plane = GeometryFactory::GenerateGeometry("plane.obj");
 	plane->SetActorScale({ 5.f,1.f,5.f });
+	GeometryFactory::GenerateGeometry(EGeometryType::kSkyBox);
 	//auto plane = GeometryFactory::GenerateGeometry(EGeometryType::kPlane);
 	//plane->SetActorScale(CusMath::vector3d{ 5.f, 1.f, 5.f });
 	//GeometryFactory::GenerateGeometry(EGeometryType::kCustom);

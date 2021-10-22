@@ -199,6 +199,18 @@
     <ClCompile Include="Private\Render\Bindable\ShaderResource.cpp">
       <Filter>Source Files\Render\Bindable</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Tool\ResLoader.cpp">
+      <Filter>Source Files\Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Shape\SkyBox.cpp">
+      <Filter>Source Files\Render\shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Bindable\RasterizerState.cpp">
+      <Filter>Source Files\Render\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Bindable\DepthStencilState.cpp">
+      <Filter>Source Files\Render\Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Public\QtFrame\DX11RenderEngine.h">
@@ -329,6 +341,18 @@
     <ClInclude Include="Public\Render\Bindable\ShaderResource.h">
       <Filter>Header Files\Render\Bindable</Filter>
     </ClInclude>
+    <ClInclude Include="Public\Tool\ResLoader.h">
+      <Filter>Header Files\Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Shape\SkyBox.h">
+      <Filter>Header Files\Render\shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Bindable\RasterizerState.h">
+      <Filter>Header Files\Render\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Bindable\DepthStencilState.h">
+      <Filter>Header Files\Render\Bindable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="RenderViewport.ui">
@@ -361,6 +385,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\src\pbr.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\src\vSkyBox.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\src\pSkyBox.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

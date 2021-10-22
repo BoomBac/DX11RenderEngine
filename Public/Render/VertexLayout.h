@@ -15,6 +15,10 @@ enum class EVertexType : UINT
 	kTexture2D,
 	kTangant
 };
+struct Postion3D
+{
+	CusMath::vector3d pos;
+};
 struct Postion3DColored
 {
 	CusMath::vector3d pos;

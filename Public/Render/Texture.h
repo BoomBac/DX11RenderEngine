@@ -16,9 +16,12 @@ class Texture
 public:
     Texture(ID3D11Device* device);
     Texture(ID3D11Device* device, const char* file_path);
+    //CreateWICTextureFromFileEx
+    Texture(ID3D11Device* device, const char* file_path, const D3D11_TEXTURE2D_DESC& des);
     void Load(const char* file_path);
 	ID3D11ShaderResourceView* GetTextureResourceView();
 	ID3D11ShaderResourceView** GetTextureResourceViewAddress();
+    ID3D11Resource* GetResource();
 private:
     DISALLOW_COPY_AND_ASSIGN(Texture)
     static ID3D11Device* device_;

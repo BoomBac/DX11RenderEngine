@@ -111,10 +111,12 @@
     <ClCompile Include="Private\QtFrame\DX11RenderEngine.cpp" />
     <ClCompile Include="Private\QtFrame\RenderViewport.cpp" />
     <ClCompile Include="Private\Render\Bindable\DepthStencil.cpp" />
+    <ClCompile Include="Private\Render\Bindable\DepthStencilState.cpp" />
     <ClCompile Include="Private\Render\Bindable\IndexBuffer.cpp" />
     <ClCompile Include="Private\Render\Bindable\InputLayout.cpp" />
     <ClCompile Include="Private\Render\Bindable\LightBuffer.cpp" />
     <ClCompile Include="Private\Render\Bindable\PixelShader.cpp" />
+    <ClCompile Include="Private\Render\Bindable\RasterizerState.cpp" />
     <ClCompile Include="Private\Render\Bindable\ShaderResource.cpp" />
     <ClCompile Include="Private\Render\Bindable\TransformBuffer.cpp" />
     <ClCompile Include="Private\Render\Bindable\VertexBuffer.cpp" />
@@ -138,8 +140,10 @@
     <ClCompile Include="Private\Render\ResManage\TextureFactory.cpp" />
     <ClCompile Include="Private\Render\Shape\Model.cpp" />
     <ClCompile Include="Private\Render\Shape\Plane.cpp" />
+    <ClCompile Include="Private\Render\Shape\SkyBox.cpp" />
     <ClCompile Include="Private\Render\Texture.cpp" />
     <ClCompile Include="Private\Render\VertexLayout.cpp" />
+    <ClCompile Include="Private\Tool\ResLoader.cpp" />
     <ClCompile Include="Private\Tool\Timer.cpp" />
     <ClCompile Include="Public\Render\Light\LightAttribute.h" />
     <ClCompile Include="Public\Tool\Subject.cpp" />
@@ -155,10 +159,12 @@
     <ClInclude Include="Public\Render\Bindable\BindableInterface.h" />
     <ClInclude Include="Public\Render\Bindable\ConstantBuffer.h" />
     <ClInclude Include="Public\Render\Bindable\DepthStencil.h" />
+    <ClInclude Include="Public\Render\Bindable\DepthStencilState.h" />
     <ClInclude Include="Public\Render\Bindable\IndexBuffer.h" />
     <ClInclude Include="Public\Render\Bindable\InputLayout.h" />
     <ClInclude Include="Public\Render\Bindable\LightBuffer.h" />
     <ClInclude Include="Public\Render\Bindable\PixelShader.h" />
+    <ClInclude Include="Public\Render\Bindable\RasterizerState.h" />
     <ClInclude Include="Public\Render\Bindable\ShaderResource.h" />
     <ClInclude Include="Public\Render\Bindable\TransformBuffer.h" />
     <ClInclude Include="Public\Render\Bindable\VertexBuffer.hpp" />
@@ -184,9 +190,11 @@
     <ClInclude Include="Public\Render\Shape\Model.h" />
     <ClInclude Include="Public\Render\Shape\Plane.h" />
     <ClInclude Include="Public\Render\Shape\Shape.hpp" />
+    <ClInclude Include="Public\Render\Shape\SkyBox.h" />
     <ClInclude Include="Public\Render\Texture.h" />
     <ClInclude Include="Public\Render\VertexLayout.h" />
     <ClInclude Include="Public\Tool\ObserverInterface.h" />
+    <ClInclude Include="Public\Tool\ResLoader.h" />
     <ClInclude Include="Public\Tool\Subject.h" />
     <ClInclude Include="Public\Tool\Timer.h" />
     <ClInclude Include="Public\Tool\Utili.h" />
@@ -227,6 +235,14 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
     </FxCompile>
+    <FxCompile Include="Shaders\src\pSkyBox.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DisableOptimizations>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
     <FxCompile Include="Shaders\src\p_raw_color.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -236,6 +252,14 @@
     <FxCompile Include="Shaders\src\RawColor.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Shaders\src\vSkyBox.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DisableOptimizations>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
