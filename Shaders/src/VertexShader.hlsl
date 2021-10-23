@@ -15,7 +15,7 @@ cbuffer CBuf
 	float3 CameraPos;
 };
 
-VSOut main(float3 pos : POSTION, float2 uv : TEXCOORD, float3 normal : NORMAL, float3 tangent : TANGENT) //: SV_POSITION
+VSOut main(float3 pos : POSITION, float2 uv : TEXCOORD, float3 normal : NORMAL, float3 tangent : TANGENT) //: SV_POSITION
 {
 	VSOut respos;
 	respos.pos = mul(float4(pos, 1.f), MVPMartrix);

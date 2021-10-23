@@ -2,6 +2,8 @@
 #ifndef DX11ENGINE_TOOL_RESLOADER_H
 #define DX11ENGINE_TOOL_RESLOADER_H
 
+
+
 struct HDRHeader
 {
 	char programtype[16];

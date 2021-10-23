@@ -20,7 +20,8 @@
 #include "Public/Render/Light/SpotLight.h"
 #include "Public/Render/RenderToTexture.h"
 #include "ScreenGrab.h"
-#include <Public/Tool/ResLoader.h>
+#include "Public/Render/Shape/SkyBox.h"
+
 
 
 
@@ -118,7 +119,8 @@ Graphics::Graphics(HWND hWnd)
 	//初始化坐标轴和场景物体
 	InitSceneObject();
 
-	g_rtr.Initialize(this, ERTTUsage::kDepthBuffer);
+
+	//ResizeBackbuffer();
 }
 
 Graphics::~Graphics()
@@ -146,23 +148,18 @@ Graphics::~Graphics()
 
 void Graphics::EndFrame()
 {
-	//if (p_light_!=nullptr)
-	//{
-	//	//p_light_->SetWorldLocation(pos);
-	//	//p_light_->SetWorldRotation(pos);
-	//	//qDebug() << "Rotation x:" << pos.x << ",y:" << pos.y;
-	//}
-
 	dynamic_cast<Light*>(p_light_)->UpdateLightMatrix();
 	pDeviceContext->ClearRenderTargetView(p_render_targetview_.Get(), bg_color);
-	g_rtr.ClearRenderTarget(this, 0.f, 1.f, 1.f, 1.f);
-	isRenderShaodw = true;
-	// Pender To Texture
-	g_rtr.SetRenderTarget(this);
-	for (const auto& i : scene_objects_)
-	{
-		i->Draw(*this);
-	}
+	//g_rtr.ClearRenderTarget(this, 0.f, 1.f, 1.f, 1.f);
+	////isRenderShaodw = true;
+	////// Pender To Texture
+	//g_rtr.SetRenderTarget(this);
+	//p_sky_box_->Draw(*this);
+	//g_rtr.SaveToImage(this, "C:/Users/BoomBac/Desktop/test.png");
+	//for (const auto& i : scene_objects_)
+	//{
+	//	i->Draw(*this);
+	//}
 
 	//GetContext()->OMSetRenderTargets(1, p_render_targetview_.GetAddressOf(), nullptr);
 	//Render Scene
@@ -174,6 +171,7 @@ void Graphics::EndFrame()
 	{
 		i->Draw(*this);
 	}
+	p_sky_box_->Draw(*this);
 	UpdateCameraMovement();
 	pSwapChain->Present(0u, 0u);
 }
@@ -227,14 +225,6 @@ void Graphics::AddSceneObject(Drawable* object, std::string object_name)
 	outline_notify_->NotifyObserver(true);
 }
 
-void Graphics::LoadResource()
-{
-	HDRHeader header;
-	ResLoader::LoadHDRHeader("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/Road_to_MonumentValley_Ref.hdr", header);
-	float* pixel = static_cast<float*>(::operator new(header.height * header.width * 3 * sizeof(float)));
-	ResLoader::LoadHDRFile("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/Road_to_MonumentValley_Ref.hdr", header.width, header.height, pixel);
-	operator delete(pixel);
-}
 
 void Graphics::DeleteSceneObject(int index)
 {
@@ -249,11 +239,10 @@ void Graphics::InitSceneObject()
 	GeometryFactory::GenerateGeometry("sphere.obj");
 	auto plane = GeometryFactory::GenerateGeometry("plane.obj");
 	plane->SetActorScale({ 5.f,1.f,5.f });
-	GeometryFactory::GenerateGeometry(EGeometryType::kSkyBox);
-	//auto plane = GeometryFactory::GenerateGeometry(EGeometryType::kPlane);
-	//plane->SetActorScale(CusMath::vector3d{ 5.f, 1.f, 5.f });
-	//GeometryFactory::GenerateGeometry(EGeometryType::kCustom);
-	//GeometryFactory::GenerateGeometry(EGeometryType::kBox);
+	p_sky_box_ = std::make_unique<SkyBox>(*this);
+	//set skybox as environment_map at slot 6
+	//auto p = p_sky_box_->GetEnvironmentRsv();
+	//pDeviceContext->PSSetShaderResources(6, 1, &p);
 	SetSelectObject(1);
 }
 
@@ -317,6 +306,32 @@ void Graphics::SetSelectObject(const int& index)
 	}
 	else
 	SetSelectObject(nullptr);
+}
+void Graphics::ResizeBackbuffer(int w, int h)
+{
+	ID3D11RenderTargetView* null_view[] = {nullptr};
+	pDeviceContext->OMSetRenderTargets(1, null_view, nullptr);
+	p_render_targetview_->Release();
+	p_depth_stencil_view_->Release();
+	pDeviceContext->ClearState();
+	ID3D11Texture2D* pBuffer;
+	pDeviceContext->Flush();
+	pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)(&pBuffer));
+	auto hr = pSwapChain->ResizeBuffers(1, w, h, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
+
+	pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)(&pBuffer));
+	hr = pDevice->CreateRenderTargetView(pBuffer, NULL, p_render_targetview_.GetAddressOf());
+	pBuffer->Release();
+	pDeviceContext->OMSetRenderTargets(1, p_render_targetview_.GetAddressOf(), p_depth_stencil_view_.Get());
+	// Set up the viewport.
+	D3D11_VIEWPORT vp;
+	vp.Width = 800;
+	vp.Height = 600;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	pDeviceContext->RSSetViewports(1, &vp);
 }
 void Graphics::SetSelectObject(Drawable* object)
 {

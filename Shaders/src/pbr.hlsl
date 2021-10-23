@@ -49,6 +49,7 @@ Texture2D roughness_map : TEXTURE: register(t2);
 Texture2D albedo_map : TEXTURE: register(t3);
 Texture2D normal_map : TEXTURE: register(t4);
 Texture2D ao_map : TEXTURE: register(t5);
+TextureCube env_map : register(t6);
 
 
 SamplerState objSamplerState : SAMPLER;
@@ -134,5 +135,7 @@ float4 main(PSInput input) : SV_TARGET
  	//gamma correct
  	color = color / (color + float3(1.f,1.f,1.f));
  	color = pow(color,float3(1.f/2.2f,1.f/2.2f,1.f/2.2f));
-	return float4(color,1.f);
+	return float4(color, 1.f);
+	//return ReflectFormEnv(env_map, objSamplerState, input.cameraPos, input.posW, input.normal);
+	//return RefractFromEnv(env_map, objSamplerState, input.cameraPos, input.posW, input.normal,0.658);
 }

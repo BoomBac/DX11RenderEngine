@@ -61,37 +61,37 @@ bool ResLoader::LoadHDRHeader(const char* path, HDRHeader& header)
 
 bool ResLoader::LoadHDRFile(const char* path, int width, int height, float* pixel)
 {
-	ifstream ifs(path, ios::binary);
-	//| ios::binary
-	if (!ifs.is_open()) return false;
-	char buf[64];
-	while (true)
-	{
-		ifs.getline(buf, 64);
-		if (buf[0] == '\0') break;
-	}
-	ifs.getline(buf, 64);
-	int pxiel_count = width * height + 1;
-	int pixel_num = 0;
-	while (--pxiel_count)
-	{
-		ifs.read(buf, 4);
-		if (buf[3])
-		{
-			float e = pow(2.f, (static_cast<float>(static_cast<unsigned char>(buf[3])) - 136));
-			pixel[pixel_num] = static_cast<float>(static_cast<unsigned char>(buf[0]))* e;
-			pixel[pixel_num + 1] = static_cast<float>(static_cast<unsigned char>(buf[1]))* e;
-			pixel[pixel_num + 2] = static_cast<float>(static_cast<unsigned char>(buf[2]))* e;
-			pixel[pixel_num + 3] = 1.f;
-		}
-		else
-		{
-			pixel[pixel_num] = pixel[pixel_num + 1] = pixel[pixel_num + 2] = 0.f;
-			pixel[pixel_num + 3] = 1.f;
-		}
-		pixel_num += 4;
-	}
-	ifs.close();
+	//ifstream ifs(path, ios::binary);
+	////| ios::binary
+	//if (!ifs.is_open()) return false;
+	//char buf[64];
+	//while (true)
+	//{
+	//	ifs.getline(buf, 64);
+	//	if (buf[0] == '\0') break;
+	//}
+	//ifs.getline(buf, 64);
+	//int pxiel_count = width * height + 1;
+	//int pixel_num = 0;
+	//while (--pxiel_count)
+	//{
+	//	ifs.read(buf, 4);
+	//	if (buf[3])
+	//	{
+	//		float e = pow(2.f, (static_cast<float>(static_cast<unsigned char>(buf[3])) - 136));
+	//		pixel[pixel_num] = static_cast<float>(static_cast<unsigned char>(buf[0]))* e;
+	//		pixel[pixel_num + 1] = static_cast<float>(static_cast<unsigned char>(buf[1]))* e;
+	//		pixel[pixel_num + 2] = static_cast<float>(static_cast<unsigned char>(buf[2]))* e;
+	//		pixel[pixel_num + 3] = 1.f;
+	//	}
+	//	else
+	//	{
+	//		pixel[pixel_num] = pixel[pixel_num + 1] = pixel[pixel_num + 2] = 0.f;
+	//		pixel[pixel_num + 3] = 1.f;
+	//	}
+	//	pixel_num += 4;
+	//}
+	//ifs.close();
 	return true;
 }
 

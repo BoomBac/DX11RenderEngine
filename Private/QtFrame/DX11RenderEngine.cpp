@@ -235,8 +235,8 @@ void DX11RenderEngine::OnOutlineItemChanged(int row)
 		p_rotation_y_->SetProgressValue(tranf[4]);
 		p_rotation_z_->SetProgressValue(tranf[5]);
         p_scale_x_->SetProgressValue(tranf[6]);
-        p_scale_x_->SetProgressValue(tranf[7]);
-        p_scale_x_->SetProgressValue(tranf[8]);
+        p_scale_y_->SetProgressValue(tranf[7]);
+        p_scale_z_->SetProgressValue(tranf[8]);
 		ELightType next_light_type = ui.renderView->GetLightType();
         if (tranf[9] == 1.f)
         {
@@ -257,8 +257,8 @@ void DX11RenderEngine::OnOutlineItemChanged(int row)
 		p_rotation_y_->SetProgressValue(0.f);
 		p_rotation_z_->SetProgressValue(0.f);
 		p_scale_x_->SetProgressValue(0.f);
-		p_scale_x_->SetProgressValue(0.f);
-		p_scale_x_->SetProgressValue(0.f);
+		p_scale_y_->SetProgressValue(0.f);
+		p_scale_z_->SetProgressValue(0.f);
     }
 }
 

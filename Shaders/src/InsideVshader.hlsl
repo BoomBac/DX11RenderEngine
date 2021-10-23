@@ -1,9 +1,9 @@
 struct VSOut
 {
-	float4 pos : SV_Position;
+	float4 pos : SV_POSITION;
 	float3 posW : WORLD_POSTION;
 	float3 cameraPos : CAMERA_POSTION;
-	float2 uv : Texcoord;
+	float2 uv : TEXCOORD;
 	float3 normal : NORMAL;
 };
 

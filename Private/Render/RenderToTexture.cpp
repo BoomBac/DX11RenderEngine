@@ -29,6 +29,8 @@ void RenderToTexture::Initialize(Graphics* gfx, ERTTUsage usage)
 
 		textureDesc.Width = gfx->GetWidth();
 		textureDesc.Height = gfx->GetHeight();
+		//textureDesc.Width = 1024;
+		//textureDesc.Height = 1024;
 		textureDesc.MipLevels = 1;
 		textureDesc.ArraySize = 1;
 		textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;  //纹理像素为12个字节

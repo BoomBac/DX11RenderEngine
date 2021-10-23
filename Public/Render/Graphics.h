@@ -20,6 +20,7 @@ class ID3D11RenderTargetView;
 class DepthStencil;
 class Drawable;
 class Light;
+class SkyBox;
 
 struct ShadowEffect
 {
@@ -85,8 +86,6 @@ public:
 	void SetSelectedObjectTranslate(const CusMath::vector3d& t);
 	void SetSelectedObjectRotation(const CusMath::vector3d& t);
 	void SetSelectedObjectScale(const CusMath::vector3d& t);
-
-	void LoadResource();
 	//工厂类添加元素
 	void AddSceneObject(Drawable* object, std::string object_name);
 	
@@ -100,7 +99,7 @@ public:
 	Subject* outline_notify_;
 	std::map<int, std::string> scene_outline_;
 	std::string last_add_object_name_;
-
+	void ResizeBackbuffer(int w = 1024, int h = 1024);
 	void SetSelectObject(const int& index);
 
 	ID3D11Device* GetDevice();
@@ -137,5 +136,6 @@ private:
 
 	ShadowEffect shadowParma;
 	MaterialProperty materal_property_;
+	std::unique_ptr<SkyBox>	p_sky_box_;
 };
 
