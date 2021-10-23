@@ -1,7 +1,7 @@
 #include "Public\Render\Bindable\DepthStencil.h"
 
 
-DepthStencil::DepthStencil(UINT x, UINT y, Graphics& gfx):w_(x),h_(y)
+DepthStencil::DepthStencil(const UINT& x, const UINT& y, Graphics& gfx):w_(x),h_(y)
 {
 	D3D11_TEXTURE2D_DESC dsd;
 	dsd.Width = x;		//与后台尺寸一致
@@ -19,11 +19,11 @@ DepthStencil::DepthStencil(UINT x, UINT y, Graphics& gfx):w_(x),h_(y)
 	GetDevice(gfx)->CreateTexture2D(&dsd, 0, &pDepthStencil);
 	GetDevice(gfx)->CreateDepthStencilView(pDepthStencil.Get(), 0, &pDepthStencilView);
 	//绑定缓冲至渲染管线，在没有设置DepthStenciState之前，会采用默认状态，默认开启深度测试
+	gfx.SetDepthStencilView(pDepthStencilView.Get());
 }
 
 void DepthStencil::Bind(Graphics& gfx)
 {
-	gfx.SetDepthStencilView(pDepthStencilView.Get());
 	auto adress = gfx.pp_render_targetview();
 	GetContext(gfx)->OMSetRenderTargets(1, &adress, pDepthStencilView.Get());
 }

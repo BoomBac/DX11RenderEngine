@@ -211,6 +211,9 @@
     <ClCompile Include="Private\Render\Bindable\DepthStencilState.cpp">
       <Filter>Source Files\Render\Bindable</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Render\Bindable\SamplerState.cpp">
+      <Filter>Source Files\Render\Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Public\QtFrame\DX11RenderEngine.h">
@@ -353,6 +356,9 @@
     <ClInclude Include="Public\Render\Bindable\DepthStencilState.h">
       <Filter>Header Files\Render\Bindable</Filter>
     </ClInclude>
+    <ClInclude Include="Public\Render\Bindable\SamplerState.h">
+      <Filter>Header Files\Render\Bindable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="RenderViewport.ui">
@@ -391,6 +397,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\src\pSkyBox.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\src\pSkyBoxC.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

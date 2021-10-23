@@ -24,12 +24,12 @@ public:
     void Initialize(Graphics* gfx, ERTTUsage usage);
 	void SetRenderTarget(Graphics* gfx);
 	void ClearRenderTarget(Graphics* gfx,float red, float green, float blue, float alpha);
-//	void ClearRenderTarget(Graphics* gfx,UINT red, UINT green, UINT blue, UINT alpha);
+    void ReleaseResource();
     void SaveToImage(Graphics* gfx,std::string path);
     void SaveToImage(Graphics* gfx);
     std::pair<Microsoft::WRL::ComPtr<ID3D11Texture2D>, D3D11_TEXTURE2D_DESC> MakeStaging(Graphics* gfx);
     ERTTUsage usage_;
-
+    ID3D11Texture2D* GetResource();
     ID3D11ShaderResourceView** GetShaderResourceView();
 private:
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> p_texture_ = nullptr;

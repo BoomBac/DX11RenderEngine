@@ -48,55 +48,6 @@ Shape<T>::~Shape()
 
 }
 
-//template<class T>
-//void Shape<T>::AdjustRotation(const CusMath::vector3d& transf, const CusMath::vector3d& coordinate, DirectX::XMMATRIX* target_martix)
-//{
-//	//先进行新的变化，然后再将老变化加入
-//	//就是将上次变换在本次变换后的坐标系进行变换 本次要影响上次变换
-//	//DirectX::XMVECTOR Axis = DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f);
-//	//DirectX::XMVECTOR Qz = DirectX::XMQuaternionRotationAxis(Axis, DegToRad(coordinate.z));
-//	//Axis = DirectX::XMVectorSet(0.f, 1.f, 0.f, 0.f);
-//	//DirectX::XMVECTOR Qy = DirectX::XMQuaternionRotationAxis(Axis, DegToRad(coordinate.y));
-//	//Axis = DirectX::XMVectorSet(1.f, 0.f, 0.f, 0.f);
-//	////DirectX::XMVECTOR Qx = DirectX::XMQuaternionRotationAxis(Axis, DegToRad(coordinate.x));
-//	//DirectX::XMVECTOR Q = DirectX::XMQuaternionMultiply(Qy, Qz);
-//	//Q = DirectX::XMQuaternionMultiply(Qx, Q);
-//	//*target_martix *= DirectX::XMMatrixRotationQuaternion(Q);
-//	if (transf.x == coordinate.x && transf.y == coordinate.y)
-//	{
-//		DirectX::XMVECTOR zAxis = DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f);
-//		DirectX::XMVECTOR Q = DirectX::XMQuaternionRotationAxis(zAxis, DegToRad(coordinate.z));
-//
-//		*target_martix *= DirectX::XMMatrixRotationQuaternion(Q);
-//			//DirectX::XMMatrixRotationX(DegToRad(coordinate.x)) *
-//			//DirectX::XMMatrixRotationY(DegToRad(coordinate.y)) *
-//			//DirectX::XMMatrixRotationZ(DegToRad(coordinate.z));
-//		qDebug() << "Rotate z";
-//	}
-//	if (transf.x == coordinate.x && transf.z == coordinate.z)
-//	{
-//		DirectX::XMVECTOR yAxis = DirectX::XMVectorSet(0.f, 1.f, 0.f, 0.f);
-//		DirectX::XMVECTOR Q = DirectX::XMQuaternionRotationAxis(yAxis, DegToRad(coordinate.y));
-//		*target_martix *= DirectX::XMMatrixRotationQuaternion(Q);
-//		//*target_martix = DirectX::XMMatrixRotationZ(DegToRad(coordinate.z)) *
-//		//	DirectX::XMMatrixRotationX(DegToRad(coordinate.x)) *
-//		//	DirectX::XMMatrixRotationY(DegToRad(coordinate.y));
-//		qDebug() << "Rotate y";
-//	}
-//	if (transf.y == coordinate.y && transf.z == coordinate.z)
-//	{
-//		DirectX::XMVECTOR xAxis = DirectX::XMVectorSet(1.f, 0.f, 0.f, 0.f);
-//		DirectX::XMVECTOR Q = DirectX::XMQuaternionRotationAxis(xAxis, DegToRad(coordinate.x));
-//		*target_martix *= DirectX::XMMatrixRotationQuaternion(Q);
-//		//*target_martix = DirectX::XMMatrixRotationZ(DegToRad(coordinate.z)) *
-//		//	DirectX::XMMatrixRotationY(DegToRad(coordinate.y)) *
-//		//	DirectX::XMMatrixRotationX(DegToRad(coordinate.x));
-//		qDebug() << "Rotate x";
-//	}
-//	UpdateOrient();
-//}
-
-
 
 template<class T>
 void Shape<T>::UpdateOrient()

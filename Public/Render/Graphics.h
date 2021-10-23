@@ -21,6 +21,7 @@ class DepthStencil;
 class Drawable;
 class Light;
 class SkyBox;
+class SamplerState;
 
 struct ShadowEffect
 {
@@ -99,7 +100,7 @@ public:
 	Subject* outline_notify_;
 	std::map<int, std::string> scene_outline_;
 	std::string last_add_object_name_;
-	void ResizeBackbuffer(int w = 1024, int h = 1024);
+	void ResizeBackbuffer(const UINT& w, const UINT& h);
 	void SetSelectObject(const int& index);
 
 	ID3D11Device* GetDevice();
@@ -109,21 +110,21 @@ public:
 	int GetHeight() const;
 	void SetRenderTargetView(ID3D11RenderTargetView* target_view);
 	void SetDepthStencilView(ID3D11DepthStencilView* depth_view);
-	ID3D11ShaderResourceView** GetShadowMap();
+	//ID3D11ShaderResourceView** GetShadowMap();
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>pDeviceContext = nullptr;
 	Microsoft::WRL::ComPtr<IDXGISwapChain>pSwapChain = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView>p_render_targetview_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D11SamplerState>p_sampler_state_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>p_depth_stencil_view_ = nullptr;
 	int width_;
 	int height_;
 	LightSet default_light_;
 	LightShader default_light_shader_;
-
-	DepthStencil* dsbuffer;
-	HRESULT InitDx11(HWND hWnd);
+	std::unique_ptr<SamplerState> p_sampler_state_;
+	std::unique_ptr<DepthStencil> p_depth_stencil_;
+	HRESULT InitializeD3DBase(HWND hWnd, const UINT& w, const UINT& h);
+	void InitializeSharedBindable();
 	float* bg_color;
 	// 容纳所有场景物体的容器,0 号元素是坐标轴
 	std::vector<Drawable*> scene_objects_;

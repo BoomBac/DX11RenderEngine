@@ -29,11 +29,10 @@ void RenderToTexture::Initialize(Graphics* gfx, ERTTUsage usage)
 
 		textureDesc.Width = gfx->GetWidth();
 		textureDesc.Height = gfx->GetHeight();
-		//textureDesc.Width = 1024;
-		//textureDesc.Height = 1024;
 		textureDesc.MipLevels = 1;
 		textureDesc.ArraySize = 1;
-		textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;  //纹理像素为12个字节
+		//textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;  //纹理像素为12个字节
+		textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;  //纹理像素为12个字节
 		textureDesc.SampleDesc.Count = 1;
 		textureDesc.SampleDesc.Quality = 0;
 		textureDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -148,6 +147,12 @@ void RenderToTexture::ClearRenderTarget(Graphics* gfx, float red, float green, f
 	}
 
 }
+
+void RenderToTexture::ReleaseResource()
+{
+	p_depth_view->Release();
+	p_target_view_->Release();
+}
 struct color
 {
 	BYTE r;
@@ -161,7 +166,8 @@ void RenderToTexture::SaveToImage(Graphics* gfx,std::string path)
 	{
 	case ERTTUsage::kBackBuffer:
 	{
-		DirectX::SaveWICTextureToFile(gfx->GetContext(), p_texture_.Get(), GUID_ContainerFormatPng, ToWide(path).c_str());
+		DirectX::SaveWICTextureToFile(gfx->GetContext(), p_texture_.Get(), GUID_ContainerFormatPng, ToWide(path).c_str(),
+		&GUID_WICPixelFormat64bppRGBA);
 	}
 		break;
 	case ERTTUsage::kDepthBuffer:
@@ -306,6 +312,11 @@ std::pair<Microsoft::WRL::ComPtr<ID3D11Texture2D>, D3D11_TEXTURE2D_DESC> RenderT
 		gfx->GetContext()->CopyResource(pTexTemp.Get(), pTexSource.Get());
 	}
 	return { std::move(pTexTemp),srcTextureDesc };
+}
+
+ID3D11Texture2D* RenderToTexture::GetResource()
+{
+	return p_texture_.Get();
 }
 
 ID3D11ShaderResourceView** RenderToTexture::GetShaderResourceView()

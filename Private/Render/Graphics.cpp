@@ -21,6 +21,7 @@
 #include "Public/Render/RenderToTexture.h"
 #include "ScreenGrab.h"
 #include "Public/Render/Shape/SkyBox.h"
+#include "Public/Render/Bindable/SamplerState.h"
 
 
 
@@ -42,13 +43,16 @@ Drawable* Graphics::p_coordinate_ = nullptr;
 
 namespace 
 {
-	RenderToTexture g_rtr;
-	DirectX::XMMATRIX test_mar{DirectX::XMMatrixIdentity()};
+	//RenderToTexture g_rtr;
 }
 
 Graphics::Graphics(HWND hWnd)
 {
-	InitDx11(hWnd);
+	InitializeD3DBase(hWnd,800,600);
+
+	ResizeBackbuffer(800, 600);
+	InitializeSharedBindable();
+
 	static float color[] = { 0,0,0,1 };
 	bg_color = color;
 	shadowParma.light_far = 1000.f;
@@ -120,13 +124,10 @@ Graphics::Graphics(HWND hWnd)
 	InitSceneObject();
 
 
-	//ResizeBackbuffer();
 }
 
 Graphics::~Graphics()
 {
-	if (dsbuffer != nullptr)
-		delete dsbuffer;
 	if (outline_notify_ != nullptr)
 		delete outline_notify_;
 
@@ -150,6 +151,7 @@ void Graphics::EndFrame()
 {
 	dynamic_cast<Light*>(p_light_)->UpdateLightMatrix();
 	pDeviceContext->ClearRenderTargetView(p_render_targetview_.Get(), bg_color);
+	//p_sky_box_->GenerateCubeMap(800, 600);
 	//g_rtr.ClearRenderTarget(this, 0.f, 1.f, 1.f, 1.f);
 	////isRenderShaodw = true;
 	////// Pender To Texture
@@ -164,8 +166,8 @@ void Graphics::EndFrame()
 	//GetContext()->OMSetRenderTargets(1, p_render_targetview_.GetAddressOf(), nullptr);
 	//Render Scene
 
-	dsbuffer->Clear(*this);
-	GetContext()->OMSetRenderTargets(1, p_render_targetview_.GetAddressOf(), dsbuffer->pDepthStencilView.Get());
+	p_depth_stencil_->Clear(*this);
+	GetContext()->OMSetRenderTargets(1, p_render_targetview_.GetAddressOf(), p_depth_stencil_->pDepthStencilView.Get());
 	isRenderShaodw = false;
 	for (const auto& i : scene_objects_)
 	{
@@ -307,31 +309,56 @@ void Graphics::SetSelectObject(const int& index)
 	else
 	SetSelectObject(nullptr);
 }
-void Graphics::ResizeBackbuffer(int w, int h)
+void Graphics::ResizeBackbuffer(const UINT& w, const UINT& h)
 {
-	ID3D11RenderTargetView* null_view[] = {nullptr};
-	pDeviceContext->OMSetRenderTargets(1, null_view, nullptr);
-	p_render_targetview_->Release();
-	p_depth_stencil_view_->Release();
-	pDeviceContext->ClearState();
-	ID3D11Texture2D* pBuffer;
-	pDeviceContext->Flush();
-	pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)(&pBuffer));
-	auto hr = pSwapChain->ResizeBuffers(1, w, h, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
+	static bool isInitialize = false;
+	width_ = w;
+	height_ = h;
+	if (!isInitialize)
+	{
+		ID3D11Texture2D* backBuffer = nullptr;
+		pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
+		if (backBuffer != nullptr)
+			pDevice->CreateRenderTargetView(backBuffer, NULL, p_render_targetview_.GetAddressOf());
+		backBuffer->Release();
+		D3D11_VIEWPORT vp;
+		vp.TopLeftX = 0;
+		vp.TopLeftY = 0;
+		vp.Width = width_;
+		vp.Height = height_;
+		vp.MinDepth = 0.0f;
+		vp.MaxDepth = 1.0f;
+		pDeviceContext->RSSetViewports(1, &vp);
+		isInitialize = true;
+	}
+	else
+	{
+		ID3D11RenderTargetView* null_view[] = { nullptr };
+		pDeviceContext->OMSetRenderTargets(sizeof(null_view) / sizeof(void*), null_view, nullptr);
+		p_render_targetview_->Release();
+		//p_depth_stencil_view_->Release();
+		//pDeviceContext->Flush();
+		//pDeviceContext->ClearState();
+		auto hr = pSwapChain->ResizeBuffers(1, w, h, /*DXGI_FORMAT_R16G16B16A16_FLOAT*/DXGI_FORMAT_UNKNOWN, 0);
+		ID3D11Texture2D* pBuffer = nullptr;
+		pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBuffer));
+		if(pBuffer!=nullptr)
+			pDevice->CreateRenderTargetView(pBuffer, NULL, p_render_targetview_.GetAddressOf());
+		pBuffer->Release();
+		p_depth_stencil_.reset(new DepthStencil(w,h,*this));
+		pDeviceContext->OMSetRenderTargets(1, p_render_targetview_.GetAddressOf(), p_depth_stencil_view_.Get());
+		// Set up the viewport.
+		D3D11_VIEWPORT vp;
+		vp.Width = w;
+		vp.Height = h;
+		vp.MinDepth = 0.0f;
+		vp.MaxDepth = 1.0f;
+		vp.TopLeftX = 0;
+		vp.TopLeftY = 0;
+		pDeviceContext->RSSetViewports(1, &vp);
+		p_camera_->SetProjection(75.f, static_cast<float>(w) / static_cast<float>(h), 1.f, 1000.f);
+	}
 
-	pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)(&pBuffer));
-	hr = pDevice->CreateRenderTargetView(pBuffer, NULL, p_render_targetview_.GetAddressOf());
-	pBuffer->Release();
-	pDeviceContext->OMSetRenderTargets(1, p_render_targetview_.GetAddressOf(), p_depth_stencil_view_.Get());
-	// Set up the viewport.
-	D3D11_VIEWPORT vp;
-	vp.Width = 800;
-	vp.Height = 600;
-	vp.MinDepth = 0.0f;
-	vp.MaxDepth = 1.0f;
-	vp.TopLeftX = 0;
-	vp.TopLeftY = 0;
-	pDeviceContext->RSSetViewports(1, &vp);
 }
 void Graphics::SetSelectObject(Drawable* object)
 {
@@ -374,15 +401,20 @@ void Graphics::SetDepthStencilView(ID3D11DepthStencilView* depth_view)
 	p_depth_stencil_view_ = depth_view;
 }
 
-ID3D11ShaderResourceView** Graphics::GetShadowMap()
-{
-	return g_rtr.GetShaderResourceView();
-}
+//ID3D11ShaderResourceView** Graphics::GetShadowMap()
+//{
+//	//return g_rtr.GetShaderResourceView();
+//}
 
 void Graphics::SetCoordinateType(bool is_world)
 {
 	dynamic_cast<Coordinate*>(p_coordinate_)->SetCoordinateType(is_world);
-	//g_rtr.SaveToImage(this);
+	//if(is_world)
+	//ResizeBackbuffer(1920, 1080);
+	//else
+	//{
+	//	ResizeBackbuffer(800, 600);
+	//}
 }
 
 bool Graphics::GetCoordinateType() const
@@ -390,9 +422,11 @@ bool Graphics::GetCoordinateType() const
 	return dynamic_cast<Coordinate*>(p_coordinate_)->GetCoordinateType();
 }
 
-HRESULT Graphics::InitDx11(HWND hWnd)
+HRESULT Graphics::InitializeD3DBase(HWND hWnd, const UINT& w, const UINT& h)
 {
-	//创建设备和上下文
+	width_ = w;
+	height_ = h;
+	//create device and context
 	D3D_FEATURE_LEVEL featureLevel;
 	HRESULT hr = D3D11CreateDevice(0, D3D_DRIVER_TYPE_HARDWARE, 0,
 		D3D11_CREATE_DEVICE_DEBUG, 0, 0, D3D11_SDK_VERSION, pDevice.GetAddressOf(), &featureLevel, pDeviceContext.GetAddressOf());
@@ -405,9 +439,7 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	{
 		qDebug() << QString("Direct3D FeatureLevel 11 unsupported."); return hr;
 	}
-	//创建交换链
-	width_ = 800;
-	height_ = 600;
+	//create swapchain
 	DXGI_SWAP_CHAIN_DESC sd = {};
 	sd.BufferDesc.Width = width_;
 	sd.BufferDesc.Height = height_;
@@ -416,11 +448,9 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-
 	//多重采样数量和质量级别
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
-
 	//将场景渲染到后台缓冲区
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	//交换链中的后台缓冲区数量；我们一般只用一个后台缓冲区来实现双缓存。
@@ -429,30 +459,17 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	sd.Windowed = TRUE;
 	sd.OutputWindow = hWnd;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-
 	IDXGIFactory* dxgiFactory;
-	CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&dxgiFactory));
+	CreateDXGIFactory(__uuidof(IDXGIFactory), reinterpret_cast<void**>(&dxgiFactory));
 	dxgiFactory->CreateSwapChain(pDevice.Get(), &sd, pSwapChain.GetAddressOf());
-	if (FAILED(hr)) return hr;
-	ID3D11Texture2D* backBuffer;
-	pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
-	if(backBuffer!=nullptr)
-		hr = pDevice->CreateRenderTargetView(backBuffer, NULL, p_render_targetview_.GetAddressOf());
-	else
-	{
-		qDebug() << "backBuffer is null!";
-	}
-	D3D11_VIEWPORT vp;
-	vp.TopLeftX = 0;
-	vp.TopLeftY = 0;
-	vp.Width = width_;
-	vp.Height = height_;
-	vp.MinDepth = 0.0f;
-	vp.MaxDepth = 1.0f;
-	pDeviceContext->RSSetViewports(1, &vp);
+	return hr;
+}
+
+void Graphics::InitializeSharedBindable()
+{
 	//创建深度模板缓冲区
-	dsbuffer = new DepthStencil(static_cast<UINT>(width_), static_cast<UINT>(height_), *this);
-	dsbuffer->Bind(*this);
+	p_depth_stencil_ = std::make_unique<DepthStencil>(static_cast<UINT>(width_), static_cast<UINT>(height_), *this);
+	p_depth_stencil_->Bind(*this);
 	//创建贴图采样描述
 	D3D11_SAMPLER_DESC sample_desc;
 	ZeroMemory(&sample_desc, sizeof(sample_desc));
@@ -463,11 +480,8 @@ HRESULT Graphics::InitDx11(HWND hWnd)
 	sample_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	sample_desc.MinLOD = 0;
 	sample_desc.MaxLOD = D3D11_FLOAT32_MAX;
-	hr = pDevice->CreateSamplerState(&sample_desc, p_sampler_state_.GetAddressOf());
-	pDeviceContext->PSSetSamplers(0u, 1u, p_sampler_state_.GetAddressOf());
-
-	
-	return hr;
+	p_sampler_state_ = std::make_unique<SamplerState>(*this, sample_desc);
+	p_sampler_state_->Bind(*this);
 }
 
 void Graphics::UpdateCameraMovement()

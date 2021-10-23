@@ -13,7 +13,7 @@ class DepthStencil :
  public BindableInterface
 {
 public:
-	DepthStencil(UINT x,UINT y, Graphics& gfx);
+	DepthStencil(const UINT& x, const UINT& y, Graphics& gfx);
 	virtual void Bind(Graphics& gfx) override;
 	virtual EBindableType GetType() const override;
 	void Clear(Graphics& gfx);

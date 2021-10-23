@@ -117,6 +117,7 @@
     <ClCompile Include="Private\Render\Bindable\LightBuffer.cpp" />
     <ClCompile Include="Private\Render\Bindable\PixelShader.cpp" />
     <ClCompile Include="Private\Render\Bindable\RasterizerState.cpp" />
+    <ClCompile Include="Private\Render\Bindable\SamplerState.cpp" />
     <ClCompile Include="Private\Render\Bindable\ShaderResource.cpp" />
     <ClCompile Include="Private\Render\Bindable\TransformBuffer.cpp" />
     <ClCompile Include="Private\Render\Bindable\VertexBuffer.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="Public\Render\Bindable\LightBuffer.h" />
     <ClInclude Include="Public\Render\Bindable\PixelShader.h" />
     <ClInclude Include="Public\Render\Bindable\RasterizerState.h" />
+    <ClInclude Include="Public\Render\Bindable\SamplerState.h" />
     <ClInclude Include="Public\Render\Bindable\ShaderResource.h" />
     <ClInclude Include="Public\Render\Bindable\TransformBuffer.h" />
     <ClInclude Include="Public\Render\Bindable\VertexBuffer.hpp" />
@@ -236,6 +238,14 @@
       <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
     </FxCompile>
     <FxCompile Include="Shaders\src\pSkyBox.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DisableOptimizations>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Shaders\src\pSkyBoxC.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DisableOptimizations>
