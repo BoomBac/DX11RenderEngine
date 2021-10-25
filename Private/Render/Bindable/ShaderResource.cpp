@@ -39,6 +39,10 @@ void ShaderResource::Bind(Graphics& gfx)
 		gfx.GetContext()->PSSetShaderResources(5u, 1u, &p_shader_res_v_);
 	}
 		break;
+	case ETextureType::kIrradiance:
+	{
+		gfx.GetContext()->PSSetShaderResources(6u, 1u, &p_shader_res_v_);
+	}
 	default:
 		break;
 	}

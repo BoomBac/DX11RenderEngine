@@ -151,7 +151,7 @@ void Graphics::EndFrame()
 {
 	dynamic_cast<Light*>(p_light_)->UpdateLightMatrix();
 	pDeviceContext->ClearRenderTargetView(p_render_targetview_.Get(), bg_color);
-	//p_sky_box_->GenerateCubeMap(800, 600);
+	//p_sky_box_->GenerateCubeSurface(1024,EGenerateFlag::kSpecular);
 	//g_rtr.ClearRenderTarget(this, 0.f, 1.f, 1.f, 1.f);
 	////isRenderShaodw = true;
 	////// Pender To Texture

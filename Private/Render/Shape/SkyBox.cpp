@@ -27,10 +27,401 @@ using BindItem = std::unique_ptr<BindableInterface>;
 namespace
 {
 	static Graphics* g_gfx;
+	std::vector<float> g_six_viws{
+		0.f,DegToRad(90.f),0.f,	//+x
+		0.f,DegToRad(-90.f),0.f,	// -x
+		DegToRad(-90.f),0.f,0.f,	//+y
+		DegToRad(90.f),0.f,0.f,	//-y
+		0.f,0.f,0.f,		//+z
+		0.f,DegToRad(180.f),0.f,	//-z
+	};
 }
 
 
 SkyBox::SkyBox(Graphics& gfx)
+{
+	InitBindable(gfx);
+	image_paths_.push_back("C:/Users/BoomBac/Desktop/top.png");
+	image_paths_.push_back("C:/Users/BoomBac/Desktop/bottom.png");
+	image_paths_.push_back("C:/Users/BoomBac/Desktop/right.png");
+	image_paths_.push_back("C:/Users/BoomBac/Desktop/left.png");
+	image_paths_.push_back("C:/Users/BoomBac/Desktop/front.png");
+	image_paths_.push_back("C:/Users/BoomBac/Desktop/back.png");
+
+	environment_map_size_ = 1024;
+	irradiance_map_size_ = 1;
+	face_desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	face_desc.Width = environment_map_size_;
+	face_desc.Height = environment_map_size_;
+	face_desc.ArraySize = 1;
+	face_desc.MipLevels = 6;
+	face_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	face_desc.Usage = D3D11_USAGE_DEFAULT;
+	face_desc.CPUAccessFlags = 0;
+	face_desc.SampleDesc.Count = 1;
+	face_desc.SampleDesc.Quality = 0;
+
+	//ShaderingFromFile("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/Apartment_Reflection.hdr");
+	ShaderingFromFile("C:/Users/BoomBac/Downloads/Desert_Highway/Desert_Highway/Road_to_MonumentValley_Ref.hdr");
+	GenerateCubeSurface(environment_map_size_,EGenerateFlag::kEnvironment);
+	GenerateCube(EGenerateFlag::kEnvironment);
+	ShaderingFromResource(EGenerateFlag::kEnvironment);
+	//GenerateCubeSurface(environment_map_size_, EGenerateFlag::kSpecular);
+	//GenerateIrrandiceSurface(irradiance_map_size_);
+	//GenerateCube(EGenerateFlag::kIrradiance);
+	//GenerateCube(EGenerateFlag::kSpecular);
+	//ShaderingFromResource(EGenerateFlag::kSpecular);
+	
+	////GenerateCube(EGenerateFlag::kSpecular);
+	//ShaderingFromResource(EGenerateFlag::kSpecular);
+	////ShaderingFromResource(EGenerateFlag::kIrradiance);
+	//BindToShadering(EGenerateFlag::kSpecular);
+}
+
+ID3D11ShaderResourceView* SkyBox::GetEnvironmentRsv() const
+{
+	return p_env_cube_.Get();
+}
+
+void SkyBox::GenerateCubeSurface(const UINT& size, const std::vector<std::string>& path_list)
+{
+	if (path_list.size() < 6) return;
+	environment_map_size_ = size;
+	image_paths_ = path_list;
+	UINT w = g_gfx->GetWidth();
+	UINT h = g_gfx->GetHeight();
+	g_gfx->ResizeBackbuffer(environment_map_size_, environment_map_size_);
+	Camera* cur_camera = g_gfx->p_camera_;
+	Camera sample_camera;
+	sample_camera.SetLocation(0.f, 0.f, 0.f);
+	sample_camera.SetProjection(90.f, 1.f, 1.f, 1000.f);
+	std::unique_ptr<RenderToTexture> rtt = std::make_unique<RenderToTexture>();
+	rtt->Initialize(g_gfx, ERTTUsage::kBackBuffer,face_desc);
+	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+	rtt->SetRenderTarget(g_gfx);
+	g_gfx->isRenderShaodw = false;
+	g_gfx->p_camera_ = &sample_camera;
+	Draw(*g_gfx);
+	rtt->SaveToImage(g_gfx, path_list[0]);
+	sample_camera.SetRotation(DegToRad(0.f), DegToRad(180.f), DegToRad(0.f));
+	Draw(*g_gfx);
+	rtt->SaveToImage(g_gfx, path_list[1]);
+	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+	sample_camera.SetRotation(DegToRad(0.f), DegToRad(-90.f), DegToRad(0.f));
+	Draw(*g_gfx);
+	rtt->SaveToImage(g_gfx, path_list[2]);
+	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+	sample_camera.SetRotation(DegToRad(0.f), DegToRad(90.f), DegToRad(0.f));
+	Draw(*g_gfx);
+	rtt->SaveToImage(g_gfx, path_list[3]);
+	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+	sample_camera.SetRotation(DegToRad(-90.f), DegToRad(0.f), DegToRad(0.f));
+	Draw(*g_gfx);
+	rtt->SaveToImage(g_gfx, path_list[4]);
+	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+	sample_camera.SetRotation(DegToRad(90.f), DegToRad(0.f), DegToRad(0.f));
+	Draw(*g_gfx);
+	rtt->SaveToImage(g_gfx, path_list[5]);
+	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+	g_gfx->isRenderShaodw = true;
+	g_gfx->p_camera_ = cur_camera;
+	g_gfx->ResizeBackbuffer(w, h);
+}
+
+void SkyBox::GenerateCubeSurface(const UINT& size, EGenerateFlag map_type)
+{
+	environment_map_size_ = size;
+	UINT w = g_gfx->GetWidth();
+	UINT h = g_gfx->GetHeight();
+	g_gfx->ResizeBackbuffer(size, size);
+	Camera* cur_camera = g_gfx->p_camera_;
+	Camera sample_camera;
+	sample_camera.SetLocation(0.f, 0.f, 0.f);
+	sample_camera.SetProjection(90.f, 1.f, 1.f, 1000.f);
+	D3D11_TEXTURE2D_DESC des{};
+	des.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	des.Width = size;
+	des.Height = size;
+	des.ArraySize = 1;
+	des.MipLevels = cube_map_level;
+	des.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	des.Usage = D3D11_USAGE_DEFAULT;
+	des.CPUAccessFlags = 0;
+	des.SampleDesc.Count = 1;
+	des.SampleDesc.Quality = 0;
+	des.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> env_faces[6];
+
+	//Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_front;
+	//Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_back;
+	//Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_left;
+	//Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_right;
+	//Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_top;
+	//Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_bottom;
+	std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>>* output;
+	if (map_type == EGenerateFlag::kEnvironment)
+	{
+		output = &texture_res_;
+		for (auto& b : binds)
+		{
+			if (b->GetType() == EBindableType::kPixelShader)
+			{
+				b.reset(new PixelShader(*g_gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBox.cso"));
+			}
+		}
+	}
+	else if (map_type == EGenerateFlag::kSpecular)
+	{
+		output = &specular_res_;
+		for (auto& b : binds)
+		{
+			if (b->GetType() == EBindableType::kPixelShader)
+			{
+				b.reset(new PixelShader(*g_gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBoxS.cso"));
+			}
+		}
+	}
+	for (int i = 0; i < 6; ++i)
+	{
+		output->push_back(env_faces[i]);
+		g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[i].GetAddressOf());
+	}
+	//output->push_back(t_tex_right);
+	//output->push_back(t_tex_left);
+	//output->push_back(t_tex_top);
+	//output->push_back(t_tex_bottom);
+	//output->push_back(t_tex_front);
+	//output->push_back(t_tex_back);
+	//g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[0].GetAddressOf());
+	//g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[1].GetAddressOf());
+	//g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[2].GetAddressOf());
+	//g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[3].GetAddressOf());
+	//g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[4].GetAddressOf());
+	//g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[5].GetAddressOf());
+	std::unique_ptr<RenderToTexture> rtt = std::make_unique<RenderToTexture>();
+	rtt->Initialize(g_gfx, ERTTUsage::kBackBuffer,face_desc);
+	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+	rtt->SetRenderTarget(g_gfx);
+	g_gfx->isRenderShaodw = false;
+	g_gfx->p_camera_ = &sample_camera;
+	for (int i = 0; i < 6; i++)
+	{
+		rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+		int ii = i * 3;
+		sample_camera.SetRotation(g_six_viws[ii], g_six_viws[ii+1], g_six_viws[ii+2]);
+		Draw(*g_gfx);
+		g_gfx->GetContext()->CopySubresourceRegion((*output)[i].Get(), 0, 0u, 0u, 0u, rtt->GetResource(), 0, nullptr);
+	}
+
+	g_gfx->isRenderShaodw = true;
+	g_gfx->p_camera_ = cur_camera;
+	g_gfx->ResizeBackbuffer(w,h);
+	//generate mip-map
+	//generate mipmap for the prefilter
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> v_tex_back;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> v_tex_front;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> v_tex_left;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> v_tex_right;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> v_tex_top;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> v_tex_bottom;
+	D3D11_SHADER_RESOURCE_VIEW_DESC rsv;
+	rsv.Format = face_desc.Format;
+	rsv.Texture2D.MipLevels = cube_map_level;
+	rsv.Texture2D.MostDetailedMip = 0;
+	rsv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;	//*
+	g_gfx->GetDevice()->CreateShaderResourceView((*output)[D3D11_TEXTURECUBE_FACE_POSITIVE_Z].Get(), &rsv, v_tex_front.GetAddressOf());
+	g_gfx->GetContext()->GenerateMips(v_tex_front.Get());
+	g_gfx->GetDevice()->CreateShaderResourceView((*output)[D3D11_TEXTURECUBE_FACE_NEGATIVE_Z].Get(), &rsv, v_tex_back.GetAddressOf());
+	g_gfx->GetContext()->GenerateMips(v_tex_back.Get());
+	g_gfx->GetDevice()->CreateShaderResourceView((*output)[D3D11_TEXTURECUBE_FACE_POSITIVE_X].Get(), &rsv, v_tex_top.GetAddressOf());
+	g_gfx->GetContext()->GenerateMips(v_tex_top.Get());
+	g_gfx->GetDevice()->CreateShaderResourceView((*output)[D3D11_TEXTURECUBE_FACE_NEGATIVE_X].Get(), &rsv, v_tex_bottom.GetAddressOf());
+	g_gfx->GetContext()->GenerateMips(v_tex_bottom.Get());
+	g_gfx->GetDevice()->CreateShaderResourceView((*output)[D3D11_TEXTURECUBE_FACE_POSITIVE_Y].Get(), &rsv, v_tex_right.GetAddressOf());
+	g_gfx->GetContext()->GenerateMips(v_tex_right.Get());
+	g_gfx->GetDevice()->CreateShaderResourceView((*output)[D3D11_TEXTURECUBE_FACE_NEGATIVE_Y].Get(), &rsv, v_tex_left.GetAddressOf());
+	g_gfx->GetContext()->GenerateMips(v_tex_left.Get());
+}
+
+void SkyBox::GenerateSpecularSurface()
+{
+}
+
+void SkyBox::GenerateIrrandiceSurface(const UINT& size)
+{
+	if (size == environment_map_size_) return;
+	UINT num = environment_map_size_ / size;
+	UINT level = 0;
+	while (true)
+	{
+		num /= 2;
+		if ( num != 0)
+			++level;
+		else break;
+	}
+
+	D3D11_TEXTURE2D_DESC des{};
+	texture_res_[0]->GetDesc(&des);
+	des.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	des.Width = size;
+	des.Height = size;
+	des.ArraySize = 1;
+	des.MipLevels = 1;
+	des.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	des.Usage = D3D11_USAGE_DEFAULT;
+	des.CPUAccessFlags = 0;
+	des.SampleDesc.Count = 1;
+	des.SampleDesc.Quality = 0;
+	des.MiscFlags = 0;
+	D3D11_SUBRESOURCE_DATA sdata{};
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> r;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> l;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> t;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> bt;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> f;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> ba;
+	irradiance_res_.push_back(r);
+	irradiance_res_.push_back(l);
+	irradiance_res_.push_back(t);
+	irradiance_res_.push_back(bt);
+	irradiance_res_.push_back(f);
+	irradiance_res_.push_back(ba);
+	for (int i = 0; i < 6; ++i)
+	{
+		g_gfx->GetDevice()->CreateTexture2D(&des, nullptr, irradiance_res_[i].GetAddressOf());
+		g_gfx->GetContext()->CopySubresourceRegion(irradiance_res_[i].Get(), 0u, 0u, 0u, 0u, texture_res_[i].Get(), level, nullptr);
+	}
+}
+
+void SkyBox::GenerateSpecularCube()
+{
+
+}
+
+void SkyBox::ShaderingFromResource(EGenerateFlag map_type)
+{
+	for (auto it = binds.begin(); it != binds.end(); it++)
+	{
+		if ((*it)->GetType() == EBindableType::kPixelShader)
+		{
+			(*it).reset(new PixelShader(*g_gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBoxS.cso"));
+			continue;
+		}
+		if ((*it)->GetType() == EBindableType::kShaderResource)
+		{
+			if (dynamic_cast<ShaderResource*>((*it).get())->GetTextureType() == ETextureType::kDiffuse)
+			{
+				if (map_type == EGenerateFlag::kEnvironment)
+				{
+					(*it).reset(new ShaderResource(p_env_cube_.Get(), ETextureType::kDiffuse));
+				}
+				else if (map_type == EGenerateFlag::kIrradiance)
+				{
+					(*it).reset(new ShaderResource(p_hdr_cube_.Get(), ETextureType::kDiffuse));
+				}
+				else if (map_type == EGenerateFlag::kSpecular)
+				{
+					(*it).reset(new ShaderResource(p_specular_cube_.Get(), ETextureType::kDiffuse));
+				}
+			}
+		}
+	}
+}
+
+void SkyBox::ShaderingFromFile(const std::string& sphere_image_path)
+{
+	stbi_set_flip_vertically_on_load(true);
+	int width, height, channels;
+	float* pixel = stbi_loadf(sphere_image_path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+	D3D11_TEXTURE2D_DESC des{};
+	des.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	des.Width = width;
+	des.Height = height;
+	des.ArraySize = 1;
+	des.MipLevels = 1;
+	des.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	des.Usage = D3D11_USAGE_DEFAULT;
+	des.CPUAccessFlags = 0;
+	des.SampleDesc.Count = 1;
+	des.SampleDesc.Quality = 0;
+	D3D11_SUBRESOURCE_DATA data;
+	data.pSysMem = pixel;
+	data.SysMemPitch = width * sizeof(float) * 4;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> hdr_texture;
+	g_gfx->GetDevice()->CreateTexture2D(&des, &data, hdr_texture.GetAddressOf());
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvd{};
+	srvd.Format = des.Format;
+	srvd.Texture2D.MipLevels = 1;
+	srvd.Texture2D.MostDetailedMip = 0;
+	srvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	g_gfx->GetDevice()->CreateShaderResourceView(hdr_texture.Get(), &srvd, p_hdr_cube_.GetAddressOf());
+	AddBind(std::make_unique<ShaderResource>(p_hdr_cube_.Get(), ETextureType::kDiffuse));
+	stbi_image_free(pixel);
+}
+
+//TODO : adapted file format
+void SkyBox::ShaderingFromFile(const std::vector<std::string>& cube_image_paths, const UINT& width, const UINT& height)
+{
+	D3D11_TEXTURE2D_DESC cube_des{};
+	cube_des.Format = face_desc.Format;
+	cube_des.Width = width;
+	cube_des.Height = height;
+	cube_des.ArraySize = 6;	//*
+	cube_des.MipLevels = 1;
+	cube_des.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	cube_des.Usage = D3D11_USAGE_DEFAULT;
+	cube_des.CPUAccessFlags = 0;
+	cube_des.SampleDesc.Count = 1;
+	cube_des.SampleDesc.Quality = 0;
+	cube_des.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;	//*
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> cube_texture;
+	g_gfx->GetDevice()->CreateTexture2D(&cube_des, nullptr, cube_texture.GetAddressOf());
+	Texture tex_top(g_gfx->GetDevice(), cube_image_paths[0].c_str(), face_desc);
+	Texture tex_bottom(g_gfx->GetDevice(), cube_image_paths[1].c_str(), face_desc);
+	Texture tex_right(g_gfx->GetDevice(), cube_image_paths[2].c_str(), face_desc);
+	Texture tex_left(g_gfx->GetDevice(), cube_image_paths[3].c_str(), face_desc);
+	Texture tex_front(g_gfx->GetDevice(), cube_image_paths[4].c_str(), face_desc);
+	Texture tex_back(g_gfx->GetDevice(), cube_image_paths[5].c_str(), face_desc);
+	g_gfx->GetContext()->CopySubresourceRegion(cube_texture.Get(), D3D11CalcSubresource(0u, 0, 1u), 0, 0, 0, tex_top.GetResource(), 0, nullptr);
+	g_gfx->GetContext()->CopySubresourceRegion(cube_texture.Get(), D3D11CalcSubresource(0u, 1, 1u), 0, 0, 0, tex_bottom.GetResource(), 0, nullptr);
+	g_gfx->GetContext()->CopySubresourceRegion(cube_texture.Get(), D3D11CalcSubresource(0u, 2, 1u), 0, 0, 0, tex_right.GetResource(), 0, nullptr);
+	g_gfx->GetContext()->CopySubresourceRegion(cube_texture.Get(), D3D11CalcSubresource(0u, 3, 1u), 0, 0, 0, tex_left.GetResource(), 0, nullptr);
+	g_gfx->GetContext()->CopySubresourceRegion(cube_texture.Get(), D3D11CalcSubresource(0u, 4, 1u), 0, 0, 0, tex_front.GetResource(), 0, nullptr);
+	g_gfx->GetContext()->CopySubresourceRegion(cube_texture.Get(), D3D11CalcSubresource(0u, 5, 1u), 0, 0, 0, tex_back.GetResource(), 0, nullptr);
+	D3D11_SHADER_RESOURCE_VIEW_DESC rsv;
+	rsv.Format = face_desc.Format;
+	rsv.TextureCube.MipLevels = 1;
+	rsv.TextureCube.MostDetailedMip = 0;
+	rsv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;	//*
+	g_gfx->GetDevice()->CreateShaderResourceView(cube_texture.Get(), &rsv, p_env_cube_.GetAddressOf());
+	for (auto it = binds.begin(); it != binds.end(); it++)
+	{
+		if ((*it)->GetType() == EBindableType::kPixelShader)
+		{
+			(*it).reset(new PixelShader(*g_gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBoxC.cso"));
+			continue;
+		}
+		if ((*it)->GetType() == EBindableType::kShaderResource)
+		{
+			it = binds.erase(it);
+			if (it == binds.end()) break;
+		}
+	}
+	AddBind(std::make_unique<ShaderResource>(p_env_cube_.Get(), ETextureType::kDiffuse));
+}
+
+void SkyBox::BindToShadering(EGenerateFlag env_type)
+{
+	if(env_type == EGenerateFlag::kIrradiance)
+		AddBind(std::make_unique<ShaderResource>(p_hdr_cube_.Get(), ETextureType::kIrradiance));
+	else if(env_type == EGenerateFlag::kSpecular)
+		AddBind(std::make_unique<ShaderResource>(p_specular_cube_.Get(), ETextureType::kIrradiance));
+	else if(env_type == EGenerateFlag::kEnvironment)
+		AddBind(std::make_unique<ShaderResource>(p_env_cube_.Get(), ETextureType::kIrradiance));
+}
+
+void SkyBox::InitBindable(Graphics& gfx)
 {
 	cast_shadow_ = false;
 	const CusMath::vector3d initPos(0.f, 0.f, 0.f);
@@ -99,274 +490,73 @@ SkyBox::SkyBox(Graphics& gfx)
 	dsds.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	dsds.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 	AddBind(std::make_unique<DepthStencilState>(*g_gfx, dsds));
-	image_paths_.push_back("C:/Users/BoomBac/Desktop/top.png");
-	image_paths_.push_back("C:/Users/BoomBac/Desktop/bottom.png");
-	image_paths_.push_back("C:/Users/BoomBac/Desktop/right.png");
-	image_paths_.push_back("C:/Users/BoomBac/Desktop/left.png");
-	image_paths_.push_back("C:/Users/BoomBac/Desktop/front.png");
-	image_paths_.push_back("C:/Users/BoomBac/Desktop/back.png");
-
-	width_ = 1024;
-	height_ = 1024;
-	face_desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-	face_desc.Width = width_;
-	face_desc.Height = height_;
-	face_desc.ArraySize = 1;
-	face_desc.MipLevels = 1;
-	face_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	face_desc.Usage = D3D11_USAGE_DEFAULT;
-	face_desc.CPUAccessFlags = 0;
-	face_desc.SampleDesc.Count = 1;
-	face_desc.SampleDesc.Quality = 0;
-
-	ShaderingFromFile("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/Apartment_Reflection.hdr");
-	GenerateCubeMap(width_, height_);
-	ShaderingFromResource();
 }
 
-ID3D11ShaderResourceView* SkyBox::GetEnvironmentRsv() const
+void SkyBox::GenerateCube(EGenerateFlag cube_type)
 {
-	return p_srv_.Get();
-}
-
-void SkyBox::GenerateCubeMap(const UINT& width, const UINT& height, const std::vector<std::string>& path_list)
-{
-	if (path_list.size() < 6) return;
-	image_paths_ = path_list;
-	UINT w = g_gfx->GetWidth();
-	UINT h = g_gfx->GetHeight();
-	g_gfx->ResizeBackbuffer(width, height);
-	Camera* cur_camera = g_gfx->p_camera_;
-	Camera sample_camera;
-	sample_camera.SetLocation(0.f, 0.f, 0.f);
-	sample_camera.SetProjection(90.f, static_cast<float>(width) / static_cast<float>(height), 1.f, 1000.f);
-	std::unique_ptr<RenderToTexture> rtt = std::make_unique<RenderToTexture>();
-	rtt->Initialize(g_gfx, ERTTUsage::kBackBuffer);
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	rtt->SetRenderTarget(g_gfx);
-	g_gfx->isRenderShaodw = false;
-	g_gfx->p_camera_ = &sample_camera;
-	Draw(*g_gfx);
-	rtt->SaveToImage(g_gfx, path_list[0]);
-	sample_camera.SetRotation(DegToRad(0.f), DegToRad(180.f), DegToRad(0.f));
-	Draw(*g_gfx);
-	rtt->SaveToImage(g_gfx, path_list[1]);
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	sample_camera.SetRotation(DegToRad(0.f), DegToRad(-90.f), DegToRad(0.f));
-	Draw(*g_gfx);
-	rtt->SaveToImage(g_gfx, path_list[2]);
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	sample_camera.SetRotation(DegToRad(0.f), DegToRad(90.f), DegToRad(0.f));
-	Draw(*g_gfx);
-	rtt->SaveToImage(g_gfx, path_list[3]);
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	sample_camera.SetRotation(DegToRad(-90.f), DegToRad(0.f), DegToRad(0.f));
-	Draw(*g_gfx);
-	rtt->SaveToImage(g_gfx, path_list[4]);
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	sample_camera.SetRotation(DegToRad(90.f), DegToRad(0.f), DegToRad(0.f));
-	Draw(*g_gfx);
-	rtt->SaveToImage(g_gfx, path_list[5]);
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	g_gfx->isRenderShaodw = true;
-	g_gfx->p_camera_ = cur_camera;
-	g_gfx->ResizeBackbuffer(w, h);
-}
-
-void SkyBox::GenerateCubeMap(const UINT& width, const UINT& height)
-{
-	UINT w = g_gfx->GetWidth();
-	UINT h = g_gfx->GetHeight();
-	g_gfx->ResizeBackbuffer(width, height);
-	Camera* cur_camera = g_gfx->p_camera_;
-	Camera sample_camera;
-	sample_camera.SetLocation(0.f, 0.f, 0.f);
-	sample_camera.SetProjection(90.f, static_cast<float>(width) / static_cast<float>(height), 1.f, 1000.f);
-
-	D3D11_TEXTURE2D_DESC des{};
-	des.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-	des.Width = width;
-	des.Height = height;
-	des.ArraySize = 1;
-	des.MipLevels = 1;
-	des.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	des.Usage = D3D11_USAGE_DEFAULT;
-	des.CPUAccessFlags = 0;
-	des.SampleDesc.Count = 1;
-	des.SampleDesc.Quality = 0;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_front;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_back;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_left;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_right;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_top;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_bottom;
-	texture_res_.push_back(t_tex_bottom);
-	texture_res_.push_back(t_tex_top);
-	texture_res_.push_back(t_tex_right);
-	texture_res_.push_back(t_tex_left);
-	texture_res_.push_back(t_tex_back);
-	texture_res_.push_back(t_tex_front);
-	g_gfx->GetDevice()->CreateTexture2D(&des, NULL, texture_res_[0].GetAddressOf());
-	g_gfx->GetDevice()->CreateTexture2D(&des, NULL, texture_res_[1].GetAddressOf());
-	g_gfx->GetDevice()->CreateTexture2D(&des, NULL, texture_res_[2].GetAddressOf());
-	g_gfx->GetDevice()->CreateTexture2D(&des, NULL, texture_res_[3].GetAddressOf());
-	g_gfx->GetDevice()->CreateTexture2D(&des, NULL, texture_res_[4].GetAddressOf());
-	g_gfx->GetDevice()->CreateTexture2D(&des, NULL, texture_res_[5].GetAddressOf());
-	std::unique_ptr<RenderToTexture> rtt = std::make_unique<RenderToTexture>();
-	rtt->Initialize(g_gfx, ERTTUsage::kBackBuffer);
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	rtt->SetRenderTarget(g_gfx);
-	g_gfx->isRenderShaodw = false;
-	g_gfx->p_camera_ = &sample_camera;
-	Draw(*g_gfx);
-	g_gfx->GetContext()->CopyResource(texture_res_[4].Get(), rtt->GetResource());
-	sample_camera.SetRotation(DegToRad(0.f), DegToRad(180.f), DegToRad(0.f));
-	Draw(*g_gfx);
-	g_gfx->GetContext()->CopyResource(texture_res_[5].Get(), rtt->GetResource());
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	sample_camera.SetRotation(DegToRad(0.f), DegToRad(-90.f), DegToRad(0.f));
-	Draw(*g_gfx);
-	g_gfx->GetContext()->CopyResource(texture_res_[1].Get(), rtt->GetResource());
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	sample_camera.SetRotation(DegToRad(0.f), DegToRad(90.f), DegToRad(0.f));
-	Draw(*g_gfx);
-	g_gfx->GetContext()->CopyResource(texture_res_[0].Get(), rtt->GetResource());
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	sample_camera.SetRotation(DegToRad(-90.f), DegToRad(0.f), DegToRad(0.f));
-	Draw(*g_gfx);
-	g_gfx->GetContext()->CopyResource(texture_res_[2].Get(), rtt->GetResource());
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	sample_camera.SetRotation(DegToRad(90.f), DegToRad(0.f), DegToRad(0.f));
-	Draw(*g_gfx);
-	g_gfx->GetContext()->CopyResource(texture_res_[3].Get(), rtt->GetResource());
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	g_gfx->isRenderShaodw = true;
-	g_gfx->p_camera_ = cur_camera;
-	g_gfx->ResizeBackbuffer(w,h);
-}
-
-void SkyBox::ShaderingFromResource()
-{
-	//create cube desc and texture2d
+	std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>>* p_res;
+	UINT image_size;
+	if (cube_type == EGenerateFlag::kEnvironment)
+	{
+		p_res = &texture_res_;
+		image_size = face_desc.Width;
+	}
+	else if (cube_type == EGenerateFlag::kIrradiance)
+	{
+		p_res = &irradiance_res_;
+		image_size = irradiance_map_size_;
+	}
+	else if (cube_type == EGenerateFlag::kSpecular)
+	{
+		p_res = &specular_res_;
+		image_size = environment_map_size_;
+	}
 	D3D11_TEXTURE2D_DESC cube_des{};
 	cube_des.Format = face_desc.Format;
-	cube_des.Width = face_desc.Width;
-	cube_des.Height = face_desc.Height;
+	cube_des.Width = image_size;//face_desc.Width;
+	cube_des.Height = image_size;//face_desc.Height;
 	cube_des.ArraySize = 6;	//*
 	cube_des.MipLevels = 1;
 	cube_des.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	cube_des.Usage = D3D11_USAGE_DEFAULT;
+	cube_des.MipLevels = 6;
 	cube_des.CPUAccessFlags = 0;
 	cube_des.SampleDesc.Count = 1;
 	cube_des.SampleDesc.Quality = 0;
-	cube_des.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;	//*
+	cube_des.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> cube_texture;
+	D3D11_SHADER_RESOURCE_VIEW_DESC rsv;
+	rsv.Format = face_desc.Format;
+	rsv.TextureCube.MostDetailedMip = 0;
+	rsv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;	//*
+	rsv.TextureCube.MipLevels = 6;
+	if (cube_type == EGenerateFlag::kIrradiance)
+	{
+		rsv.TextureCube.MipLevels = 1;
+		cube_des.MipLevels = 1;
+	}
 	g_gfx->GetDevice()->CreateTexture2D(&cube_des, nullptr, cube_texture.GetAddressOf());
+	//irradance dont't create mip-map
 	for (int i = 0; i < 6; ++i)
 	{
-		g_gfx->GetContext()->CopySubresourceRegion(cube_texture.Get(), D3D11CalcSubresource(0u, i, 1u)
-			, 0, 0, 0, texture_res_[i].Get(), 0, nullptr);
+		for (int j = 0; j < cube_des.MipLevels; ++j)
+		{
+			g_gfx->GetContext()->CopySubresourceRegion(cube_texture.Get(), D3D11CalcSubresource(j, i, cube_des.MipLevels)
+				, 0, 0, 0, (*p_res)[i].Get(), j, nullptr);
+		}
 	}
-	D3D11_SHADER_RESOURCE_VIEW_DESC rsv;
-	rsv.Format = face_desc.Format;
-	rsv.TextureCube.MipLevels = 1;
-	rsv.TextureCube.MostDetailedMip = 0;
-	rsv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;	//*
-	g_gfx->GetDevice()->CreateShaderResourceView(cube_texture.Get(), &rsv, p_srv_.GetAddressOf());
-	for (auto it = binds.begin(); it != binds.end(); it++)
+	if (cube_type == EGenerateFlag::kEnvironment)
 	{
-		if ((*it)->GetType() == EBindableType::kPixelShader)
-		{
-			(*it).reset(new PixelShader(*g_gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBoxC.cso"));
-			continue;
-		}
-		if ((*it)->GetType() == EBindableType::kShaderResource)
-		{
-			it = binds.erase(it);
-			if (it == binds.end()) break;
-		}
+		g_gfx->GetDevice()->CreateShaderResourceView(cube_texture.Get(), &rsv, p_env_cube_.GetAddressOf());
 	}
-	AddBind(std::make_unique<ShaderResource>(p_srv_.Get(), ETextureType::kDiffuse));
+	else if (cube_type == EGenerateFlag::kIrradiance)
+	{
+		g_gfx->GetDevice()->CreateShaderResourceView(cube_texture.Get(), &rsv, p_hdr_cube_.GetAddressOf());
+	}
+	else if (cube_type == EGenerateFlag::kSpecular)
+	{
+		g_gfx->GetDevice()->CreateShaderResourceView(cube_texture.Get(), &rsv, p_specular_cube_.GetAddressOf());
+	}
+
 }
 
-void SkyBox::ShaderingFromFile(const std::string& sphere_image_path)
-{
-	stbi_set_flip_vertically_on_load(true);
-	int width, height, channels;
-	float* pixel = stbi_loadf(sphere_image_path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
-	D3D11_TEXTURE2D_DESC des{};
-	des.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	des.Width = width;
-	des.Height = height;
-	des.ArraySize = 1;
-	des.MipLevels = 1;
-	des.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	des.Usage = D3D11_USAGE_DEFAULT;
-	des.CPUAccessFlags = 0;
-	des.SampleDesc.Count = 1;
-	des.SampleDesc.Quality = 0;
-	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = pixel;
-	data.SysMemPitch = width * sizeof(float) * 4;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> hdr_texture;
-	g_gfx->GetDevice()->CreateTexture2D(&des, &data, hdr_texture.GetAddressOf());
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvd{};
-	srvd.Format = des.Format;
-	srvd.Texture2D.MipLevels = 1;
-	srvd.Texture2D.MostDetailedMip = 0;
-	srvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	g_gfx->GetDevice()->CreateShaderResourceView(hdr_texture.Get(), &srvd, p_hdr_srv_.GetAddressOf());
-	AddBind(std::make_unique<ShaderResource>(p_hdr_srv_.Get(), ETextureType::kDiffuse));
-	stbi_image_free(pixel);
-}
-
-//TODO : adapted file format
-void SkyBox::ShaderingFromFile(const std::vector<std::string>& cube_image_paths, const UINT& width, const UINT& height)
-{
-	D3D11_TEXTURE2D_DESC cube_des{};
-	cube_des.Format = face_desc.Format;
-	cube_des.Width = width;
-	cube_des.Height = height;
-	cube_des.ArraySize = 6;	//*
-	cube_des.MipLevels = 1;
-	cube_des.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	cube_des.Usage = D3D11_USAGE_DEFAULT;
-	cube_des.CPUAccessFlags = 0;
-	cube_des.SampleDesc.Count = 1;
-	cube_des.SampleDesc.Quality = 0;
-	cube_des.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;	//*
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> cube_texture;
-	g_gfx->GetDevice()->CreateTexture2D(&cube_des, nullptr, cube_texture.GetAddressOf());
-	Texture tex_top(g_gfx->GetDevice(), cube_image_paths[0].c_str(), face_desc);
-	Texture tex_bottom(g_gfx->GetDevice(), cube_image_paths[1].c_str(), face_desc);
-	Texture tex_right(g_gfx->GetDevice(), cube_image_paths[2].c_str(), face_desc);
-	Texture tex_left(g_gfx->GetDevice(), cube_image_paths[3].c_str(), face_desc);
-	Texture tex_front(g_gfx->GetDevice(), cube_image_paths[4].c_str(), face_desc);
-	Texture tex_back(g_gfx->GetDevice(), cube_image_paths[5].c_str(), face_desc);
-	g_gfx->GetContext()->CopySubresourceRegion(cube_texture.Get(), D3D11CalcSubresource(0u, 0, 1u), 0, 0, 0, tex_top.GetResource(), 0, nullptr);
-	g_gfx->GetContext()->CopySubresourceRegion(cube_texture.Get(), D3D11CalcSubresource(0u, 1, 1u), 0, 0, 0, tex_bottom.GetResource(), 0, nullptr);
-	g_gfx->GetContext()->CopySubresourceRegion(cube_texture.Get(), D3D11CalcSubresource(0u, 2, 1u), 0, 0, 0, tex_right.GetResource(), 0, nullptr);
-	g_gfx->GetContext()->CopySubresourceRegion(cube_texture.Get(), D3D11CalcSubresource(0u, 3, 1u), 0, 0, 0, tex_left.GetResource(), 0, nullptr);
-	g_gfx->GetContext()->CopySubresourceRegion(cube_texture.Get(), D3D11CalcSubresource(0u, 4, 1u), 0, 0, 0, tex_front.GetResource(), 0, nullptr);
-	g_gfx->GetContext()->CopySubresourceRegion(cube_texture.Get(), D3D11CalcSubresource(0u, 5, 1u), 0, 0, 0, tex_back.GetResource(), 0, nullptr);
-	D3D11_SHADER_RESOURCE_VIEW_DESC rsv;
-	rsv.Format = face_desc.Format;
-	rsv.TextureCube.MipLevels = 1;
-	rsv.TextureCube.MostDetailedMip = 0;
-	rsv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;	//*
-	g_gfx->GetDevice()->CreateShaderResourceView(cube_texture.Get(), &rsv, p_srv_.GetAddressOf());
-	for (auto it = binds.begin(); it != binds.end(); it++)
-	{
-		if ((*it)->GetType() == EBindableType::kPixelShader)
-		{
-			(*it).reset(new PixelShader(*g_gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBoxC.cso"));
-			continue;
-		}
-		if ((*it)->GetType() == EBindableType::kShaderResource)
-		{
-			it = binds.erase(it);
-			if (it == binds.end()) break;
-		}
-	}
-	AddBind(std::make_unique<ShaderResource>(p_srv_.Get(), ETextureType::kDiffuse));
-}

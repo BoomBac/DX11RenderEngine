@@ -16,7 +16,7 @@ RenderToTexture::RenderToTexture()
 
 }
 
-void RenderToTexture::Initialize(Graphics* gfx, ERTTUsage usage)
+void RenderToTexture::Initialize(Graphics* gfx, ERTTUsage usage, const D3D11_TEXTURE2D_DESC& des)
 {
 	usage_ = usage;
 	switch (usage_)
@@ -27,12 +27,12 @@ void RenderToTexture::Initialize(Graphics* gfx, ERTTUsage usage)
 		D3D11_TEXTURE2D_DESC textureDesc;
 		ZeroMemory(&textureDesc, sizeof(textureDesc));
 
-		textureDesc.Width = gfx->GetWidth();
-		textureDesc.Height = gfx->GetHeight();
+		textureDesc.Width = des.Width;
+		textureDesc.Height = des.Height;
 		textureDesc.MipLevels = 1;
 		textureDesc.ArraySize = 1;
 		//textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;  //纹理像素为12个字节
-		textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;  //纹理像素为12个字节
+		textureDesc.Format = des.Format;  //纹理像素为12个字节
 		textureDesc.SampleDesc.Count = 1;
 		textureDesc.SampleDesc.Quality = 0;
 		textureDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -263,6 +263,12 @@ void RenderToTexture::SaveToImage(Graphics* gfx,std::string path)
 	default:
 		break;
 	}
+}
+
+void RenderToTexture::SaveToImage(Graphics* gfx, std::string path, ID3D11Texture2D* res)
+{
+	DirectX::SaveWICTextureToFile(gfx->GetContext(), res, GUID_ContainerFormatPng, ToWide(path).c_str(),
+		&GUID_WICPixelFormat64bppRGBA);
 }
 
 void RenderToTexture::SaveToImage(Graphics* gfx)

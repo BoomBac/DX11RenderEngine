@@ -21,11 +21,12 @@ class RenderToTexture
 {
 public:
     RenderToTexture();
-    void Initialize(Graphics* gfx, ERTTUsage usage);
+    void Initialize(Graphics* gfx, ERTTUsage usage,const D3D11_TEXTURE2D_DESC& des);
 	void SetRenderTarget(Graphics* gfx);
 	void ClearRenderTarget(Graphics* gfx,float red, float green, float blue, float alpha);
     void ReleaseResource();
     void SaveToImage(Graphics* gfx,std::string path);
+    void SaveToImage(Graphics* gfx,std::string path, ID3D11Texture2D* res);
     void SaveToImage(Graphics* gfx);
     std::pair<Microsoft::WRL::ComPtr<ID3D11Texture2D>, D3D11_TEXTURE2D_DESC> MakeStaging(Graphics* gfx);
     ERTTUsage usage_;

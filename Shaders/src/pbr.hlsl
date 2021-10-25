@@ -32,24 +32,25 @@ cbuffer LightMatrix : register(b1)
 cbuffer MaterialProperty : register(b2)
 {
 	//Reflectance ratio
-	//float3 albedo;
-	//float metallic;
-	//float roughness;
-	//float3 padding_1;
+	float3 albedo;
+	float metallic;
+	float roughness;
+	float3 padding_1;
 }
 
 //static const float3 albedo = float3(1.f,1.f,1.f);
 //static const float metallic = 0.f;
 //static const float roughness = 1.f;
 static const float ao;
-static const float PI = 3.14159265359;
 Texture2D diffuse_map : TEXTURE: register(t0);
 Texture2D metallic_map : TEXTURE: register(t1);
 Texture2D roughness_map : TEXTURE: register(t2);
 Texture2D albedo_map : TEXTURE: register(t3);
 Texture2D normal_map : TEXTURE: register(t4);
 Texture2D ao_map : TEXTURE: register(t5);
-TextureCube env_map : register(t6);
+TextureCube irradiance_map : register(t6);
+TextureCube env_map : register(t7);
+
 
 
 SamplerState objSamplerState : SAMPLER;
@@ -67,17 +68,12 @@ float3 FresnelSchlick(float cosTheta, float3 F0)
 {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }  
-float DistributionGGX(float3 N,float3 H,float roughness)
+float3 FresnelSchlikRoughness(float cosTheta, float3 F0, float roughness)
 {
-	float a      = roughness*roughness;
-    float a2     = a*a;
-    float NdotH  = max(dot(N, H), 0.0);
-    float NdotH2 = NdotH*NdotH;
-    float num   = a2;
-    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-    denom = PI * denom * denom;
-    return num / denom;
+	return F0 + float3(max(float3(1.0 - roughness, 1.0 - roughness, 1.0 - roughness), F0) - F0) * 
+		pow(float3(clamp(float3(1.0 - cosTheta, 1.0 - cosTheta, 1.0 - cosTheta), float3(0.f, 0.f, 0.f), float3(1.0, 1.0, 1.0))), float3(5.f, 5.f, 5.f));
 }
+
 float GeometrySchlickGGX(float NdotV, float roughness)
 {
     float r = (roughness + 1.0);
@@ -100,10 +96,10 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 float4 main(PSInput input) : SV_TARGET
 {
 	//	return float4(1.f,1.f,1.f,1.f);
-	float3 albedo = float3(1.f,0.86f,0.76f);//pow(albedo_map.Sample(objSamplerState,input.uv).rgb, 2.2);
+	//float3 albedo = float3(1.f,0.86f,0.76f);//pow(albedo_map.Sample(objSamplerState,input.uv).rgb, 2.2);
 	float3 N = GetNormal(normal_map, input.uv, objSamplerState, input.btn);
-	float metallic = metallic_map.Sample(objSamplerState, input.uv).r;
-	float roughness = roughness_map.Sample(objSamplerState, input.uv).r;
+	//float metallic = metallic_map.Sample(objSamplerState, input.uv).r;
+	//float roughness = roughness_map.Sample(objSamplerState, input.uv).r;
 	float3 D = diffuse_map.Sample(objSamplerState, input.uv);
 	//float ao = texture(ao_map, input.uv).r;
 
@@ -130,12 +126,16 @@ float4 main(PSInput input) : SV_TARGET
  	float3 specular     = numerator / denominator;  
  	float NDotL = max(dot(N,L),0.f);
  	L0 += (kD * albedo/PI + specular) * radians * NDotL;
-	//ambient
-	float3 color = (L0 * D);
+	//calculate ambient
+	float3 kS_e = FresnelSchlikRoughness(max(dot(H, V), 0.f), F0, roughness);
+	float3 kD_e = float3(1.f, 1.f, 1.f) - kS_e;
+	float3 diffuse = irradiance_map.Sample(objSamplerState, N).rgb * albedo * kD_e;
+	float3 ambient = diffuse;
+
+
+	float3 color = L0 + ambient * 1.f;
  	//gamma correct
  	color = color / (color + float3(1.f,1.f,1.f));
  	color = pow(color,float3(1.f/2.2f,1.f/2.2f,1.f/2.2f));
 	return float4(color, 1.f);
-	//return ReflectFormEnv(env_map, objSamplerState, input.cameraPos, input.posW, input.normal);
-	//return RefractFromEnv(env_map, objSamplerState, input.cameraPos, input.posW, input.normal,0.658);
 }

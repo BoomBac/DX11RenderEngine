@@ -402,6 +402,9 @@
     <FxCompile Include="Shaders\src\pSkyBoxC.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\src\pSkyBoxS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\src\PCSS.hlsli">
