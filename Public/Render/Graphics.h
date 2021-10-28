@@ -30,14 +30,8 @@ struct ShadowEffect
 	float light_near;
 	float light_far;
 };
-struct MaterialProperty
-{
-	//Reflectance ratio
-	DirectX::XMFLOAT3 albedo;
-	float metallic;
-	float roughness;
-	DirectX::XMFLOAT3 padding;
-};
+
+
 enum class EAxisType
 {
 	kXAxis,
@@ -78,7 +72,7 @@ public:
 	DirectX::XMMATRIX* p_light_view_projection_;
 	LightMatrix* p_light_matrix_;
 	ShadowEffect* p_shadow_effect_;
-	MaterialProperty* p_material_property_;
+
 
 	void SetCoordinateType(bool is_world);
 	//if world coord,return true
@@ -136,7 +130,7 @@ private:
 	void SetSelectObject(Drawable* object);
 
 	ShadowEffect shadowParma;
-	MaterialProperty materal_property_;
+
 	std::unique_ptr<SkyBox>	p_sky_box_;
 };
 

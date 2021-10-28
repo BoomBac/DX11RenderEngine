@@ -22,6 +22,7 @@
 #include "ScreenGrab.h"
 #include "Public/Render/Shape/SkyBox.h"
 #include "Public/Render/Bindable/SamplerState.h"
+#include <Public/Render/Material/Material.h>
 
 
 
@@ -50,6 +51,11 @@ Graphics::Graphics(HWND hWnd)
 {
 	InitializeD3DBase(hWnd,800,600);
 
+	//init Global
+	Global::getInstance()->G_Device = pDevice.Get();
+	Global::getInstance()->G_Context = pDeviceContext.Get();
+	Global::getInstance()->G_Gfx = this;
+
 	ResizeBackbuffer(800, 600);
 	InitializeSharedBindable();
 
@@ -60,10 +66,6 @@ Graphics::Graphics(HWND hWnd)
 	shadowParma.light_size = 0.4f;
 	shadowParma.max_bias = 0.001f;
 	p_shadow_effect_ = &shadowParma;
-	materal_property_.albedo = { 1.f,0.86f,0.76f };
-	materal_property_.metallic = 0.f;
-	materal_property_.roughness = 0.1f;
-	p_material_property_ = &materal_property_;
 
 	p_camera_ = new Camera();
 	p_camera_->SetProjection(75.f, 4.f / 3.f, 1.f, 1000.f);
@@ -80,6 +82,8 @@ Graphics::Graphics(HWND hWnd)
 	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/rustediron2_metallic.png");
 	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/rustediron2_normal.png");
 	TextureFactory::GetInstance().AddTexture("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/rustediron2_roughness.png");
+
+	TextureFactory::GetInstance().AddTexture("C:/Users/BoomBac/Desktop/testtt.png");
 
 
 	//LoadResource();
@@ -99,8 +103,6 @@ Graphics::Graphics(HWND hWnd)
 	//g_light_camera.SetLocation({ 0.f, 10.f, 50.f,0.f });
 	//g_light_camera.SetRotation(0.f, DegToRad(180.f), 0.f);
 	//p_light_camera = &g_light_camera;
-
-
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/point_light.obj");
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/directional_light.obj");
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/spot_light.obj");
@@ -109,8 +111,9 @@ Graphics::Graphics(HWND hWnd)
 	p_coordinate_ = new Coordinate(*this, 10.f);
 	scene_objects_.push_back(dynamic_cast<Drawable*>(p_coordinate_));
 
-	AddLight(ELightType::kPonintLight);
+
 	//创建默认灯光
+	AddLight(ELightType::kPonintLight);
 	p_light_->SetWorldLocation({ 20.f,30.f,0.f });
 	dynamic_cast<PointLight*>(p_light_)->SetRadius(100.f);
 	p_light_camera = &dynamic_cast<Light*>(p_light_)->light_camera_;
@@ -119,10 +122,15 @@ Graphics::Graphics(HWND hWnd)
 
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/sphere.obj");
 	MeshFactory::getInstance().AddMesh("Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/plane.obj");
+	MeshFactory::getInstance().AddMesh("C:/Users/BoomBac/Desktop/cubbe.obj");
+
 
 	//初始化坐标轴和场景物体
 	InitSceneObject();
 
+
+
+	//Material mat(*this, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pbr.cso");
 
 }
 
@@ -151,6 +159,7 @@ void Graphics::EndFrame()
 {
 	dynamic_cast<Light*>(p_light_)->UpdateLightMatrix();
 	pDeviceContext->ClearRenderTargetView(p_render_targetview_.Get(), bg_color);
+
 	//p_sky_box_->GenerateCubeSurface(1024,EGenerateFlag::kSpecular);
 	//g_rtr.ClearRenderTarget(this, 0.f, 1.f, 1.f, 1.f);
 	////isRenderShaodw = true;
@@ -173,7 +182,8 @@ void Graphics::EndFrame()
 	{
 		i->Draw(*this);
 	}
-	p_sky_box_->Draw(*this);
+	//p_sky_box_->Draw(*this);
+	//p_selected_object_->Draw(*this);
 	UpdateCameraMovement();
 	pSwapChain->Present(0u, 0u);
 }
@@ -238,10 +248,11 @@ void Graphics::DeleteSceneObject(int index)
 
 void Graphics::InitSceneObject()
 {
-	GeometryFactory::GenerateGeometry("sphere.obj");
+	//GeometryFactory::GenerateGeometry("sphere.obj");
 	auto plane = GeometryFactory::GenerateGeometry("plane.obj");
+	//GeometryFactory::GenerateGeometry("cubbe.obj");
 	plane->SetActorScale({ 5.f,1.f,5.f });
-	p_sky_box_ = std::make_unique<SkyBox>(*this);
+	//p_sky_box_ = std::make_unique<SkyBox>(*this);
 	//set skybox as environment_map at slot 6
 	//auto p = p_sky_box_->GetEnvironmentRsv();
 	//pDeviceContext->PSSetShaderResources(6, 1, &p);
@@ -312,6 +323,7 @@ void Graphics::SetSelectObject(const int& index)
 void Graphics::ResizeBackbuffer(const UINT& w, const UINT& h)
 {
 	static bool isInitialize = false;
+	if (width_ == w && height_ == h && isInitialize == true) return;
 	width_ = w;
 	height_ = h;
 	if (!isInitialize)
@@ -336,9 +348,6 @@ void Graphics::ResizeBackbuffer(const UINT& w, const UINT& h)
 		ID3D11RenderTargetView* null_view[] = { nullptr };
 		pDeviceContext->OMSetRenderTargets(sizeof(null_view) / sizeof(void*), null_view, nullptr);
 		p_render_targetview_->Release();
-		//p_depth_stencil_view_->Release();
-		//pDeviceContext->Flush();
-		//pDeviceContext->ClearState();
 		auto hr = pSwapChain->ResizeBuffers(1, w, h, /*DXGI_FORMAT_R16G16B16A16_FLOAT*/DXGI_FORMAT_UNKNOWN, 0);
 		ID3D11Texture2D* pBuffer = nullptr;
 		pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBuffer));
@@ -357,6 +366,10 @@ void Graphics::ResizeBackbuffer(const UINT& w, const UINT& h)
 		vp.TopLeftY = 0;
 		pDeviceContext->RSSetViewports(1, &vp);
 		p_camera_->SetProjection(75.f, static_cast<float>(w) / static_cast<float>(h), 1.f, 1000.f);
+		if (hr == S_OK)
+		{
+			qDebug() << "current size is" << w << "," << h;
+		}
 	}
 
 }

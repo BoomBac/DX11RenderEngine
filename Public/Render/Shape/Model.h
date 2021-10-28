@@ -12,6 +12,7 @@
 #include "Public\Render\Shape\Shape.hpp"
 #include <Public/Render/Texture.h>
 #include <Public/Render/Bindable/ShaderResource.h>
+#include <Public/Render/Material/Material.h>
 
 
 class Model :
@@ -24,6 +25,7 @@ public:
 	~Model();
 	virtual void Draw(Graphics& gfx) override;
 	//TODO(): add copy()
+	std::unique_ptr<Material> p_mat_;
 
 private:
 	DISALLOW_COPY_AND_ASSIGN(Model)

@@ -311,17 +311,17 @@ void RenderViewport::SetMaterialProperty(CusMath::vector3d albedo, float metalli
 {
 	if (albedo.x >= 0.f)
 	{
-		graphicsIns->p_material_property_->albedo.x = albedo.x;
-		graphicsIns->p_material_property_->albedo.y = albedo.y;
-		graphicsIns->p_material_property_->albedo.z = albedo.z;
+		//graphicsIns->p_material_property_->albedo.x = albedo.x;
+		//graphicsIns->p_material_property_->albedo.y = albedo.y;
+		//graphicsIns->p_material_property_->albedo.z = albedo.z;
 	}
 	else if(metallic >= 0.f )
 	{
-		graphicsIns->p_material_property_->metallic = metallic;
+		//graphicsIns->p_material_property_->metallic = metallic;
 	}
 	else if (roughness >= 0.f)
 	{
-		graphicsIns->p_material_property_->roughness = roughness;
+		//graphicsIns->p_material_property_->roughness = roughness;
 	}
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 #include <QDebug>
 #include "Tool/Timer.h"
-
+#include <Public/Render/Graphics.h>
 
 
 class Global
@@ -27,6 +27,9 @@ public:
 
 public:
     RE::Timer gTimer;
+    ID3D11Device* G_Device = nullptr;
+    ID3D11DeviceContext* G_Context = nullptr;
+    Graphics* G_Gfx = nullptr;
 };
 
 

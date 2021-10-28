@@ -75,6 +75,12 @@
     <Filter Include="External Widgets">
       <UniqueIdentifier>{9b28e06e-2255-4664-b8d9-b1f7c0e936d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Render\Material">
+      <UniqueIdentifier>{f31e4aa7-0152-4b42-957f-fc87f6537d2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\Material">
+      <UniqueIdentifier>{81353a1b-6fa6-40d4-88b9-852ae5edfba7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="DX11RenderEngine.qrc">
@@ -213,6 +219,12 @@
     </ClCompile>
     <ClCompile Include="Private\Render\Bindable\SamplerState.cpp">
       <Filter>Source Files\Render\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Material\Material.cpp">
+      <Filter>Source Files\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\ResManage\PShaderFactory.cpp">
+      <Filter>Source Files\Render\ResManage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -359,6 +371,12 @@
     <ClInclude Include="Public\Render\Bindable\SamplerState.h">
       <Filter>Header Files\Render\Bindable</Filter>
     </ClInclude>
+    <ClInclude Include="Public\Render\Material\Material.h">
+      <Filter>Header Files\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\ResManage\PShaderFactory.h">
+      <Filter>Header Files\Render\ResManage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="RenderViewport.ui">
@@ -405,12 +423,18 @@
     <FxCompile Include="Shaders\src\pSkyBoxS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\src\pLUT.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\src\PCSS.hlsli">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\src\common.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\src\ShaderlHeader.hlsli">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

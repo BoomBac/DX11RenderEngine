@@ -15,6 +15,7 @@
 #include <Public/Render/Bindable/RasterizerState.h>
 #include <Public/Render/Bindable/DepthStencilState.h>
 #include <Public/Render/RenderToTexture.h>
+#include <Public/Render/Bindable/LightBuffer.h>
 
 
 
@@ -61,21 +62,26 @@ SkyBox::SkyBox(Graphics& gfx)
 	face_desc.SampleDesc.Count = 1;
 	face_desc.SampleDesc.Quality = 0;
 
+	//GenerateLUT(std::string{});
+
 	//ShaderingFromFile("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/Apartment_Reflection.hdr");
 	ShaderingFromFile("C:/Users/BoomBac/Downloads/Desert_Highway/Desert_Highway/Road_to_MonumentValley_Ref.hdr");
 	GenerateCubeSurface(environment_map_size_,EGenerateFlag::kEnvironment);
 	GenerateCube(EGenerateFlag::kEnvironment);
 	ShaderingFromResource(EGenerateFlag::kEnvironment);
-	//GenerateCubeSurface(environment_map_size_, EGenerateFlag::kSpecular);
-	//GenerateIrrandiceSurface(irradiance_map_size_);
-	//GenerateCube(EGenerateFlag::kIrradiance);
-	//GenerateCube(EGenerateFlag::kSpecular);
+	GenerateCubeSurface(environment_map_size_, EGenerateFlag::kSpecular);
+	GenerateIrrandiceSurface(irradiance_map_size_);
+	GenerateCube(EGenerateFlag::kIrradiance);
+	GenerateCube(EGenerateFlag::kSpecular);
 	//ShaderingFromResource(EGenerateFlag::kSpecular);
 	
-	////GenerateCube(EGenerateFlag::kSpecular);
+	//GenerateCube(EGenerateFlag::kSpecular);
 	//ShaderingFromResource(EGenerateFlag::kSpecular);
-	////ShaderingFromResource(EGenerateFlag::kIrradiance);
-	//BindToShadering(EGenerateFlag::kSpecular);
+	//ShaderingFromResource(EGenerateFlag::kIrradiance);
+	LoadLUT("C:/Users/BoomBac/Desktop/ibl_brdf_lut.png");
+	BindToShadering(EGenerateFlag::kSpecular);
+	BindToShadering(EGenerateFlag::kIrradiance);
+	ShaderingFromResource(EGenerateFlag::kEnvironment);
 }
 
 ID3D11ShaderResourceView* SkyBox::GetEnvironmentRsv() const
@@ -138,6 +144,7 @@ void SkyBox::GenerateCubeSurface(const UINT& size, EGenerateFlag map_type)
 	Camera sample_camera;
 	sample_camera.SetLocation(0.f, 0.f, 0.f);
 	sample_camera.SetProjection(90.f, 1.f, 1.f, 1000.f);
+
 	D3D11_TEXTURE2D_DESC des{};
 	des.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	des.Width = size;
@@ -152,13 +159,6 @@ void SkyBox::GenerateCubeSurface(const UINT& size, EGenerateFlag map_type)
 	des.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> env_faces[6];
-
-	//Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_front;
-	//Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_back;
-	//Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_left;
-	//Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_right;
-	//Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_top;
-	//Microsoft::WRL::ComPtr<ID3D11Texture2D> t_tex_bottom;
 	std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>>* output;
 	if (map_type == EGenerateFlag::kEnvironment)
 	{
@@ -174,6 +174,7 @@ void SkyBox::GenerateCubeSurface(const UINT& size, EGenerateFlag map_type)
 	else if (map_type == EGenerateFlag::kSpecular)
 	{
 		output = &specular_res_;
+		des.ArraySize = max_roughness_level_;
 		for (auto& b : binds)
 		{
 			if (b->GetType() == EBindableType::kPixelShader)
@@ -187,61 +188,65 @@ void SkyBox::GenerateCubeSurface(const UINT& size, EGenerateFlag map_type)
 		output->push_back(env_faces[i]);
 		g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[i].GetAddressOf());
 	}
-	//output->push_back(t_tex_right);
-	//output->push_back(t_tex_left);
-	//output->push_back(t_tex_top);
-	//output->push_back(t_tex_bottom);
-	//output->push_back(t_tex_front);
-	//output->push_back(t_tex_back);
-	//g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[0].GetAddressOf());
-	//g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[1].GetAddressOf());
-	//g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[2].GetAddressOf());
-	//g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[3].GetAddressOf());
-	//g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[4].GetAddressOf());
-	//g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[5].GetAddressOf());
 	std::unique_ptr<RenderToTexture> rtt = std::make_unique<RenderToTexture>();
 	rtt->Initialize(g_gfx, ERTTUsage::kBackBuffer,face_desc);
 	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
 	rtt->SetRenderTarget(g_gfx);
 	g_gfx->isRenderShaodw = false;
 	g_gfx->p_camera_ = &sample_camera;
-	for (int i = 0; i < 6; i++)
-	{
-		rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-		int ii = i * 3;
-		sample_camera.SetRotation(g_six_viws[ii], g_six_viws[ii+1], g_six_viws[ii+2]);
-		Draw(*g_gfx);
-		g_gfx->GetContext()->CopySubresourceRegion((*output)[i].Get(), 0, 0u, 0u, 0u, rtt->GetResource(), 0, nullptr);
-	}
 
+	if (map_type == EGenerateFlag::kEnvironment)
+	{
+		for (int i = 0; i < 6; i++)
+		{
+			rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+			int ii = i * 3;
+			sample_camera.SetRotation(g_six_viws[ii], g_six_viws[ii + 1], g_six_viws[ii + 2]);
+			Draw(*g_gfx);
+			g_gfx->GetContext()->CopySubresourceRegion((*output)[i].Get(), 0, 0u, 0u, 0u, rtt->GetResource(), 0, nullptr);
+		}
+		//generate mip-map
+		//generate mipmap for the prefilter
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv_env_faces[6];
+		D3D11_SHADER_RESOURCE_VIEW_DESC rsv;
+		rsv.Format = face_desc.Format;
+		rsv.Texture2D.MipLevels = cube_map_level;
+		rsv.Texture2D.MostDetailedMip = 0;
+		rsv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;	//*
+		for (int i = 0; i < 6; ++i)
+		{
+			g_gfx->GetDevice()->CreateShaderResourceView((*output)[i].Get(), &rsv, srv_env_faces[i].GetAddressOf());
+			g_gfx->GetContext()->GenerateMips(srv_env_faces[i].Get());
+		}
+	}
+	else if (map_type == EGenerateFlag::kSpecular)
+	{
+		for (int r_level = 0; r_level < max_roughness_level_; ++r_level)
+		{
+			roughness_.roughness = static_cast<float>(r_level) / static_cast<float>(max_roughness_level_-1);
+			auto s = size / static_cast<UINT>(pow(2, r_level));
+			g_gfx->ResizeBackbuffer(s,s);
+			//rtt->ReleaseResource();
+			des.Width = s;
+			des.Height = s;
+			rtt->Initialize(g_gfx, ERTTUsage::kBackBuffer, des);
+			rtt->SetRenderTarget(g_gfx);
+			for (int sur_count = 0; sur_count < 6; ++sur_count)
+			{
+				rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+				int ii = sur_count * 3;
+				sample_camera.SetProjection(90.f, 1.f, 1.f, 1000.f);
+				sample_camera.SetRotation(g_six_viws[ii], g_six_viws[ii + 1], g_six_viws[ii + 2]);
+				Draw(*g_gfx);
+				g_gfx->GetContext()->CopySubresourceRegion((*output)[sur_count].Get(), 
+					D3D11CalcSubresource(r_level, 0u,max_roughness_level_), 0u, 0u, 0u, rtt->GetResource(), 0, nullptr);
+			}
+		}
+	}
+	//recovery graphics property
 	g_gfx->isRenderShaodw = true;
 	g_gfx->p_camera_ = cur_camera;
-	g_gfx->ResizeBackbuffer(w,h);
-	//generate mip-map
-	//generate mipmap for the prefilter
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> v_tex_back;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> v_tex_front;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> v_tex_left;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> v_tex_right;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> v_tex_top;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> v_tex_bottom;
-	D3D11_SHADER_RESOURCE_VIEW_DESC rsv;
-	rsv.Format = face_desc.Format;
-	rsv.Texture2D.MipLevels = cube_map_level;
-	rsv.Texture2D.MostDetailedMip = 0;
-	rsv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;	//*
-	g_gfx->GetDevice()->CreateShaderResourceView((*output)[D3D11_TEXTURECUBE_FACE_POSITIVE_Z].Get(), &rsv, v_tex_front.GetAddressOf());
-	g_gfx->GetContext()->GenerateMips(v_tex_front.Get());
-	g_gfx->GetDevice()->CreateShaderResourceView((*output)[D3D11_TEXTURECUBE_FACE_NEGATIVE_Z].Get(), &rsv, v_tex_back.GetAddressOf());
-	g_gfx->GetContext()->GenerateMips(v_tex_back.Get());
-	g_gfx->GetDevice()->CreateShaderResourceView((*output)[D3D11_TEXTURECUBE_FACE_POSITIVE_X].Get(), &rsv, v_tex_top.GetAddressOf());
-	g_gfx->GetContext()->GenerateMips(v_tex_top.Get());
-	g_gfx->GetDevice()->CreateShaderResourceView((*output)[D3D11_TEXTURECUBE_FACE_NEGATIVE_X].Get(), &rsv, v_tex_bottom.GetAddressOf());
-	g_gfx->GetContext()->GenerateMips(v_tex_bottom.Get());
-	g_gfx->GetDevice()->CreateShaderResourceView((*output)[D3D11_TEXTURECUBE_FACE_POSITIVE_Y].Get(), &rsv, v_tex_right.GetAddressOf());
-	g_gfx->GetContext()->GenerateMips(v_tex_right.Get());
-	g_gfx->GetDevice()->CreateShaderResourceView((*output)[D3D11_TEXTURECUBE_FACE_NEGATIVE_Y].Get(), &rsv, v_tex_left.GetAddressOf());
-	g_gfx->GetContext()->GenerateMips(v_tex_left.Get());
+	g_gfx->ResizeBackbuffer(w, h);
 }
 
 void SkyBox::GenerateSpecularSurface()
@@ -290,7 +295,7 @@ void SkyBox::GenerateIrrandiceSurface(const UINT& size)
 	for (int i = 0; i < 6; ++i)
 	{
 		g_gfx->GetDevice()->CreateTexture2D(&des, nullptr, irradiance_res_[i].GetAddressOf());
-		g_gfx->GetContext()->CopySubresourceRegion(irradiance_res_[i].Get(), 0u, 0u, 0u, 0u, texture_res_[i].Get(), level, nullptr);
+		g_gfx->GetContext()->CopySubresourceRegion(irradiance_res_[i].Get(), 0u, 0u, 0u, 0u, texture_res_[i].Get(),level, nullptr);
 	}
 }
 
@@ -305,7 +310,7 @@ void SkyBox::ShaderingFromResource(EGenerateFlag map_type)
 	{
 		if ((*it)->GetType() == EBindableType::kPixelShader)
 		{
-			(*it).reset(new PixelShader(*g_gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBoxS.cso"));
+			(*it).reset(new PixelShader(*g_gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBoxC.cso"));
 			continue;
 		}
 		if ((*it)->GetType() == EBindableType::kShaderResource)
@@ -415,10 +420,19 @@ void SkyBox::BindToShadering(EGenerateFlag env_type)
 {
 	if(env_type == EGenerateFlag::kIrradiance)
 		AddBind(std::make_unique<ShaderResource>(p_hdr_cube_.Get(), ETextureType::kIrradiance));
-	else if(env_type == EGenerateFlag::kSpecular)
-		AddBind(std::make_unique<ShaderResource>(p_specular_cube_.Get(), ETextureType::kIrradiance));
+	else if (env_type == EGenerateFlag::kSpecular)
+	{
+		AddBind(std::make_unique<ShaderResource>(p_specular_cube_.Get(), ETextureType::kSpecularMap));
+		AddBind(std::make_unique<ShaderResource>(p_LUT_map_.Get(), ETextureType::kLUT));
+	}
 	else if(env_type == EGenerateFlag::kEnvironment)
 		AddBind(std::make_unique<ShaderResource>(p_env_cube_.Get(), ETextureType::kIrradiance));
+}
+
+void SkyBox::LoadLUT(const std::string& path)
+{
+	Texture LUT(g_gfx->GetDevice(), path.c_str());
+	p_LUT_map_ = LUT.GetTextureResourceView();
 }
 
 void SkyBox::InitBindable(Graphics& gfx)
@@ -490,6 +504,7 @@ void SkyBox::InitBindable(Graphics& gfx)
 	dsds.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	dsds.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 	AddBind(std::make_unique<DepthStencilState>(*g_gfx, dsds));
+	AddBind(std::make_unique<PSConstantBuffer<PixelBuffer>>(*g_gfx, &p_roughness_));
 }
 
 void SkyBox::GenerateCube(EGenerateFlag cube_type)
@@ -516,10 +531,9 @@ void SkyBox::GenerateCube(EGenerateFlag cube_type)
 	cube_des.Width = image_size;//face_desc.Width;
 	cube_des.Height = image_size;//face_desc.Height;
 	cube_des.ArraySize = 6;	//*
-	cube_des.MipLevels = 1;
 	cube_des.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	cube_des.Usage = D3D11_USAGE_DEFAULT;
-	cube_des.MipLevels = 6;
+	cube_des.MipLevels = cube_map_level;
 	cube_des.CPUAccessFlags = 0;
 	cube_des.SampleDesc.Count = 1;
 	cube_des.SampleDesc.Quality = 0;
@@ -529,7 +543,7 @@ void SkyBox::GenerateCube(EGenerateFlag cube_type)
 	rsv.Format = face_desc.Format;
 	rsv.TextureCube.MostDetailedMip = 0;
 	rsv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;	//*
-	rsv.TextureCube.MipLevels = 6;
+	rsv.TextureCube.MipLevels = cube_map_level;
 	if (cube_type == EGenerateFlag::kIrradiance)
 	{
 		rsv.TextureCube.MipLevels = 1;

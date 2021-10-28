@@ -2,6 +2,7 @@
 #include "Public/Render/ModelResFactory.h"
 #include "Public/Render/Bindable/TransformBuffer.h"
 #include "Public/Render/ResManage/TextureFactory.h"
+#include <Public/Global.h>
 
 
 using BindItem = std::unique_ptr<BindableInterface>;
@@ -72,9 +73,11 @@ Model::Model(Graphics& gfx, const char* res_key)
 	};
 	//v_cons_buf_.camera_pos = gfx.p_camera_->location_f();
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
+
 	AddBind(std::move(vcb));
-	//"Y:\Project_VS2019\DX11RenderEngine\Res\rustediron1-alt2-Unreal-Engine\rustediron2_basecolor.png"
-	std::unique_ptr<ShaderResource> difrsv = std::make_unique<ShaderResource>(TextureFactory::GetInstance().GetTexture("rustediron2_basecolor.png")
+
+	//testtt.png  rustediron2_basecolor.png
+	std::unique_ptr<ShaderResource> difrsv = std::make_unique<ShaderResource>(TextureFactory::GetInstance().GetTexture("testtt.png")
 		->GetTextureResourceView(),ETextureType::kDiffuse);
 	AddBind(std::move(std::make_unique<ShaderResource>(difrsv->GetResourceView(), ETextureType::kDiffuse)));
 	texture_set_.insert(std::make_pair<ETextureType, std::unique_ptr<ShaderResource>>(ETextureType::kDiffuse, std::move(difrsv)));
@@ -93,6 +96,9 @@ Model::Model(Graphics& gfx, const char* res_key)
 		->GetTextureResourceView(), ETextureType::kRoughness);
 	AddBind(std::move(std::make_unique<ShaderResource>(roursv->GetResourceView(), ETextureType::kRoughness)));
 	texture_set_.insert(std::make_pair<ETextureType, std::unique_ptr<ShaderResource>>(ETextureType::kRoughness, std::move(roursv)));
+
+	p_mat_ = std::make_unique<Material>();
+	p_mat_->LoadFromLib("pbr.cso");
 }
 
 Model::~Model()
@@ -105,6 +111,7 @@ Model::~Model()
 
 void Model::Draw(Graphics& gfx)
 {
+	p_mat_->CommitAllBufferData();
 	Drawable::Draw(gfx);
 }
 

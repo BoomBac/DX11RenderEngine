@@ -43,6 +43,16 @@ void ShaderResource::Bind(Graphics& gfx)
 	{
 		gfx.GetContext()->PSSetShaderResources(6u, 1u, &p_shader_res_v_);
 	}
+	break;
+	case ETextureType::kSpecularMap:
+	{
+		gfx.GetContext()->PSSetShaderResources(7u, 1u, &p_shader_res_v_);
+	}
+	break;
+	case ETextureType::kLUT:
+	{
+		gfx.GetContext()->PSSetShaderResources(8u, 1u, &p_shader_res_v_);
+	}
 	default:
 		break;
 	}

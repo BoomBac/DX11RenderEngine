@@ -133,10 +133,12 @@
     <ClCompile Include="Private\Render\Light\Light.cpp" />
     <ClCompile Include="Private\Render\Light\PointLight.cpp" />
     <ClCompile Include="Private\Render\Light\SpotLight.cpp" />
+    <ClCompile Include="Private\Render\Material\Material.cpp" />
     <ClCompile Include="Private\Render\Mesh.cpp" />
     <ClCompile Include="Private\Render\ModelResFactory.cpp" />
     <ClCompile Include="Private\Render\RenderToTexture.cpp" />
     <ClCompile Include="Private\Render\ResManage\MeshFactory.cpp" />
+    <ClCompile Include="Private\Render\ResManage\PShaderFactory.cpp" />
     <ClCompile Include="Private\Render\ResManage\ResManage.cpp" />
     <ClCompile Include="Private\Render\ResManage\TextureFactory.cpp" />
     <ClCompile Include="Private\Render\Shape\Model.cpp" />
@@ -182,10 +184,12 @@
     <ClInclude Include="Public\Render\Light\LightSet.h" />
     <ClInclude Include="Public\Render\Light\PointLight.h" />
     <ClInclude Include="Public\Render\Light\SpotLight.h" />
+    <ClInclude Include="Public\Render\Material\Material.h" />
     <ClInclude Include="Public\Render\Mesh.h" />
     <ClInclude Include="Public\Render\ModelResFactory.h" />
     <ClInclude Include="Public\Render\RenderToTexture.h" />
     <ClInclude Include="Public\Render\ResManage\MeshFactory.h" />
+    <ClInclude Include="Public\Render\ResManage\PShaderFactory.h" />
     <ClInclude Include="Public\Render\ResManage\ResManage.h" />
     <ClInclude Include="Public\Render\ResManage\TextureFactory.h" />
     <ClInclude Include="Public\Render\Shape\Box.h" />
@@ -236,6 +240,14 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
+    </FxCompile>
+    <FxCompile Include="Shaders\src\pLUT.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DisableOptimizations>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebuggingInformation>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shaders\src\pSkyBox.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -291,6 +303,7 @@
   <ItemGroup>
     <None Include="Shaders\src\common.hlsli" />
     <None Include="Shaders\src\PCSS.hlsli" />
+    <None Include="Shaders\src\ShaderlHeader.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

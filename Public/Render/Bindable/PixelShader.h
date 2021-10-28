@@ -16,6 +16,7 @@ class PixelShader :
     public BindableInterface
 {
 public:
+    friend class Material;
     PixelShader(Graphics& gfx,const std::string& path);
     virtual void Bind(Graphics& gfx) override;
     virtual EBindableType GetType() const override;

@@ -18,7 +18,9 @@ enum class ETextureType : BYTE
     kAlbedo,
     kRoughness,
     kAmbientOcclusion,
-    kIrradiance
+    kIrradiance,
+    kSpecularMap,
+    kLUT
 };
 
 class ShaderResource : public BindableInterface

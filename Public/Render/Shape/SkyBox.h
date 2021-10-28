@@ -18,6 +18,14 @@ enum class EGenerateFlag
     kSpecular
 };
 
+struct PixelBuffer
+{
+    float roughness;
+    float padding0;
+    float padding1;
+    float padding2;
+};
+
 /// <summary>
 /// * load sdr image(single-sphere/six-cube) for shading
 /// * load hdr sphere image and generate cube edition and fliter it
@@ -45,14 +53,18 @@ public:
     void ShaderingFromFile(const std::vector<std::string>& cube_image_paths, const UINT& width, const UINT& height);
     //bind cube_map to ShaderResourceView at slot 6
     void BindToShadering(EGenerateFlag env_type);
+
+    void LoadLUT(const std::string& path);
 private:
     DISALLOW_COPY_AND_ASSIGN(SkyBox)
     UINT irradiance_map_size_;
     UINT environment_map_size_;
-    UINT cube_map_level = 5;
+    UINT cube_map_level = 11;
+    UINT max_roughness_level_ = 5;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> p_env_cube_;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> p_hdr_cube_;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> p_specular_cube_;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> p_LUT_map_;
     D3D11_TEXTURE2D_DESC face_desc;
     std::vector<std::string> image_paths_;
     //rl ub fb
@@ -63,6 +75,9 @@ private:
     void InitBindable(Graphics& gfx);
     //generate texture_cube ,must call after the GenerateCubeSurface
     void GenerateCube(EGenerateFlag cube_type);
+    PixelBuffer* p_roughness_ = &roughness_;
+    //for the pxiel conf
+    PixelBuffer roughness_;
 };
 
 #endif // !DX11ENGINE_RENDER_SHAPE_SKYBOX_H
