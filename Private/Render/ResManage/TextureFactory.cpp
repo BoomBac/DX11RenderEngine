@@ -2,6 +2,11 @@
 #include "QFileInfo"
 
 
+namespace
+{
+	constexpr char* common_dir_ = "Y:/Project_VS2019/DX11RenderEngine/Res/Texture/";
+}
+
 TextureFactory& TextureFactory::TextureFactory::GetInstance()
 {
 	static TextureFactory tex_fac;
@@ -10,8 +15,9 @@ TextureFactory& TextureFactory::TextureFactory::GetInstance()
 
 void TextureFactory::AddTexture(std::string file_path)
 {
-	QFileInfo fin(QString::fromStdString(file_path));
-	texture_pool_.insert(std::pair<std::string, std::shared_ptr<Texture >>(fin.fileName().toStdString().c_str(), std::make_shared<Texture>(gfx_->GetDevice(),file_path.c_str())));
+	std::string path = std::string(common_dir_).append(file_path);
+	QFileInfo fin(QString::fromStdString(path));
+	texture_pool_.insert(std::pair<std::string, std::shared_ptr<Texture >>(fin.fileName().toStdString().c_str(), std::make_shared<Texture>(gfx_->GetDevice(), path.c_str())));
 }
 
 std::shared_ptr<Texture> TextureFactory::GetTexture(std::string file_name)

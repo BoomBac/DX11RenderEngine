@@ -40,8 +40,8 @@ public:
 	~BindableInterface() = default;
 	virtual void Bind(Graphics& gfx) = 0;
 	virtual EBindableType GetType() const=0;
-	int* vc_buf_index_ = &vc_i;
-	int* pc_buf_index = &pc_i;
+	int vc_buf_index_ = 0;
+	int pc_buf_index = 0;
 };
 
 #endif //DX11ENGINE_RENDER_BINDABLE_BINDABLE_H

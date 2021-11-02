@@ -174,7 +174,7 @@ void DX11RenderEngine::keyPressEvent(QKeyEvent* event)
         {
         auto row = ui.L_OutLine->currentRow();
 		auto p = ui.L_OutLine->takeItem(row);
-        ui.renderView->DeleteSceneObject(row+1);
+        ui.renderView->DeleteSceneObject(row);
 		delete p;
         }
         break;
@@ -227,7 +227,7 @@ void DX11RenderEngine::OnOutlineItemChanged(int row)
     {
         // 0-8表示变换，9表示当前是否选中了灯光
         double tranf[10];
-        ui.renderView->SetSelectObject(row + 1, tranf);
+        ui.renderView->SetSelectObject(row, tranf);
         p_location_x_->SetProgressValue(tranf[0]);
         p_location_y_->SetProgressValue(tranf[1]);
         p_location_z_->SetProgressValue(tranf[2]);

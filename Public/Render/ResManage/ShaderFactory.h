@@ -10,6 +10,7 @@
 #endif 
 
 #include <Public/Render/Bindable/PixelShader.h>
+#include <Public/Render/Bindable/VertexShader.h>
 
 //class MeshFactory
 //{
@@ -27,21 +28,29 @@
 //	void LoadMesh(std::string file_path, std::vector<Postion3DTN2>& vertics, std::vector<UINT>& indices);
 //};
 
+enum class EShaderType
+{
+    kPixelShader,
+    kVertexShader
+};
+
 /// <summary>
 /// Create and Load cso file
 /// all file must be create in "Y:\Project_VS2019\DX11RenderEngine\Shaders\cso\"
 /// </summary>
-class PShaderFactory
+class ShaderFactory
 {
 public:
-    static PShaderFactory& getInstance();
-    void AddShader(std::string file_name);
-    std::shared_ptr<PixelShader> GetShader(std::string file_name);
+    static ShaderFactory& getInstance();
+    void AddShader(std::string file_name, EShaderType type);
+    std::shared_ptr<PixelShader> GetPShader(std::string file_name);
+    std::shared_ptr<VertexShader> GetVShader(std::string file_name);
 
 private:
-    DISALLOW_COPY_AND_ASSIGN(PShaderFactory)
-    PShaderFactory() {};
-    std::map<std::string, std::shared_ptr<PixelShader>> shader_lib_;
+    DISALLOW_COPY_AND_ASSIGN(ShaderFactory)
+    ShaderFactory() {};
+    std::map<std::string, std::shared_ptr<PixelShader>> pshader_lib_;
+    std::map<std::string, std::shared_ptr<VertexShader>> vshader_lib_;
 };
 
 #endif//DX11ENGINE_RENDER_RESMANAGE_PSHADERFACTORY_H

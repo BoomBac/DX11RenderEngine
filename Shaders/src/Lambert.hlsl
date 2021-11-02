@@ -1,4 +1,5 @@
 #include "PCSS.hlsli"
+#include "Pcommon.hlsli"
 
 struct PSInput
 {
@@ -8,19 +9,6 @@ struct PSInput
 	float2 uv : Texcoord;
 	float3 normal : NORMAL;
 };
-cbuffer LightBuffer : register(b0)
-{
-	float3 light_pos;
-	float light_intensity;
-	float3 light_dir;
-	float padding;
-	float4 light_color;
-	float affect_radius;
-	float inner_angle_;
-	float outer_angle;
-	float light_type;
-};
-
 cbuffer LightMatrix : register(b1)
 {
 	row_major matrix light_view_projection;
@@ -45,7 +33,8 @@ static const int height = 600;
 
 
 
-Texture2D objTexture : TEXTURE : register(t0);
+Texture2D objTexture : TEXTURE : register(t5);
+Texture2D finalColor : TEXTURE : register(t10);
 SamplerState objSamplerState : SAMPLER;
 
 // Using similar triangles from the surface point to the area light
@@ -274,22 +263,22 @@ float shadow_occlussion(float3 p,out float p_r,float bias,out float3 debug_color
 
 float4 main(PSInput input):SV_TARGET
 {
-	float3 pix_color = objTexture.Sample(objSamplerState, input.uv);
-	float3 lit;
-	if (light_type == 0.f)
-	{
-		lit = light_color * max(0.f, dot(normalize(input.normal), -normalize(input.posW - light_pos))) * clamp(1 - pow(distance(input.posW, light_pos) / affect_radius, 4.f), 0.f, 2.f);
-	}
-	else if (light_type == 1.f)
-	{
-		lit = max(0.f, dot(normalize(input.normal), -light_dir)) * light_color;
+	//float3 pix_color = objTexture.Sample(objSamplerState, input.uv);
+	//float3 lit;
+	//if (light_type == 0.f)
+	//{
+	//	lit = light_color * max(0.f, dot(normalize(input.normal), -normalize(input.posW - light_pos))) * clamp(1 - pow(distance(input.posW, light_pos) / affect_radius, 4.f), 0.f, 2.f);
+	//}
+	//else if (light_type == 1.f)
+	//{
+	//	lit = max(0.f, dot(normalize(input.normal), -light_dir)) * light_color;
 
-	}
-	else if (light_type == 2.f)
-	{
-		lit = light_color * pow(clamp((dot(normalize(light_pos - input.posW), light_dir) - cos(outer_angle)) / (cos(inner_angle_) - cos(outer_angle)), 0.f, 1.f), 2.f)
-            * clamp(1 - pow(distance(input.posW, light_pos) / affect_radius, 4.f), 0.f, 2.f);
-	}
+	//}
+	//else if (light_type == 2.f)
+	//{
+	//	lit = light_color * pow(clamp((dot(normalize(light_pos - input.posW), light_dir) - cos(outer_angle)) / (cos(inner_angle_) - cos(outer_angle)), 0.f, 1.f), 2.f)
+ //           * clamp(1 - pow(distance(input.posW, light_pos) / affect_radius, 4.f), 0.f, 2.f);
+	//}
 	//map to lightCoordinate
 	float4 pos_light = mul(float4(input.posW, 1.f), light_view_projection);
 	float4 pos_light_w = mul(float4(input.posW, 1.f), light_view);
@@ -304,6 +293,6 @@ float4 main(PSInput input):SV_TARGET
 	float r;
     float p_r;
     float3  num_blockers_color;
-
-    return shadow_occlussion(input.posW, p_r, bias, num_blockers_color) *float4(light_intensity * lit, 1.f)+ float4(0.1, 0.1, 0.1, 1.f);
+	float2 pix_pos = float2(input.pos.x / 800.f, input.pos.y / 600.f);
+	return finalColor.Sample(objSamplerState, pix_pos) * shadow_occlussion(input.posW, p_r, bias, num_blockers_color);
 }

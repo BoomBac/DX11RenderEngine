@@ -18,13 +18,6 @@ enum class EGenerateFlag
     kSpecular
 };
 
-struct PixelBuffer
-{
-    float roughness;
-    float padding0;
-    float padding1;
-    float padding2;
-};
 
 /// <summary>
 /// * load sdr image(single-sphere/six-cube) for shading
@@ -75,9 +68,6 @@ private:
     void InitBindable(Graphics& gfx);
     //generate texture_cube ,must call after the GenerateCubeSurface
     void GenerateCube(EGenerateFlag cube_type);
-    PixelBuffer* p_roughness_ = &roughness_;
-    //for the pxiel conf
-    PixelBuffer roughness_;
 };
 
 #endif // !DX11ENGINE_RENDER_SHAPE_SKYBOX_H

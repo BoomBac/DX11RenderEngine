@@ -13,7 +13,7 @@ using namespace std;
 
 namespace
 {
-	
+	constexpr char* common_dir_ = "Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/";
 }
 
 MeshFactory& MeshFactory::getInstance()
@@ -22,30 +22,13 @@ MeshFactory& MeshFactory::getInstance()
 	return instance;
 }
 
-bool MeshFactory::AddMesh(std::string file_path)
+bool MeshFactory::AddMesh(std::string file_name)
 {
-	if (mesh_loaded_.find(file_path) != mesh_loaded_.end()) return false;
+	if (mesh_loaded_.find(file_name) != mesh_loaded_.end()) return false;
 	vector<Postion3DTN2> vertics;
 	vector<UINT> indices;
+	std::string file_path = std::string(common_dir_).append(file_name);
 	LoadMesh(file_path, vertics, indices);
-	const char* file_name;
-	bool can_push = false;
-	for (int i = file_path.length() - 1; i > 0; i--)
-	{
-		if (file_path[i] == '.')
-		{
-			can_push = true;
-			continue;
-		}
-		if (can_push)
-		{
-			if (file_path[i] == '/')
-			{
-				file_name = &file_path[i + 1];
-				break;
-			}
-		}
-	}
 	vertices_pool_.insert(pair<string, vector<Postion3DTN2>>(file_name, move(vertics)));
 	indices_pool_.insert(pair<string, vector<UINT>>(file_name, move(indices)));
 	ModelResFactory::GetInstance().AddResource(file_name);

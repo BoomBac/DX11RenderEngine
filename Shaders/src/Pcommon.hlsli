@@ -1,5 +1,18 @@
 static const float PI = 3.14159265359;
 
+cbuffer cbPerFrame : register(b0)
+{
+	float light_intensity;
+	float3 light_pos;
+	float3 light_dir;
+	float padding_1;
+	float4 light_color;
+	float affect_radius;
+	float inner_angle_;
+	float outer_angle;
+	float light_type;
+};
+
 float3 GetNormal(in Texture2D map, float2 uv, SamplerState state,float3x3 btn)
 {
 	float3 N = map.Sample(state,uv).xyz *2.f - 1.f;

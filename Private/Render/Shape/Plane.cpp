@@ -79,15 +79,7 @@ Plane::Plane(int row, int col, const int& size, Graphics& gfx)
 	world_location_ = {0.f,0.f,0.f};
 	world_rotation_ = { 0.f,0.f,0.f };
 	scale_ = { 1.f,1.f,1.f };
-	v_cons_buf_.mvp_matrix_ =
-	{
-		view *
-		projection
-	};
-	v_cons_buf_.world_matrix_ =
-	{
-		DirectX::XMMatrixIdentity()
-	};
+	v_cons_buf_.world_matrix_ = DirectX::XMMatrixIdentity();
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
 	AddBind(std::move(vcb));
 }

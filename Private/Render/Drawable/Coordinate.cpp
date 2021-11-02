@@ -66,15 +66,12 @@ Coordinate::Coordinate(Graphics& gfx, const float& size)
 	world_location_ = { 0.f,0.f,0.f };
 	world_rotation_ = { 0.f,0.f,0.f };
 	scale_ = { 1.f,1.f,1.f };
-	v_cons_buf_ =
-	{
-		DirectX::XMMatrixIdentity() *
-		view *
-		projection
-	};
+	v_cons_buf_.world_matrix_ = DirectX::XMMatrixIdentity();
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
+	vcb->vc_buf_index_ = 1u;
 	AddBind(std::move(vcb));
 	is_world_ = true;
+	effects_.push_back(EEffectType::kNone);
 }
 
 void Coordinate::Draw(Graphics& gfx)

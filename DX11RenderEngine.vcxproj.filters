@@ -81,6 +81,12 @@
     <Filter Include="Source Files\Render\Material">
       <UniqueIdentifier>{81353a1b-6fa6-40d4-88b9-852ae5edfba7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Render\Effect">
+      <UniqueIdentifier>{46e68b83-4fcd-4112-9aaf-9a633022e116}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render\Effect">
+      <UniqueIdentifier>{ddfff2ad-51ce-4cf9-80b9-2065f299c04d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="DX11RenderEngine.qrc">
@@ -223,8 +229,14 @@
     <ClCompile Include="Private\Render\Material\Material.cpp">
       <Filter>Source Files\Render\Material</Filter>
     </ClCompile>
-    <ClCompile Include="Private\Render\ResManage\PShaderFactory.cpp">
+    <ClCompile Include="Private\Render\ResManage\ShaderFactory.cpp">
       <Filter>Source Files\Render\ResManage</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Effect\Pass.cpp">
+      <Filter>Source Files\Render\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Private\Render\Effect\Effect.cpp">
+      <Filter>Source Files\Render\Effect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -374,8 +386,14 @@
     <ClInclude Include="Public\Render\Material\Material.h">
       <Filter>Header Files\Render\Material</Filter>
     </ClInclude>
-    <ClInclude Include="Public\Render\ResManage\PShaderFactory.h">
+    <ClInclude Include="Public\Render\ResManage\ShaderFactory.h">
       <Filter>Header Files\Render\ResManage</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Effect\Pass.h">
+      <Filter>Header Files\Render\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\Render\Effect\Effect.h">
+      <Filter>Header Files\Render\Effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -391,9 +409,6 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\src\VertexShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\src\InsideVshader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\src\InsidePshader.hlsl">
@@ -431,10 +446,10 @@
     <None Include="Shaders\src\PCSS.hlsli">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\src\common.hlsli">
+    <None Include="Shaders\src\Pcommon.hlsli">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\src\ShaderlHeader.hlsli">
+    <None Include="Shaders\src\Vcommon.hlsli">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -83,7 +83,8 @@ private:
 template<class T>
 void VConstantBuffer<T>::Bind(Graphics& gfx)
 {
-	GetContext(gfx)->VSSetConstantBuffers(*BindableInterface::vc_buf_index_, 1, p_constant_buffer_.GetAddressOf());
+	//GetContext(gfx)->VSSetConstantBuffers(1, 1, p_constant_buffer_.GetAddressOf());
+	GetContext(gfx)->VSSetConstantBuffers(BindableInterface::vc_buf_index_, 1, p_constant_buffer_.GetAddressOf());
 }
 
 template<class T>
@@ -102,7 +103,7 @@ private:
 template<class T>
 void PConstantBuffer<T>::Bind(Graphics& gfx)
 {
-	GetContext(gfx)->PSSetConstantBuffers(*BindableInterface::pc_buf_index, 1, p_constant_buffer_.GetAddressOf());
+	GetContext(gfx)->PSSetConstantBuffers(BindableInterface::pc_buf_index, 1, p_constant_buffer_.GetAddressOf());
 }
 
 #endif //DX11ENGINE_RENDER_BINDABLE_CONSTANTBUFFER_H

@@ -1,6 +1,6 @@
 #include "Public/Render/Bindable/ShaderResource.h"
 
-ShaderResource::ShaderResource(ID3D11ShaderResourceView* srv, ETextureType type) : p_shader_res_v_(srv),tex_type_(type)
+ShaderResource::ShaderResource(ID3D11ShaderResourceView* srv, ESResourceType type) : p_shader_res_v_(srv),tex_type_(type)
 {
 
 }
@@ -9,47 +9,47 @@ void ShaderResource::Bind(Graphics& gfx)
 {
 	switch (tex_type_)
 	{
-	case ETextureType::kDiffuse:
+	case ESResourceType::kDiffuse:
 	{
 		gfx.GetContext()->PSSetShaderResources(0u, 1u, &p_shader_res_v_);
 	}
 		break;
-	case ETextureType::kNormal:
+	case ESResourceType::kNormal:
 	{
 		gfx.GetContext()->PSSetShaderResources(4u, 1u, &p_shader_res_v_);
 	}
 		break;
-	case ETextureType::kMetallic:
+	case ESResourceType::kMetallic:
 	{
 		gfx.GetContext()->PSSetShaderResources(1u, 1u, &p_shader_res_v_);
 	}
 		break;
-	case ETextureType::kAlbedo:
+	case ESResourceType::kAlbedo:
 	{
 		gfx.GetContext()->PSSetShaderResources(3u, 1u, &p_shader_res_v_);
 	}
 		break;
-	case ETextureType::kRoughness:
+	case ESResourceType::kRoughness:
 	{
 		gfx.GetContext()->PSSetShaderResources(2u, 1u, &p_shader_res_v_);
 	}
 		break;
-	case ETextureType::kAmbientOcclusion:
+	case ESResourceType::kAmbientOcclusion:
 	{
 		gfx.GetContext()->PSSetShaderResources(5u, 1u, &p_shader_res_v_);
 	}
 		break;
-	case ETextureType::kIrradiance:
+	case ESResourceType::kIrradiance:
 	{
 		gfx.GetContext()->PSSetShaderResources(6u, 1u, &p_shader_res_v_);
 	}
 	break;
-	case ETextureType::kSpecularMap:
+	case ESResourceType::kSpecularMap:
 	{
 		gfx.GetContext()->PSSetShaderResources(7u, 1u, &p_shader_res_v_);
 	}
 	break;
-	case ETextureType::kLUT:
+	case ESResourceType::kLUT:
 	{
 		gfx.GetContext()->PSSetShaderResources(8u, 1u, &p_shader_res_v_);
 	}
@@ -59,7 +59,7 @@ void ShaderResource::Bind(Graphics& gfx)
 
 }
 
-void ShaderResource::SetTexture(ID3D11ShaderResourceView* srv, ETextureType type)
+void ShaderResource::SetTexture(ID3D11ShaderResourceView* srv, ESResourceType type)
 {
 	p_shader_res_v_ = srv;
 	tex_type_ = type;
@@ -70,7 +70,7 @@ ID3D11ShaderResourceView* ShaderResource::GetResourceView()
 	return p_shader_res_v_;
 }
 
-ETextureType ShaderResource::GetTextureType() const
+ESResourceType ShaderResource::GetTextureType() const
 {
 	return tex_type_;
 }

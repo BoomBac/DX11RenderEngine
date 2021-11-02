@@ -126,6 +126,8 @@
     <ClCompile Include="Private\Render\Drawable\Box.cpp" />
     <ClCompile Include="Private\Render\Drawable\Coordinate.cpp" />
     <ClCompile Include="Private\Render\Drawable\Drawable.cpp" />
+    <ClCompile Include="Private\Render\Effect\Effect.cpp" />
+    <ClCompile Include="Private\Render\Effect\Pass.cpp" />
     <ClCompile Include="Private\Render\GeometryFactory.cpp" />
     <ClCompile Include="Private\Render\Graphics.cpp" />
     <ClCompile Include="Private\Render\GraphicsResource.cpp" />
@@ -138,7 +140,7 @@
     <ClCompile Include="Private\Render\ModelResFactory.cpp" />
     <ClCompile Include="Private\Render\RenderToTexture.cpp" />
     <ClCompile Include="Private\Render\ResManage\MeshFactory.cpp" />
-    <ClCompile Include="Private\Render\ResManage\PShaderFactory.cpp" />
+    <ClCompile Include="Private\Render\ResManage\ShaderFactory.cpp" />
     <ClCompile Include="Private\Render\ResManage\ResManage.cpp" />
     <ClCompile Include="Private\Render\ResManage\TextureFactory.cpp" />
     <ClCompile Include="Private\Render\Shape\Model.cpp" />
@@ -176,6 +178,8 @@
     <ClInclude Include="Public\Render\camera.h" />
     <ClInclude Include="Public\Render\Drawable\Coordinate.h" />
     <ClInclude Include="Public\Render\Drawable\Drawable.h" />
+    <ClInclude Include="Public\Render\Effect\Effect.h" />
+    <ClInclude Include="Public\Render\Effect\Pass.h" />
     <ClInclude Include="Public\Render\GeometryFactory.h" />
     <ClInclude Include="Public\Render\Graphics.h" />
     <ClInclude Include="Public\Render\GraphicsResource.h" />
@@ -189,7 +193,7 @@
     <ClInclude Include="Public\Render\ModelResFactory.h" />
     <ClInclude Include="Public\Render\RenderToTexture.h" />
     <ClInclude Include="Public\Render\ResManage\MeshFactory.h" />
-    <ClInclude Include="Public\Render\ResManage\PShaderFactory.h" />
+    <ClInclude Include="Public\Render\ResManage\ShaderFactory.h" />
     <ClInclude Include="Public\Render\ResManage\ResManage.h" />
     <ClInclude Include="Public\Render\ResManage\TextureFactory.h" />
     <ClInclude Include="Public\Render\Shape\Box.h" />
@@ -210,12 +214,6 @@
     <FxCompile Include="Shaders\src\InsidePshader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Shaders\src\InsideVshader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)/Shaders/cso/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
@@ -301,9 +299,9 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\src\common.hlsli" />
+    <None Include="Shaders\src\Pcommon.hlsli" />
     <None Include="Shaders\src\PCSS.hlsli" />
-    <None Include="Shaders\src\ShaderlHeader.hlsli" />
+    <None Include="Shaders\src\Vcommon.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

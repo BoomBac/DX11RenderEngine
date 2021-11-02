@@ -1,4 +1,4 @@
-#include "common.hlsli"
+#include "Pcommon.hlsli"
 
 struct PSInput
 {
@@ -8,18 +8,6 @@ struct PSInput
 	float2 uv : Texcoord;
 	float3 normal : NORMAL;
 	matrix<float,3,3> btn : BTN;
-};
-cbuffer LightBuffer : register(b1)
-{
-	float light_intensity;
-	float3 light_pos;
-	float3 light_dir;
-	float padding;
-	float4 light_color;
-	float affect_radius;
-	float inner_angle_;
-	float outer_angle;
-	float light_type;
 };
 
 // cbuffer LightMatrix : register(b1)
@@ -41,13 +29,12 @@ cbuffer LightBuffer : register(b1)
 //static const float3 albedo = float3(1.f,1.f,1.f);
 //static const float metallic = 0.f;
 //static const float roughness = 1.f;
-static const float ao;
-Texture2D diffuse_map : TEXTURE: register(t0);
+Texture2D albedo_map : TEXTURE : register(t0);
 Texture2D metallic_map : TEXTURE: register(t1);
 Texture2D roughness_map : TEXTURE: register(t2);
-Texture2D albedo_map : TEXTURE: register(t3);
-Texture2D normal_map : TEXTURE: register(t4);
-Texture2D ao_map : TEXTURE: register(t5);
+Texture2D normal_map : TEXTURE: register(t3);
+Texture2D ao_map : TEXTURE: register(t4);
+
 TextureCube irradiance_map : register(t6);
 TextureCube specular_map : register(t7);
 Texture2D brdf_LUT : register(t8);
@@ -62,8 +49,7 @@ float3 CalculateRadiance(float3 l_dir,float3 v_dir,float3 p_w)
 	float3 radians = light_color * attenuation;
 	return radians;
 }
-////calculate the radio of reflect
-////input dot(half-vector,view_dir)
+
 float3 FresnelSchlick(float cosTheta, float3 F0)
 {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
@@ -77,11 +63,11 @@ float3 FresnelSchlikRoughness(float cosTheta, float3 F0, float roughness)
 
 float4 main(PSInput input) : SV_TARGET
 {
-	float3 albedo = float3(1.f,0.86f,0.76f);//pow(albedo_map.Sample(objSamplerState,input.uv).rgb, 2.2);
+	float3 albedo = pow(albedo_map.Sample(objSamplerState,input.uv).rgb, 2.2);
 	float3 N = GetNormal(normal_map, input.uv, objSamplerState, input.btn);
 	float metallic = metallic_map.Sample(objSamplerState, input.uv).r;
 	float roughness = roughness_map.Sample(objSamplerState, input.uv).r;
-	float3 D = diffuse_map.Sample(objSamplerState, input.uv);
+
 
 	float3 V = normalize(input.cameraPos - input.posW);
 	float3 L = normalize(light_pos - input.posW);
@@ -121,10 +107,10 @@ float4 main(PSInput input) : SV_TARGET
 	float3 ambient = (kD_e *  diffuse + specular_) * 1.f;
 	//float3 ambient =specular_ * 1.f;
 
-	float3 color = float3(1.f,1.f,1.f) * L0 + ambient * 1.f;
+	float3 color = L0 * albedo + ambient * 1.f;
  	//gamma correct
  	color = color / (color + float3(1.f,1.f,1.f));
  	color = pow(color,float3(1.f/2.2f,1.f/2.2f,1.f/2.2f));
-	//return float4(color, 1.f);
-	return light_intensity * float4(1.f,1.f,1.f,1.f);
+	return float4(color, 1.f);
+	//return light_intensity * float4(1.f,1.f,1.f,1.f);
 }

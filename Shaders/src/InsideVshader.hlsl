@@ -1,4 +1,4 @@
-struct VSOut
+truct VSOut
 {
 	float4 pos : SV_POSITION;
 	float3 posW : WORLD_POSTION;

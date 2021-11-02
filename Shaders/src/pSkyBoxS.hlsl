@@ -1,4 +1,4 @@
-#include "common.hlsli"
+#include "Pcommon.hlsli"
 
 TextureCube cube_map : register(t0);
 SamplerState objSamplerState : SAMPLER;
@@ -9,9 +9,10 @@ struct PsIn
 	float3 pos_w : WORLDPOSITION;
 };
 
-cbuffer buffer
+cbuffer buffer : register(b0)
 {
-    float c_roughness;
+    float roughness;
+	float3 padding;
 };
 
 static const float rou = 0.f;
@@ -50,5 +51,5 @@ float3 PrefilterEnvMap( float Roughness, float3 R )
 
 float4 main(PsIn pin) : SV_TARGET
 {
-    return float4(PrefilterEnvMap(c_roughness,normalize(pin.pos_w)),1.f);
+	return float4(PrefilterEnvMap(roughness, normalize(pin.pos_w)), 1.f);
 }

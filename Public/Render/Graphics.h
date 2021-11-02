@@ -1,14 +1,16 @@
 #pragma once
 
+#include <d3d11.h>
+
 #include <wrl/client.h>
 #include <vector>
 #include <map>
 #include <qwindowdefs_win.h>
 
 #include "vector3D.h"
+
 #include "Public/Render/camera.h"
 #include "Public/Tool/Subject.h"
-#include <d3d11.h>
 #include "Light/LightSet.h"
 
 
@@ -22,6 +24,15 @@ class Drawable;
 class Light;
 class SkyBox;
 class SamplerState;
+class Coordinate;
+class Light;
+template <class T> 
+class VConstantBuffer;
+enum class EEffectType;
+template <class T>
+class PConstantBuffer;
+
+
 
 struct ShadowEffect
 {
@@ -31,6 +42,18 @@ struct ShadowEffect
 	float light_far;
 };
 
+struct VCommonStruct
+{
+	DirectX::XMMATRIX gView;
+	DirectX::XMMATRIX gProj;
+	DirectX::XMMATRIX gViewProj;
+	DirectX::XMFLOAT3 gCamreaPos;
+	float padding;
+};
+struct PCommonStruct
+{
+	LightSet gLightInfo;
+};
 
 enum class EAxisType
 {
@@ -51,8 +74,12 @@ public:
 	void EndFrame();
 	//供drawable调用
 	void DrawIndexed(const UINT& count);
-
 	void SetVPBackColor(float color[4]);
+	//update the VertexConstbuffer(slot 0) in ShaderHeader 
+	void CommitPerFrameBuf();
+	void UpdatePerFrameBuf(std::string& val_name,const DirectX::XMMATRIX& mat);
+	void UpdatePerFrameBuf(std::string& val_name,const DirectX::XMFLOAT3& f3);
+
 
 	//从按键输入接收摄像机运动状态
 	void UpdateCameraState(ECameraMovementState new_state);
@@ -62,9 +89,8 @@ public:
 	ID3D11RenderTargetView* pp_render_targetview();
 	//当前渲染视口选中的物体
 	static Drawable* p_selected_object_;
-	static Drawable* p_coordinate_;
-
-	Drawable* p_light_ = nullptr;
+	std::unique_ptr<Coordinate> p_coordinate_;
+	Light* p_light_;
 
 	LightSet* p_scene_light_;
 	LightShader* p_light_shader_;
@@ -105,6 +131,8 @@ public:
 	void SetRenderTargetView(ID3D11RenderTargetView* target_view);
 	void SetDepthStencilView(ID3D11DepthStencilView* depth_view);
 	//ID3D11ShaderResourceView** GetShadowMap();
+	std::unique_ptr<VConstantBuffer<VCommonStruct>> p_com_vcons_buf_;
+	std::unique_ptr<PConstantBuffer<PCommonStruct>> p_com_pcons_buf_;
 private:
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>pDeviceContext = nullptr;
@@ -128,9 +156,12 @@ private:
 	void UpdateCameraMovement();
 	std::vector<Camera*> camera_set_;
 	void SetSelectObject(Drawable* object);
-
 	ShadowEffect shadowParma;
-
 	std::unique_ptr<SkyBox>	p_sky_box_;
+	std::map<EEffectType, std::vector<Drawable*>> effect_bucket_;
+	void AdjustRenderQueue();
+	VCommonStruct common_v_cbuf_src;
+	PCommonStruct common_p_cbuf_src;
+	void UpdatePerFrameBuf();
 };
 

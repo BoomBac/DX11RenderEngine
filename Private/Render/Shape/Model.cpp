@@ -34,14 +34,10 @@ Model::Model(Graphics& gfx)
 	world_location_ = {0.f,0.f,0.f};
 	world_rotation_ = { 0.f,0.f,0.f };
 	scale_ = { 1.f,1.f,1.f };
-	v_cons_buf_.mvp_matrix_ =
-	{
-		DirectX::XMMatrixTranslation(world_location_.x,world_location_.y,world_location_.z) *
-		view *
-		projection
-	};
+	v_cons_buf_.world_matrix_ =DirectX::XMMatrixTranslation(world_location_.x,world_location_.y,world_location_.z);
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
 	AddBind(std::move(vcb));
+	effects_.push_back(EEffectType::kPBREffect);
 }
 
 Model::Model(Graphics& gfx, const char* res_key)
@@ -65,40 +61,21 @@ Model::Model(Graphics& gfx, const char* res_key)
 	world_location_ = { 0.f,0.f,0.f };
 	world_rotation_ = { 0.f,0.f,0.f };
 	scale_ = { 1.f,1.f,1.f };
-	v_cons_buf_.mvp_matrix_ =
-	{
-		DirectX::XMMatrixTranslation(world_location_.x,world_location_.y,world_location_.z) *
-		view *
-		projection
-	};
+	v_cons_buf_.world_matrix_ =DirectX::XMMatrixTranslation(world_location_.x,world_location_.y,world_location_.z);
 	//v_cons_buf_.camera_pos = gfx.p_camera_->location_f();
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
 
 	AddBind(std::move(vcb));
 
-	//testtt.png  rustediron2_basecolor.png
-	std::unique_ptr<ShaderResource> difrsv = std::make_unique<ShaderResource>(TextureFactory::GetInstance().GetTexture("testtt.png")
-		->GetTextureResourceView(),ETextureType::kDiffuse);
-	AddBind(std::move(std::make_unique<ShaderResource>(difrsv->GetResourceView(), ETextureType::kDiffuse)));
-	texture_set_.insert(std::make_pair<ETextureType, std::unique_ptr<ShaderResource>>(ETextureType::kDiffuse, std::move(difrsv)));
-
-	std::unique_ptr<ShaderResource> metrsv = std::make_unique<ShaderResource>(TextureFactory::GetInstance().GetTexture("rustediron2_metallic.png")
-		->GetTextureResourceView(), ETextureType::kMetallic);
-	AddBind(std::move(std::make_unique<ShaderResource>(metrsv->GetResourceView(), ETextureType::kMetallic)));
-	texture_set_.insert(std::make_pair<ETextureType, std::unique_ptr<ShaderResource>>(ETextureType::kMetallic, std::move(metrsv)));
-
-	std::unique_ptr<ShaderResource> norrsv = std::make_unique<ShaderResource>(TextureFactory::GetInstance().GetTexture("rustediron2_normal.png")
-		->GetTextureResourceView(), ETextureType::kNormal);
-	AddBind(std::move(std::make_unique<ShaderResource>(norrsv->GetResourceView(), ETextureType::kNormal)));
-	texture_set_.insert(std::make_pair<ETextureType, std::unique_ptr<ShaderResource>>(ETextureType::kNormal, std::move(norrsv)));
-
-	std::unique_ptr<ShaderResource> roursv = std::make_unique<ShaderResource>(TextureFactory::GetInstance().GetTexture("rustediron2_roughness.png")
-		->GetTextureResourceView(), ETextureType::kRoughness);
-	AddBind(std::move(std::make_unique<ShaderResource>(roursv->GetResourceView(), ETextureType::kRoughness)));
-	texture_set_.insert(std::make_pair<ETextureType, std::unique_ptr<ShaderResource>>(ETextureType::kRoughness, std::move(roursv)));
-
 	p_mat_ = std::make_unique<Material>();
 	p_mat_->LoadFromLib("pbr.cso");
+	std::vector<std::string> t_l;
+	t_l.push_back("rustediron2_basecolor.png");
+	t_l.push_back("rustediron2_metallic.png");
+	t_l.push_back("rustediron2_roughness.png");
+	t_l.push_back("rustediron2_normal.png");
+	p_mat_->InitTexture(t_l);
+	effects_.push_back(EEffectType::kPBREffect);
 }
 
 Model::~Model()
@@ -111,7 +88,7 @@ Model::~Model()
 
 void Model::Draw(Graphics& gfx)
 {
-	p_mat_->CommitAllBufferData();
+	p_mat_->CommitAllTexture();
 	Drawable::Draw(gfx);
 }
 

@@ -24,8 +24,8 @@ class MeshFactory
 {
 public:
 	static MeshFactory& getInstance();
-	bool AddMesh(std::string file_path);
-	bool GetMesh(std::string file_path, std::vector<Postion3DTN2>** pv, std::vector<UINT>** pi);
+	bool AddMesh(std::string file_name);
+	bool GetMesh(std::string file_name, std::vector<Postion3DTN2>** pv, std::vector<UINT>** pi);
 private:
 	MeshFactory() {};
 	DISALLOW_COPY_AND_ASSIGN(MeshFactory)

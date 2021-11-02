@@ -1,19 +1,23 @@
 #include "Public/Render/Material/Material.h"
-#include "Public/Render/ResManage/PShaderFactory.h"
+#include "Public/Render/ResManage/ShaderFactory.h"
 #include <d3d11shader.h>
 #include <d3dcompiler.h>
 #include <QDebug>
 #include <Public/Global.h>
+#include <Public/Render/ResManage/TextureFactory.h>
 
 using Microsoft::WRL::ComPtr;
 
 
 void Material::LoadFromLib(const std::string& name)
 {
-	p_shader_ = PShaderFactory::getInstance().GetShader(name);
+	p_shader_ = ShaderFactory::getInstance().GetPShader(name);
 	ComPtr<ID3D11ShaderReflection> shader_reflection;
 	HRESULT hr = D3DReflect(p_shader_->p_blob_->GetBufferPointer(), p_shader_->p_blob_->GetBufferSize(),
 		IID_ID3D11ShaderReflection, reinterpret_cast<void**>(shader_reflection.GetAddressOf()));
+	UINT cbuf_slot = 0;
+	p_cbuffer_.fill(nullptr);
+	buf_size_.fill(0);
 	for (UINT i = 0;; ++i)
 	{
 		D3D11_SHADER_INPUT_BIND_DESC des;
@@ -23,17 +27,18 @@ void Material::LoadFromLib(const std::string& name)
 			qDebug() << "Input Resource Parse Done";
 			break;
 		}
-		UINT cbuf_slot = 0;
+
 		switch (des.Type)
 		{
 		case D3D_SIT_CBUFFER:
 		{
-			ID3D11ShaderReflectionConstantBuffer* pRcbuf = shader_reflection->GetConstantBufferByName(des.Name);
+			ID3D11ShaderReflectionConstantBuffer* pRcbuf = shader_reflection->GetConstantBufferByIndex(cbuf_slot);
 			D3D11_SHADER_BUFFER_DESC cbDesc{};
 			hr = pRcbuf->GetDesc(&cbDesc);
 			if (FAILED(hr))
 			{
 				qDebug() << "Parse ConstBuffer Failed";
+				++cbuf_slot;
 				break;
 			}
 			UINT buf_size = 0;
@@ -60,11 +65,12 @@ void Material::LoadFromLib(const std::string& name)
 			cdb.ByteWidth = buf_size;
 			cdb.StructureByteStride = 0;
 			ComPtr<ID3D11Buffer> g_buf;
-			Global::getInstance()->G_Device->CreateBuffer(&cdb, nullptr, g_buf.GetAddressOf());
-			p_cbuffer_.push_back(p);
-			p_gbuffer_.push_back(g_buf);
-			buf_size_.push_back(buf_size);
+			hr = Global::getInstance()->G_Device->CreateBuffer(&cdb, nullptr, g_buf.GetAddressOf());
+			p_cbuffer_[cbuf_slot] = p;
+			p_gbuffer_[cbuf_slot] = g_buf;
+			buf_size_[cbuf_slot] = buf_size;
 			++cbuf_slot;
+			++buffer_num;
 		}
 		break;
 		case D3D_SIT_TEXTURE:
@@ -86,8 +92,8 @@ void Material::LoadFromLib(const std::string& name)
 
 void Material::Bind()
 {
-	Global::getInstance()->G_Context->PSSetConstantBuffers(1u,p_gbuffer_.size(), p_gbuffer_.data()->GetAddressOf());
-	p_shader_->Bind(*Global::getInstance()->G_Gfx);
+	Global::getInstance()->G_Context->PSSetConstantBuffers(0, buffer_num, p_gbuffer_.data()->GetAddressOf());
+	//p_shader_->Bind(*Global::getInstance()->G_Gfx);
 }
 
 Material::~Material()
@@ -107,7 +113,7 @@ bool Material::SetFloat(const std::string& name, const float& value)
 	}
 	memcpy(reinterpret_cast<char*>(p_cbuffer_[it->second.slot]) + it->second.offset,
 		&value, sizeof(value));
-	//qDebug() << "peek:" << *reinterpret_cast<float*>(p_cbuffer_[0]);
+	qDebug() << *reinterpret_cast<float*>(p_cbuffer_[it->second.slot]);
 	return true;
 }
 
@@ -160,20 +166,52 @@ bool Material::SetTextureByName(const std::string& name, const std::string& tex_
 	return false;
 }
 
+void Material::InitTexture(const std::string& name, ESResourceType tex_type)
+{
+	texture_list_.insert(std::make_pair(tex_type, name));
+	textures_[tex_type] = TextureFactory::GetInstance().GetTexture(name);
+
+}
+
+void Material::InitTexture(const std::vector<std::string>& name_list)
+{
+	UINT i = 0;
+	for (auto& name : name_list)
+	{
+		texture_list_.insert(std::pair<ESResourceType,std::string>(static_cast<ESResourceType>(i), name));
+		textures_[i] = TextureFactory::GetInstance().GetTexture(name);
+		++i;
+	}
+	texture_num_ = i;
+}
+
 void Material::CommitAllBufferData()
 {
 	D3D11_MAPPED_SUBRESOURCE mapSub;
-	//qDebug() << "value in cbuf" << *reinterpret_cast<float*>(p_cbuffer_[0]);
-	//SetFloat("light_intensity", 0.2f);
-	for (int i = 0; i < p_cbuffer_.size(); ++i)
+	for (int i = 0; i < buffer_num; ++i)
 	{
-
+		if (p_cbuffer_[i] == nullptr) continue;
 		auto hr = Global::getInstance()->G_Context->Map(p_gbuffer_[i].Get(), 0u, D3D11_MAP_WRITE_DISCARD, 0u, &mapSub);
 		memcpy(mapSub.pData, p_cbuffer_[i], buf_size_[i]);
-		//memcpy(mapSub.pData, &j, 4);
-		//qDebug() << *reinterpret_cast<float*>(mapSub.pData);
 		Global::getInstance()->G_Context->Unmap(p_gbuffer_[i].Get(), 0u);
 	}
-	//qDebug() << "value in gbuf" << *reinterpret_cast<float*>(mapSub.pData);
+	Bind();
+}
+
+void Material::CommitAllTexture()
+{
+	ID3D11ShaderResourceView* tex[5];
+	for (int i = 0; i < texture_num_; ++i)
+	{
+		tex[i] = textures_[i]->GetTextureResourceView();
+	}
+	Global::getInstance()->G_Context->PSSetShaderResources(0, texture_num_, tex);
+	Bind();
+}
+
+void Material::CommitAllInput()
+{
+	CommitAllBufferData();
+	CommitAllTexture();
 	Bind();
 }

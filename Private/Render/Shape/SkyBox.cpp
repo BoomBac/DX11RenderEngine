@@ -16,6 +16,7 @@
 #include <Public/Render/Bindable/DepthStencilState.h>
 #include <Public/Render/RenderToTexture.h>
 #include <Public/Render/Bindable/LightBuffer.h>
+#include <Public/Render/Material/Material.h>
 
 
 
@@ -42,6 +43,7 @@ namespace
 SkyBox::SkyBox(Graphics& gfx)
 {
 	InitBindable(gfx);
+	effects_.push_back(EEffectType::kNone);
 	image_paths_.push_back("C:/Users/BoomBac/Desktop/top.png");
 	image_paths_.push_back("C:/Users/BoomBac/Desktop/bottom.png");
 	image_paths_.push_back("C:/Users/BoomBac/Desktop/right.png");
@@ -101,35 +103,39 @@ void SkyBox::GenerateCubeSurface(const UINT& size, const std::vector<std::string
 	Camera sample_camera;
 	sample_camera.SetLocation(0.f, 0.f, 0.f);
 	sample_camera.SetProjection(90.f, 1.f, 1.f, 1000.f);
-	std::unique_ptr<RenderToTexture> rtt = std::make_unique<RenderToTexture>();
-	rtt->Initialize(g_gfx, ERTTUsage::kBackBuffer,face_desc);
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	rtt->SetRenderTarget(g_gfx);
-	g_gfx->isRenderShaodw = false;
+	std::unique_ptr<RenderToTexture> rtt_depth = std::make_unique<RenderToTexture>();
+	rtt_depth->Initialize(g_gfx, ERTTUsage::kBackBuffer,face_desc);
+	rtt_depth->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+	rtt_depth->SetRenderTarget(g_gfx);
 	g_gfx->p_camera_ = &sample_camera;
+	g_gfx->UpdatePerFrameBuf(std::string("gViewProj"), sample_camera.view_projection_matrix());
 	Draw(*g_gfx);
-	rtt->SaveToImage(g_gfx, path_list[0]);
+	rtt_depth->SaveToImage(g_gfx, path_list[0]);
 	sample_camera.SetRotation(DegToRad(0.f), DegToRad(180.f), DegToRad(0.f));
+	g_gfx->UpdatePerFrameBuf(std::string("gViewProj"), sample_camera.view_projection_matrix());
 	Draw(*g_gfx);
-	rtt->SaveToImage(g_gfx, path_list[1]);
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+	rtt_depth->SaveToImage(g_gfx, path_list[1]);
+	rtt_depth->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
 	sample_camera.SetRotation(DegToRad(0.f), DegToRad(-90.f), DegToRad(0.f));
+	g_gfx->UpdatePerFrameBuf(std::string("gViewProj"), sample_camera.view_projection_matrix());
 	Draw(*g_gfx);
-	rtt->SaveToImage(g_gfx, path_list[2]);
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+	rtt_depth->SaveToImage(g_gfx, path_list[2]);
+	rtt_depth->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
 	sample_camera.SetRotation(DegToRad(0.f), DegToRad(90.f), DegToRad(0.f));
+	g_gfx->UpdatePerFrameBuf(std::string("gViewProj"), sample_camera.view_projection_matrix());
 	Draw(*g_gfx);
-	rtt->SaveToImage(g_gfx, path_list[3]);
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+	rtt_depth->SaveToImage(g_gfx, path_list[3]);
+	rtt_depth->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
 	sample_camera.SetRotation(DegToRad(-90.f), DegToRad(0.f), DegToRad(0.f));
+	g_gfx->UpdatePerFrameBuf(std::string("gViewProj"), sample_camera.view_projection_matrix());
 	Draw(*g_gfx);
-	rtt->SaveToImage(g_gfx, path_list[4]);
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+	rtt_depth->SaveToImage(g_gfx, path_list[4]);
+	rtt_depth->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
 	sample_camera.SetRotation(DegToRad(90.f), DegToRad(0.f), DegToRad(0.f));
+	g_gfx->UpdatePerFrameBuf(std::string("gViewProj"), sample_camera.view_projection_matrix());
 	Draw(*g_gfx);
-	rtt->SaveToImage(g_gfx, path_list[5]);
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	g_gfx->isRenderShaodw = true;
+	rtt_depth->SaveToImage(g_gfx, path_list[5]);
+	rtt_depth->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
 	g_gfx->p_camera_ = cur_camera;
 	g_gfx->ResizeBackbuffer(w, h);
 }
@@ -188,10 +194,10 @@ void SkyBox::GenerateCubeSurface(const UINT& size, EGenerateFlag map_type)
 		output->push_back(env_faces[i]);
 		g_gfx->GetDevice()->CreateTexture2D(&des, NULL, (*output)[i].GetAddressOf());
 	}
-	std::unique_ptr<RenderToTexture> rtt = std::make_unique<RenderToTexture>();
-	rtt->Initialize(g_gfx, ERTTUsage::kBackBuffer,face_desc);
-	rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
-	rtt->SetRenderTarget(g_gfx);
+	std::unique_ptr<RenderToTexture> rtt_depth = std::make_unique<RenderToTexture>();
+	rtt_depth->Initialize(g_gfx, ERTTUsage::kBackBuffer,face_desc);
+	rtt_depth->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+	rtt_depth->SetRenderTarget(g_gfx);
 	g_gfx->isRenderShaodw = false;
 	g_gfx->p_camera_ = &sample_camera;
 
@@ -199,11 +205,12 @@ void SkyBox::GenerateCubeSurface(const UINT& size, EGenerateFlag map_type)
 	{
 		for (int i = 0; i < 6; i++)
 		{
-			rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+			rtt_depth->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
 			int ii = i * 3;
 			sample_camera.SetRotation(g_six_viws[ii], g_six_viws[ii + 1], g_six_viws[ii + 2]);
+			g_gfx->UpdatePerFrameBuf(std::string("gViewProj"), sample_camera.view_projection_matrix());
 			Draw(*g_gfx);
-			g_gfx->GetContext()->CopySubresourceRegion((*output)[i].Get(), 0, 0u, 0u, 0u, rtt->GetResource(), 0, nullptr);
+			g_gfx->GetContext()->CopySubresourceRegion((*output)[i].Get(), 0, 0u, 0u, 0u, rtt_depth->GetResource(), 0, nullptr);
 		}
 		//generate mip-map
 		//generate mipmap for the prefilter
@@ -221,25 +228,30 @@ void SkyBox::GenerateCubeSurface(const UINT& size, EGenerateFlag map_type)
 	}
 	else if (map_type == EGenerateFlag::kSpecular)
 	{
+		Material mat;
+		mat.LoadFromLib("pSkyBoxS.cso");
 		for (int r_level = 0; r_level < max_roughness_level_; ++r_level)
 		{
-			roughness_.roughness = static_cast<float>(r_level) / static_cast<float>(max_roughness_level_-1);
+			mat.SetFloat("roughness", static_cast<float>(r_level) / static_cast<float>(max_roughness_level_ - 1));
+			//roughness_.roughness = ;
 			auto s = size / static_cast<UINT>(pow(2, r_level));
 			g_gfx->ResizeBackbuffer(s,s);
 			//rtt->ReleaseResource();
 			des.Width = s;
 			des.Height = s;
-			rtt->Initialize(g_gfx, ERTTUsage::kBackBuffer, des);
-			rtt->SetRenderTarget(g_gfx);
+			rtt_depth->Initialize(g_gfx, ERTTUsage::kBackBuffer, des);
+			rtt_depth->SetRenderTarget(g_gfx);
 			for (int sur_count = 0; sur_count < 6; ++sur_count)
 			{
-				rtt->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
+				rtt_depth->ClearRenderTarget(g_gfx, 0.f, 1.f, 1.f, 1.f);
 				int ii = sur_count * 3;
 				sample_camera.SetProjection(90.f, 1.f, 1.f, 1000.f);
 				sample_camera.SetRotation(g_six_viws[ii], g_six_viws[ii + 1], g_six_viws[ii + 2]);
+				g_gfx->UpdatePerFrameBuf(std::string("gViewProj"), sample_camera.view_projection_matrix());
+				mat.CommitAllBufferData();
 				Draw(*g_gfx);
 				g_gfx->GetContext()->CopySubresourceRegion((*output)[sur_count].Get(), 
-					D3D11CalcSubresource(r_level, 0u,max_roughness_level_), 0u, 0u, 0u, rtt->GetResource(), 0, nullptr);
+					D3D11CalcSubresource(r_level, 0u,max_roughness_level_), 0u, 0u, 0u, rtt_depth->GetResource(), 0, nullptr);
 			}
 		}
 	}
@@ -315,19 +327,19 @@ void SkyBox::ShaderingFromResource(EGenerateFlag map_type)
 		}
 		if ((*it)->GetType() == EBindableType::kShaderResource)
 		{
-			if (dynamic_cast<ShaderResource*>((*it).get())->GetTextureType() == ETextureType::kDiffuse)
+			if (dynamic_cast<ShaderResource*>((*it).get())->GetTextureType() == ESResourceType::kDiffuse)
 			{
 				if (map_type == EGenerateFlag::kEnvironment)
 				{
-					(*it).reset(new ShaderResource(p_env_cube_.Get(), ETextureType::kDiffuse));
+					(*it).reset(new ShaderResource(p_env_cube_.Get(), ESResourceType::kDiffuse));
 				}
 				else if (map_type == EGenerateFlag::kIrradiance)
 				{
-					(*it).reset(new ShaderResource(p_hdr_cube_.Get(), ETextureType::kDiffuse));
+					(*it).reset(new ShaderResource(p_hdr_cube_.Get(), ESResourceType::kDiffuse));
 				}
 				else if (map_type == EGenerateFlag::kSpecular)
 				{
-					(*it).reset(new ShaderResource(p_specular_cube_.Get(), ETextureType::kDiffuse));
+					(*it).reset(new ShaderResource(p_specular_cube_.Get(), ESResourceType::kDiffuse));
 				}
 			}
 		}
@@ -361,7 +373,7 @@ void SkyBox::ShaderingFromFile(const std::string& sphere_image_path)
 	srvd.Texture2D.MostDetailedMip = 0;
 	srvd.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	g_gfx->GetDevice()->CreateShaderResourceView(hdr_texture.Get(), &srvd, p_hdr_cube_.GetAddressOf());
-	AddBind(std::make_unique<ShaderResource>(p_hdr_cube_.Get(), ETextureType::kDiffuse));
+	AddBind(std::make_unique<ShaderResource>(p_hdr_cube_.Get(), ESResourceType::kDiffuse));
 	stbi_image_free(pixel);
 }
 
@@ -413,20 +425,20 @@ void SkyBox::ShaderingFromFile(const std::vector<std::string>& cube_image_paths,
 			if (it == binds.end()) break;
 		}
 	}
-	AddBind(std::make_unique<ShaderResource>(p_env_cube_.Get(), ETextureType::kDiffuse));
+	AddBind(std::make_unique<ShaderResource>(p_env_cube_.Get(), ESResourceType::kDiffuse));
 }
 
 void SkyBox::BindToShadering(EGenerateFlag env_type)
 {
 	if(env_type == EGenerateFlag::kIrradiance)
-		AddBind(std::make_unique<ShaderResource>(p_hdr_cube_.Get(), ETextureType::kIrradiance));
+		AddBind(std::make_unique<ShaderResource>(p_hdr_cube_.Get(), ESResourceType::kIrradiance));
 	else if (env_type == EGenerateFlag::kSpecular)
 	{
-		AddBind(std::make_unique<ShaderResource>(p_specular_cube_.Get(), ETextureType::kSpecularMap));
-		AddBind(std::make_unique<ShaderResource>(p_LUT_map_.Get(), ETextureType::kLUT));
+		AddBind(std::make_unique<ShaderResource>(p_specular_cube_.Get(), ESResourceType::kSpecularMap));
+		AddBind(std::make_unique<ShaderResource>(p_LUT_map_.Get(), ESResourceType::kLUT));
 	}
 	else if(env_type == EGenerateFlag::kEnvironment)
-		AddBind(std::make_unique<ShaderResource>(p_env_cube_.Get(), ETextureType::kIrradiance));
+		AddBind(std::make_unique<ShaderResource>(p_env_cube_.Get(), ESResourceType::kIrradiance));
 }
 
 void SkyBox::LoadLUT(const std::string& path)
@@ -484,13 +496,9 @@ void SkyBox::InitBindable(Graphics& gfx)
 	world_location_ = initPos;
 	world_rotation_ = { 0.f,0.f,0.f };
 	scale_ = { 1.f,1.f,1.f };
-	v_cons_buf_.mvp_matrix_ =
-	{
-		DirectX::XMMatrixTranslation(initPos.x,initPos.y,initPos.z) *
-		view *
-		projection
-	};
+	v_cons_buf_.world_matrix_ = DirectX::XMMatrixTranslation(initPos.x, initPos.y, initPos.z);
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx, *this);
+	vcb->vc_buf_index_ = 1;
 	AddBind(std::move(vcb));
 	//SetActorScale({ 100.f,100.f,100.f });
 	g_gfx = &gfx;
@@ -504,7 +512,6 @@ void SkyBox::InitBindable(Graphics& gfx)
 	dsds.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	dsds.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 	AddBind(std::make_unique<DepthStencilState>(*g_gfx, dsds));
-	AddBind(std::make_unique<PSConstantBuffer<PixelBuffer>>(*g_gfx, &p_roughness_));
 }
 
 void SkyBox::GenerateCube(EGenerateFlag cube_type)

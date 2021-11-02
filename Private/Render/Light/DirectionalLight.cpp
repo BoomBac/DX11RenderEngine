@@ -9,6 +9,7 @@ DirectionalLight::DirectionalLight(Graphics& gfx) : Light::Light(gfx, "direction
 
 void DirectionalLight::UpdateAttribute()
 {
+	Light::UpdateAttribute();
 	DirectX::XMStoreFloat3(&direction_, light_camera_.forward());
 	//SetWorldLocation({ light_camera_.location_f().x,light_camera_.location_f().y,light_camera_.location_f().z});
 	//qDebug() << (static_cast<int>(RadToDeg(light_camera_.rotation_f().x))/10);

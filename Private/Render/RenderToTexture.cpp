@@ -93,8 +93,8 @@ void RenderToTexture::Initialize(Graphics* gfx, ERTTUsage usage, const D3D11_TEX
 		gfx->GetDevice()->CreateShaderResourceView(p_texture_.Get(), &shaderResourceViewDesc, p_shader_view_.GetAddressOf());
 
 		//第四，设置视口的属性
-		p_view_port.Width = static_cast<float>(gfx->GetWidth());
-		p_view_port.Height = static_cast<float>(gfx->GetHeight());
+		p_view_port.Width = static_cast<float>(gfx->GetWidth())/2.f;
+		p_view_port.Height = static_cast<float>(gfx->GetHeight())/2.f;
 		p_view_port.MinDepth = 0.0f;
 		p_view_port.MaxDepth = 1.0f;
 		p_view_port.TopLeftX = 0.0f;
@@ -108,13 +108,18 @@ void RenderToTexture::Initialize(Graphics* gfx, ERTTUsage usage, const D3D11_TEX
 
 void RenderToTexture::SetRenderTarget(Graphics* gfx)
 {
-	if (usage_==ERTTUsage::kBackBuffer)
-	gfx->GetContext()->OMSetRenderTargets(1u, p_target_view_.GetAddressOf(), gfx->GetDepthStencilView());
+	if (usage_ == ERTTUsage::kBackBuffer)
+	{
+		gfx->GetContext()->OMSetRenderTargets(1u, p_target_view_.GetAddressOf(), gfx->GetDepthStencilView());
+
+	}
+
 	else if (usage_ == ERTTUsage::kDepthBuffer)
 	{
 		ID3D11RenderTargetView* renderTarget[1] = { 0 };
 		//auto i = gfx->pp_render_targetview();
 		gfx->GetContext()->OMSetRenderTargets(1u, renderTarget, p_depth_view.Get());
+		//gfx->GetContext()->RSSetViewports(1, &p_view_port);
 		//gfx->GetContext()->RSSetViewports(1u, &p_view_port);
 	}
 }

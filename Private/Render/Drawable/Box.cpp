@@ -75,12 +75,7 @@ Box::Box(const int& size,Graphics& gfx)
 	world_location_ = initPos;
 	world_rotation_ = { 0.f,0.f,0.f };
 	scale_ = { 1.f,1.f,1.f };
-	v_cons_buf_.mvp_matrix_ =
-	{
-		DirectX::XMMatrixTranslation(initPos.x,initPos.y,initPos.z)*
-		view*
-		projection
-	};
+	v_cons_buf_.world_matrix_ = DirectX::XMMatrixTranslation(initPos.x,initPos.y,initPos.z);
 	BindItem vcb = std::make_unique<TransformBuffer>(gfx,*this);
 	AddBind(std::move(vcb));
 	SetWorldLocation(initPos);

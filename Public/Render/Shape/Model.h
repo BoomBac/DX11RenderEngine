@@ -32,7 +32,6 @@ private:
 
 	std::vector<std::unique_ptr<BindableInterface>> binds_;
 	virtual const std::vector<std::unique_ptr<BindableInterface>>& GetStaticBinds() const override;
-	std::map<ETextureType,std::unique_ptr<ShaderResource>> texture_set_;
 	const char* res_key_ = "zzz.obj";
 };
 

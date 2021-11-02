@@ -14,6 +14,7 @@
 #include "Public/Render/Bindable/IndexBuffer.h"
 #include "Public/Render/Graphics.h"
 #include "Public/Render/Bindable/BindableInterface.h"
+#include "Public/Render/Effect/Effect.h"
 
 
 enum class EGeometryType
@@ -24,19 +25,11 @@ enum class EGeometryType
 	kSkyBox
 };
 
-enum class EDrawableType
-{
-	kDefault,
-	kSkyBox
-};
-
 
 // mvp在一起
 struct WorldTransform
 {
-	DirectX::XMMATRIX mvp_matrix_; //4x4
 	DirectX::XMMATRIX world_matrix_; //4x4
-	DirectX::XMFLOAT3 camera_pos;
 };
 
 
@@ -45,12 +38,13 @@ class Drawable
 	template<class T>
 	friend class Shape;
 public:
-
 	Drawable() = default;
 	virtual void Draw(Graphics& gfx);
 	void AddBind(std::unique_ptr<BindableInterface> bind);
 	void AddIndexBuf(std::unique_ptr<IndexBuffer> ibf, Graphics& gfx);
 	virtual ~Drawable();
+
+	void AddEffect(EEffectType type);
 	//返回mvp变换矩阵，对于每一个物体而言，vp都是共享一份的
 	WorldTransform& GetTransform();
 	//设置物体变换
@@ -76,17 +70,20 @@ public:
 	DirectX::XMFLOAT3 forward_direction() const;
 	DirectX::XMFLOAT3 right_direction() const;
 	DirectX::XMFLOAT3 up_direction() const;
+	//mvp变换矩阵，所有Drawable共享一份view和projection
+	WorldTransform v_cons_buf_;
 
 	bool IsOnWorldCoordinate() const;
 	//渲染属性
 	bool visiblity_ = true;
 	bool cast_shadow_ = true;
+	std::vector<EEffectType> effects_;
+	void SetName(const std::string& name);
+	std::string GetName() const;
 protected:
-
 	std::vector<std::unique_ptr<BindableInterface>> binds;
 	IndexBuffer* indexbuffer;
-	//mvp变换矩阵，所有Drawable共享一份view和projection
-	WorldTransform v_cons_buf_;
+
 	//物体自身坐标轴
 	DirectX::XMFLOAT3 forward_direction_ = DirectX::XMFLOAT3(0.f, 0.f, 1.f);
 	DirectX::XMFLOAT3 right_direction_ = DirectX::XMFLOAT3(1.f, 0.f, 0.f);
@@ -120,6 +117,7 @@ protected:
 private:
 	DISALLOW_COPY_AND_ASSIGN(Drawable)
 	virtual const std::vector<std::unique_ptr<BindableInterface>>& GetStaticBinds() const=0;
+	std::string name_{};
 };
 
 #endif //DX11ENGINE_RENDER_DRAWABLE_DRAWABLE_H

@@ -26,7 +26,6 @@ private:
 	DISALLOW_COPY_AND_ASSIGN(TextureFactory)
 	TextureFactory() {};
 	std::map<std::string, std::shared_ptr<Texture>> texture_pool_;
-	//void LoadMesh(std::string file_path, std::vector<Postion3DTN>& vertics, std::vector<UINT>& indices);
 };
 
 #endif//DX11ENGINE_RENDER_RESMANAGE_TEXTUREFACTORY_H

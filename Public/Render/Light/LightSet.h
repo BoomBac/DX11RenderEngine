@@ -9,8 +9,8 @@ enum class ELightType : BYTE
 
 struct LightSet
 {
-	DirectX::XMFLOAT3 light_pos_;
 	float light_intensity_;
+	DirectX::XMFLOAT3 light_pos_;
 	DirectX::XMFLOAT3 light_dir_;
 	float padding;
 	DirectX::XMFLOAT4 light_color_;

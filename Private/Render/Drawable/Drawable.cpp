@@ -16,77 +16,69 @@ void Drawable::Draw(Graphics& gfx)
 {
 	if (!visiblity_) return;
 	//根据pass类型选择camera
-	if (gfx.isRenderShaodw)
-	{
-		if (cast_shadow_)
-		{
-			view = gfx.p_light_camera->view_matrix();
-			projection = gfx.p_light_camera->projection_matrix();
-			v_cons_buf_.camera_pos = gfx.p_light_camera->location_f();
-		}
-	}
-	else
-	{
-		view = gfx.p_camera_->view_matrix();// *gfx.p_camera_->projection_matrix();
-		projection = gfx.p_camera_->projection_matrix();
-		v_cons_buf_.camera_pos = gfx.p_camera_->location_f();
-	}
-
-	int pc_id = -1;
-	int vc_id = -1;
+	//if (gfx.isRenderShaodw)
+	//{
+	//	if (cast_shadow_)
+	//	{
+	//		view = gfx.p_light_camera->view_matrix();
+	//		projection = gfx.p_light_camera->projection_matrix();
+	//		v_cons_buf_.camera_pos = gfx.p_light_camera->location_f();
+	//	}
+	//}
+	//view = gfx.p_camera_->view_matrix();// *gfx.p_camera_->projection_matrix();
+	//projection = gfx.p_camera_->projection_matrix();
 	Update();
 	//记录可绑定多个bind的数量，并将他们绑定到不同的slot
 	for (auto& i : binds)
 	{
-		if (i->GetType() == EBindableType::kPixelConstantBuffer)
-		{
-			++pc_id;
-			i->pc_buf_index = &pc_id;
-		}
-		if (i->GetType() == EBindableType::kVetexConstantBuffer)
-		{
-			++vc_id;
-			i->vc_buf_index_ = &vc_id;
-		}
+		//if (i->GetType() == EBindableType::kPixelConstantBuffer)
+		//{
+		//	++pc_id;
+		//	i->pc_buf_index = pc_id;
+		//}
+		//if (i->GetType() == EBindableType::kVetexConstantBuffer)
+		//{
+		//	++vc_id;
+		//	i->vc_buf_index_ = vc_id;
+		//}
 		i->Bind(gfx);
 	}
 	for (auto& i : GetStaticBinds())
 	{
-		if (i->GetType() == EBindableType::kPixelConstantBuffer)
-		{
-			++pc_id;
-			i->pc_buf_index = &pc_id;
-		}
-		if (i->GetType() == EBindableType::kVetexConstantBuffer)
-		{
-			++vc_id;
-			i->vc_buf_index_ = &vc_id;
-		}
+		//if (i->GetType() == EBindableType::kPixelConstantBuffer)
+		//{
+		//	++pc_id;
+		//	i->pc_buf_index = pc_id;
+		//}
+		//if (i->GetType() == EBindableType::kVetexConstantBuffer)
+		//{
+		//	++vc_id;
+		//	i->vc_buf_index_ = vc_id;
+		//}
 		i->Bind(gfx);
 	}
 	//生成shadowMap时PixelShader置空，正常渲染时将shadowMap绑定到着色器资源
-	if (gfx.isRenderShaodw)
-	{
-		gfx.GetContext()->PSSetShader(nullptr, nullptr, 0u);
-	}
-	else
-	{
-		//gfx.GetContext()->PSSetShaderResources(0, 1, gfx.GetShadowMap());
-	}
+	//if (gfx.isRenderShaodw)
+	//{
+	//	gfx.GetContext()->PSSetShader(nullptr, nullptr, 0u);
+	//}
+	//else
+	//{
+	//	//gfx.GetContext()->PSSetShaderResources(0, 1, gfx.GetShadowMap());
+	//}
 
-	if (gfx.isRenderShaodw)
-	{
-		if (cast_shadow_)
-		{
-			gfx.DrawIndexed(indexbuffer->size_);
-		}
-	}
-	else
-		gfx.DrawIndexed(indexbuffer->size_);
+	//if (gfx.isRenderShaodw)
+	//{
+	//	if (cast_shadow_)
+	//	{
+	//		gfx.DrawIndexed(indexbuffer->size_);
+	//	}
+	//}
+	//else
+	gfx.DrawIndexed(indexbuffer->size_);
 	gfx.GetContext()->RSSetState(nullptr);
-	gfx.GetContext()->OMSetDepthStencilState(nullptr, 1u);
+	//gfx.GetContext()->OMSetDepthStencilState(nullptr, 1u);
 	//渲染结束将shadowMap槽位的shaderResource解绑，以便其在下一个shadowPass可以用作depthbuffer
-	//gfx.GetContext()->PSSetShaderResources(0, 1, TextureFactory::GetInstance().GetTexture("Depth.png")->GetTextureResourceViewAddress());
 }
 
 void Drawable::AddBind(std::unique_ptr<BindableInterface> bind)
@@ -103,6 +95,11 @@ void Drawable::AddIndexBuf(std::unique_ptr<IndexBuffer> ibf, Graphics& gfx)
 Drawable::~Drawable()
 {
 
+}
+
+void Drawable::AddEffect(EEffectType type)
+{
+	effects_.push_back(type);
 }
 
 WorldTransform& Drawable::GetTransform()
@@ -215,4 +212,15 @@ bool Drawable::IsOnWorldCoordinate() const
 		right_direction_.x != 1.f || right_direction_.y != 0.f || right_direction_.z != 0.f ||
 		up_direction_.x != 0.f || up_direction_.y != 1.f || up_direction_.z != 0.f);
 }
+
+void Drawable::SetName(const std::string& name)
+{
+	name_ = name;
+}
+
+std::string Drawable::GetName() const
+{
+	return name_;
+}
+
 
