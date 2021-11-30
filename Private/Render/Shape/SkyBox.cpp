@@ -66,8 +66,8 @@ SkyBox::SkyBox(Graphics& gfx)
 
 	//GenerateLUT(std::string{});
 
-	//ShaderingFromFile("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/Apartment_Reflection.hdr");
-	ShaderingFromFile("C:/Users/BoomBac/Downloads/Desert_Highway/Desert_Highway/Road_to_MonumentValley_Ref.hdr");
+	ShaderingFromFile("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/Apartment_Reflection.hdr");
+	//ShaderingFromFile("Y:\Project_VS2019\DX11RenderEngine\Res\Texture\Apartment_Reflection.hdr");
 	GenerateCubeSurface(environment_map_size_,EGenerateFlag::kEnvironment);
 	GenerateCube(EGenerateFlag::kEnvironment);
 	ShaderingFromResource(EGenerateFlag::kEnvironment);
@@ -80,7 +80,7 @@ SkyBox::SkyBox(Graphics& gfx)
 	//GenerateCube(EGenerateFlag::kSpecular);
 	//ShaderingFromResource(EGenerateFlag::kSpecular);
 	//ShaderingFromResource(EGenerateFlag::kIrradiance);
-	LoadLUT("C:/Users/BoomBac/Desktop/ibl_brdf_lut.png");
+	LoadLUT("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/ibl_brdf_lut.png");
 	BindToShadering(EGenerateFlag::kSpecular);
 	BindToShadering(EGenerateFlag::kIrradiance);
 	ShaderingFromResource(EGenerateFlag::kEnvironment);

@@ -113,7 +113,7 @@ bool Material::SetFloat(const std::string& name, const float& value)
 	}
 	memcpy(reinterpret_cast<char*>(p_cbuffer_[it->second.slot]) + it->second.offset,
 		&value, sizeof(value));
-	qDebug() << *reinterpret_cast<float*>(p_cbuffer_[it->second.slot]);
+	//qDebug() << *reinterpret_cast<float*>(p_cbuffer_[it->second.slot]);
 	return true;
 }
 
