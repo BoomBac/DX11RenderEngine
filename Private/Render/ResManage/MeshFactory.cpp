@@ -13,7 +13,7 @@ using namespace std;
 
 namespace
 {
-	constexpr char* common_dir_ = "Y:/Project_VS2019/DX11RenderEngine/Res/Mesh/";
+	constexpr char* common_dir_ = "E:/Project_VS2019/DX11RenderEngine/Res/Mesh/";
 }
 
 MeshFactory& MeshFactory::getInstance()

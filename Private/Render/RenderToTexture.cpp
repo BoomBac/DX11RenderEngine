@@ -281,10 +281,10 @@ void RenderToTexture::SaveToImage(Graphics* gfx)
 	switch (usage_)
 	{
 	case ERTTUsage::kBackBuffer:
-		SaveToImage(gfx, "Y:/Project_VS2019/DX11RenderEngine/Debug/Back.png");
+		SaveToImage(gfx, "E:/Project_VS2019/DX11RenderEngine/Debug/Back.png");
 		break;
 	case ERTTUsage::kDepthBuffer:
-		SaveToImage(gfx, "Y:/Project_VS2019/DX11RenderEngine/Debug/Depth.png");
+		SaveToImage(gfx, "E:/Project_VS2019/DX11RenderEngine/Debug/Depth.png");
 		break;
 	default:
 		break;

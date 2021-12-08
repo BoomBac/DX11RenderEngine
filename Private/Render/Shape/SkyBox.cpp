@@ -66,7 +66,7 @@ SkyBox::SkyBox(Graphics& gfx)
 
 	//GenerateLUT(std::string{});
 
-	ShaderingFromFile("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/Apartment_Reflection.hdr");
+	ShaderingFromFile("E:/Project_VS2019/DX11RenderEngine/Res/Texture/Apartment_Reflection.hdr");
 	//ShaderingFromFile("Y:\Project_VS2019\DX11RenderEngine\Res\Texture\Apartment_Reflection.hdr");
 	GenerateCubeSurface(environment_map_size_,EGenerateFlag::kEnvironment);
 	GenerateCube(EGenerateFlag::kEnvironment);
@@ -80,7 +80,7 @@ SkyBox::SkyBox(Graphics& gfx)
 	//GenerateCube(EGenerateFlag::kSpecular);
 	//ShaderingFromResource(EGenerateFlag::kSpecular);
 	//ShaderingFromResource(EGenerateFlag::kIrradiance);
-	LoadLUT("Y:/Project_VS2019/DX11RenderEngine/Res/Texture/ibl_brdf_lut.png");
+	LoadLUT("E:/Project_VS2019/DX11RenderEngine/Res/Texture/ibl_brdf_lut.png");
 	BindToShadering(EGenerateFlag::kSpecular);
 	BindToShadering(EGenerateFlag::kIrradiance);
 	ShaderingFromResource(EGenerateFlag::kEnvironment);
@@ -173,7 +173,7 @@ void SkyBox::GenerateCubeSurface(const UINT& size, EGenerateFlag map_type)
 		{
 			if (b->GetType() == EBindableType::kPixelShader)
 			{
-				b.reset(new PixelShader(*g_gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBox.cso"));
+				b.reset(new PixelShader(*g_gfx, "E:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBox.cso"));
 			}
 		}
 	}
@@ -185,7 +185,7 @@ void SkyBox::GenerateCubeSurface(const UINT& size, EGenerateFlag map_type)
 		{
 			if (b->GetType() == EBindableType::kPixelShader)
 			{
-				b.reset(new PixelShader(*g_gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBoxS.cso"));
+				b.reset(new PixelShader(*g_gfx, "E:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBoxS.cso"));
 			}
 		}
 	}
@@ -322,7 +322,7 @@ void SkyBox::ShaderingFromResource(EGenerateFlag map_type)
 	{
 		if ((*it)->GetType() == EBindableType::kPixelShader)
 		{
-			(*it).reset(new PixelShader(*g_gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBoxC.cso"));
+			(*it).reset(new PixelShader(*g_gfx, "E:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBoxC.cso"));
 			continue;
 		}
 		if ((*it)->GetType() == EBindableType::kShaderResource)
@@ -416,7 +416,7 @@ void SkyBox::ShaderingFromFile(const std::vector<std::string>& cube_image_paths,
 	{
 		if ((*it)->GetType() == EBindableType::kPixelShader)
 		{
-			(*it).reset(new PixelShader(*g_gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBoxC.cso"));
+			(*it).reset(new PixelShader(*g_gfx, "E:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBoxC.cso"));
 			continue;
 		}
 		if ((*it)->GetType() == EBindableType::kShaderResource)
@@ -482,8 +482,8 @@ void SkyBox::InitBindable(Graphics& gfx)
 	};
 	auto ib = std::make_unique<IndexBuffer>(indices, gfx);
 	AddStaticIndexBuf(std::move(ib), gfx);
-	BindItem vs = std::make_unique<VertexShader>(gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/vSkyBox.cso");
-	BindItem ps = std::make_unique<PixelShader>(gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBox.cso");
+	BindItem vs = std::make_unique<VertexShader>(gfx, "E:/Project_VS2019/DX11RenderEngine/Shaders/cso/vSkyBox.cso");
+	BindItem ps = std::make_unique<PixelShader>(gfx, "E:/Project_VS2019/DX11RenderEngine/Shaders/cso/pSkyBox.cso");
 	AddBind(std::move(ps));
 	VertexLayout vl;
 	vl << EVertexType::kPosition3D;

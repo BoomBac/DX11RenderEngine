@@ -52,8 +52,8 @@ Plane::Plane(int row, int col, const int& size, Graphics& gfx)
 		auto ib = std::make_unique<IndexBuffer>(indices, gfx);
 		AddStaticIndexBuf(std::move(ib), gfx);
 
-		BindItem vs = std::make_unique<VertexShader>(gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/InsideVshader.cso");
-		BindItem ps = std::make_unique<PixelShader>(gfx, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/Lambert.cso");
+		BindItem vs = std::make_unique<VertexShader>(gfx, "E:/Project_VS2019/DX11RenderEngine/Shaders/cso/InsideVshader.cso");
+		BindItem ps = std::make_unique<PixelShader>(gfx, "E:/Project_VS2019/DX11RenderEngine/Shaders/cso/Lambert.cso");
 		AddStaticBind(std::move(ps));
 
 		VertexLayout vl;

@@ -64,16 +64,16 @@ void ModelResFactory::AddResource(std::string model_key)
 	std::vector<UINT>** pi = new std::vector<UINT>*;
 	MeshFactory::getInstance().GetMesh(model_key, pv, pi);
 	v.push_back(std::make_shared<VertexBuffer<Postion3DTN2, Vec>>(**pv, *gfx_));
-	auto vs = std::make_shared<VertexShader>(*gfx_, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/VertexShader.cso");
+	auto vs = std::make_shared<VertexShader>(*gfx_, "E:/Project_VS2019/DX11RenderEngine/Shaders/cso/VertexShader.cso");
 	v.push_back(std::make_shared<IndexBuffer>(**pi, *gfx_));
 	if (model_key == "point_light.obj" || model_key =="directional_light.obj" || model_key == "spot_light.obj")
 	{
-		v.push_back(std::make_shared<PixelShader>(*gfx_, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/p_raw_color.cso"));
+		v.push_back(std::make_shared<PixelShader>(*gfx_, "E:/Project_VS2019/DX11RenderEngine/Shaders/cso/p_raw_color.cso"));
 		v.push_back(vs);
 	}
 	//else
 	//{
-	//	//v.push_back(std::make_shared<PixelShader>(*gfx_, "Y:/Project_VS2019/DX11RenderEngine/Shaders/cso/pbr.cso"));
+	//	//v.push_back(std::make_shared<PixelShader>(*gfx_, "E:/Project_VS2019/DX11RenderEngine/Shaders/cso/pbr.cso"));
 	//	//v.push_back(std::make_shared<PSConstantBuffer<LightMatrix>>(*gfx_, &gfx_->p_light_matrix_));
 	//}
 	VertexLayout vl;
