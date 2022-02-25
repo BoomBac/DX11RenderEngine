@@ -294,5 +294,6 @@ float4 main(PSInput input):SV_TARGET
     float p_r;
     float3  num_blockers_color;
 	float2 pix_pos = float2(input.pos.x / 800.f, input.pos.y / 600.f);
-	return finalColor.Sample(objSamplerState, pix_pos) * shadow_occlussion(input.posW, p_r, bias, num_blockers_color);
+    float4 fcolor = finalColor.Sample(objSamplerState, pix_pos);
+	return  0.4f * fcolor + fcolor * shadow_occlussion(input.posW, p_r, bias, num_blockers_color);
 }

@@ -4,7 +4,7 @@
 
 namespace
 {
-	constexpr char* common_dir_ = "E:/Project_VS2019/DX11RenderEngine/Res/Texture/";
+	const char* common_dir_ = "E:/Project_VS2019/DX11RenderEngine/Res/Texture/";
 }
 
 TextureFactory& TextureFactory::TextureFactory::GetInstance()
